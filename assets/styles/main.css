@@ -1,0 +1,42 @@
+.eztable {
+    --easy-table-border: none;
+    --easy-table-row-border: none;
+  
+    --easy-table-header-font-size: 13px;
+    --easy-table-header-height: 0px;
+    --easy-table-header-font-color: theme("colors.gray.700");
+   --easy-table-header-background-color: #eff4fc;  /*  theme("colors.gray.200"); */
+    --easy-table-header-item-padding: 10px;
+  
+   
+   
+    --easy-table-body-row-height: 0px;
+    --easy-table-body-row-font-size: 12px;
+    --easy-table-body-row-font-color: theme("colors.gray.600");
+    --easy-table-body-row-background-color: #fff;
+    --easy-table-body-row-hover-font-color: theme("colors.gray.700");
+    --easy-table-body-row-hover-background-color: theme("colors.gray.100");
+    --easy-table-body-even-row-font-color: #373737;
+    --easy-table-body-even-row-background-color: #fff;
+    --easy-table-body-item-padding: 10px;
+  
+    --easy-table-footer-background-color: #fff;
+    --easy-table-footer-font-color: theme("colors.gray.500");
+    --easy-table-footer-font-size: 13px;
+    --easy-table-footer-padding: 25px 10px;
+    --easy-table-footer-height: 0px;
+    --easy-table-rows-per-page-selector-width: auto;
+    --easy-table-rows-per-page-selector-options-padding: 5px;
+  
+  
+   --easy-table-loading-mask-background-color: #fff;
+    --easy-table-loading-mask-opacity:0.5;
+  
+    --easy-table-scrollbar-track-color: #fff;
+    --easy-table-scrollbar-color: #fff;
+    --easy-table-scrollbar-thumb-color: theme("colors.gray.200");
+    --easy-table-scrollbar-corner-color: #fff;
+    --easy-table-buttons-pagination-border:1px solid #e0e0e0;
+  
+   
+  }

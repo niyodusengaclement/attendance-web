@@ -20,7 +20,7 @@ export const useAuth = () => {
                 if (data.status == 200) {
                     localStorage.setItem('token', data.token)
                     localStorage.setItem('logger', JSON.stringify(data.data))
-
+                    useToast().success("Login Successful");
                     // navigateTo(current_location.value??"/dashboard")
                     if (remember) {
                         localStorage.setItem('userType', '1')

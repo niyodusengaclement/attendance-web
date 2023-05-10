@@ -4,6 +4,8 @@ import sidebarItems from '@/components/layout/full/vertical-sidebar/sidebarItem'
 import { Menu2Icon } from 'vue-tabler-icons';
 const sidebarMenu = shallowRef(sidebarItems);
 const sDrawer = ref(true);
+
+
 </script>
 
 <template>
@@ -45,11 +47,11 @@ const sDrawer = ref(true);
                     <Menu2Icon size="20" stroke-width="1.5" />
                 </v-btn>
                 <!-- Notification -->
-                <LayoutFullVerticalHeaderNotificationDD/>
+                 
             </div>
             <div>
                 <!-- Upgrade button -->
-                <v-btn class="mr-2 bg-primary" href="https://adminmart.com/templates/nuxtjs/" target="_blank">Download Free</v-btn>
+                <LayoutFullVerticalHeaderNotificationDD class="mx-3"/>
                 <!-- User Profile -->
                 <LayoutFullVerticalHeaderProfileDD />
             </div>

@@ -13,8 +13,10 @@ export default defineNuxtConfig({
     transpile: [
       "vuetify",
       "@fawmi/vue-google-maps",
+      "vue-toastification"
     ],
   },
+  css :[ "~/assets/styles/main.css"],
   vite: {
     define: {
       "process.env.DEBUG": false,
