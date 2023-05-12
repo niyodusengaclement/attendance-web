@@ -1,11 +1,11 @@
 <template>
     <v-row>
         <v-col cols="12" md="4">
-            <UiParentCard title="New Products">
+            <UiParentCard title="Product Category">
                 <form role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
                         <v-file-input v-model="form.fileRecords.$value" density="compact" color="primary" counter
-                            label="Product Image" multiple placeholder="Select your files" prepend-icon="mdi-camera"
+                            label="Category Image" multiple placeholder="Select your files" prepend-icon="mdi-camera"
                             variant="outlined" :show-size="1000" :errors="form.fileRecords.$errors">
                             <template v-slot:selection="{ fileNames }">
                                 <template v-for="(fileName, index) in fileNames" :key="fileName">
@@ -20,45 +20,27 @@
                             </template>
                         </v-file-input>
 
-                        <v-text-field variant="outlined" density="compact" label="Product" v-model="form.productName.$value"
+                        <v-text-field variant="outlined" density="compact" label="Title" v-model="form.productName.$value"
                             @blur="form.productName.$validate()" color="primary"
                             :error-messages="form.productName.$errors"></v-text-field>
 
-                        <v-select label="Category" variant="outlined" density="compact" v-model="selectedCategory"
-                            color="primary" :items="categories" item-title="Title" item-value="ID"></v-select>
-
-                        <v-select label="Is Gas" v-model="IsGas" :items="productType" variant="outlined" density="compact"
-                            color="primary" item-title="label" item-value="value"></v-select>
-
-                        <v-text-field variant="outlined" density="compact" label="Product In KG"
-                            v-model="form.productKg.$value" @blur="form.productKg.$validate()" color="primary"
-                            :error-messages="form.productKg.$errors"></v-text-field>
-
-
-                        <v-text-field variant="outlined" density="compact" label="Price" v-model="form.productPrice.$value"
-                            @blur="form.productPrice.$validate()" color="primary"
-                            :error-messages="form.productPrice.$errors"></v-text-field>
-
-                        <v-textarea variant="outlined" :error-messages="form.productDesc.$errors" density="compact"
-                            label="Description" v-model="form.productDesc.$value" @blur="form.productDesc.$validate()"
-                            color="primary"></v-textarea>
-
+                       
 
                         <v-btn @click.prevent="saveData" :disabled="loading" class="my-4" color="primary" size="large" block
                             flat>{{
-                                loading ? 'Creating Item...' : 'Create Product' }}</v-btn>
+                                loading ? 'Creating Item...' : 'Create Category' }}</v-btn>
 
                     </v-col>
                 </form>
             </UiParentCard>
         </v-col>
         <v-col cols="12" md="8">
-            <UiParentCard title="List Products">
+            <UiParentCard title="List Categories">
                 <v-card-text>
                     <v-row class="mb-4">
                         <v-col cols="12" md="8">
                             <v-text-field v-model="search" :loading="loading" variant="tonal" density="compact"
-                                label="Search for Order ID, customer, order status, or something"
+                                label="Search for Category ID, Title or Something"
                                 prepend-inner-icon="mdi-magnify" single-line hide-details
                                 @click:prepend-inner="onSearchData">
 
@@ -76,9 +58,10 @@
                     </v-row>
                     <ClientOnly>
                         <EasyDataTable empty-message="No Product found" :search-value="search" theme-color="#f97316"
-                            table-class-name="eztable" :headers="headers" :items="products">
-                            <template #item-ProductPhoto="item">
-                                <v-img :src="API_URL + item.ProductPhoto" height="100%" class="rounded-lg"></v-img>
+                            table-class-name="eztable" :headers="headers" :items="categories">
+                            <template #item-ImageUrl="item">
+                                <v-img :src="API_URL + item.ImageUrl" height="40" class="rounded-lg"></v-img>
+                                <!-- <v-img src="http://localhost:8080/web/api/v1/uploads/1683894504743290100_images-blog-4.jpg" height="100%" class="rounded-lg"></v-img> -->
                             </template>
                             <template #item-actions="item">
 
@@ -170,19 +153,8 @@ const categories = ref([]);
 const search = ref("");
 const IsGas = ref('')
 
-function getProducts() {
-    http.fetch("products")
-        .then((data: any) => {
-            if (data.status == 200) {
-                products.value = data.records;
-                instance?.proxy?.$forceUpdate();
-            }
-        })
-        .catch(() => { })
-        .finally(() => (loading.value = false));
-}
+
 onMounted(() => {
-    getProducts();
     getCategories();
 });
 async function handleSubmit() {
@@ -225,27 +197,17 @@ function deleteProduct(status: number) {
 
 
 const headers: Header[] = [
-    { text: "Photo", value: "ProductPhoto", sortable: true },
-    { text: "Product", value: "ProductName", sortable: true },
-    { text: "Category", value: "ProductCategory", sortable: true },
-    { text: "Price", value: "PriceBuying", sortable: true },
-    { text: "Type", value: "IsGas", sortable: true },
-    { text: "ProductRate", value: "ProductRate", sortable: true },
+    { text: "Photo", value: "ImageUrl", sortable: true },
+    { text: "Category", value: "Title", sortable: true },
     { text: "Actions", value: "actions", width: 120 },
 ]
 
 async function saveData() {
     let formData = new FormData()
     formData.append("file", form.fileRecords.$value[0])
-    formData.append("product_name", form.productName.$value)
-    formData.append("product_category", selectedCategory.value)
-    formData.append("product_description", form.productDesc.$value)
-    formData.append("quantity_kg", form.productKg.$value)
-    formData.append("price_refilling", "")
-    formData.append("price_buying", form.productPrice.$value)
-    formData.append("product_rate", "0.0")
-    formData.append("is_gas", IsGas.value)
-    fetch(API_URL + 'create_product', {
+    formData.append("category_name", form.productName.$value)
+  
+    fetch(API_URL + 'create_category', {
         method: "POST",
         mode: "no-cors",
         cache: "no-cache",
@@ -256,9 +218,10 @@ async function saveData() {
         },
         body: formData
     }).then((data: any) => {
+        useToast().success(data.message);
         if (data.status == 200) {
-            useToast().success(data.data.message);
-            getProducts();
+            
+            getCategories();
         }
     }).catch((error) => {
             console.log(error);

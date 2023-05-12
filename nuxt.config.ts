@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      apiUrl: '',
+      apiUrl: 'http://localhost:8080/web/api/v1/',
     }
   },
   typescript: {

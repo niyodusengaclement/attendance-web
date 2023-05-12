@@ -123,18 +123,21 @@ import { onMounted } from 'vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 import { GoogleMap, InfoWindow, Polyline, Marker, MarkerCluster, CustomMarker } from "vue3-google-map";
 const route = useRoute();
+const http = useHttpRequest()
 const tab = ref(null);
-const orderId = route.params.id;
+const orderId = ref(route.params.id);
 const order = ref([]);
 const orderDetials = ref([]);
 const deliveryLocations = ref([]);
 const driver = ref([]);
+const loading = ref(false)
 definePageMeta({
   layout: "admin",
 });
 
 onMounted(() => {
   loadOrderById();
+  console.log(orderId)
 })
 
 const center = { lat: -1.929942, lng: 30.070546 };
@@ -349,20 +352,25 @@ const options = [
   }
 ]
 const controls = ref(false)
-const loadOrderById = () => {
-  $fetch(`get_client_order_by_id/` + 13, {
-    method: 'GET',
-    baseURL: 'http://192.168.1.69:8080/api/web/v1/',
-  }).then(function (res) {
-    order.value = res.order;
-    driver.value = res.driver;
-    orderDetials.value = res.details;
-    deliveryLocations.value = res.delivery_address
-  });
 
-  
 
+function loadOrderById(){
+  loading.value = true
+  http.fetch("order/" + orderId)
+    .then((data) => {
+      if (data.status == 200) {
+        // lists.value = data.records;
+        order.value = data.order;
+        driver.value = data.driver;
+        orderDetials.value = data.details;
+        deliveryLocations.value = data.delivery_address
+        instance?.proxy?.$forceUpdate();
+      }
+    })
+    .catch(() => { })
+    .finally(() => (loading.value = false));
 }
+
 </script>
 
   

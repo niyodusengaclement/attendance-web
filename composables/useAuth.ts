@@ -32,7 +32,8 @@ export const useAuth = () => {
                     console.log("login succeed")
                 }
             }).catch((data) => {
-              console.log("data.data.message");
+            //   console.log("data.data.message");
+              useToast().error(data.data.message);
             }).finally(() => loading.value = false)
         },
         

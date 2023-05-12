@@ -26,6 +26,11 @@ const sidebarItem: menu[] = [
         to: '/dashboard'
     },
     {
+        title: 'Product category',
+        icon: ChecklistIcon,
+        to: '/category'
+    },
+    {
         title: 'Products',
         icon: ChecklistIcon,
         to: '/products'
