@@ -66,10 +66,10 @@
                             <template #item-actions="item">
 
                                 <div>
-                                    <v-btn density="compact" variant="tonal" color="primary" class="mx-1" icon="mdi-pencil">
+                                    <v-btn size="large" density="compact" variant="tonal" color="primary" class="mx-1" icon="mdi-square-edit-outline">
 
                                     </v-btn>
-                                    <v-btn density="compact" variant="tonal" color="error" class="mx-1" icon="mdi-delete">
+                                    <v-btn size="large" density="compact" variant="tonal" color="error" class="mx-1" icon="mdi-delete">
 
                                     </v-btn>
                                 </div>
