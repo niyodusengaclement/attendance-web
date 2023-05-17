@@ -1,7 +1,6 @@
 
 <script lang='ts' setup>
 import { ref } from 'vue';
-const checkbox = ref(true);
 
 // import { useToast } from "primevue/usetoast";
 import { Field, useValidation } from "vue3-form-validation";
@@ -9,6 +8,8 @@ import { rules } from "~/utils/rules";
 import { useAuth } from '~~/composables/useAuth';
 const { login, loading } = useAuth();
 // const toast = useToast();
+const checkbox = ref(true);
+
 interface FormData {
   email: Field<string>;
   password: Field<File[]>;

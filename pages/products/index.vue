@@ -60,7 +60,7 @@
                             <v-text-field v-model="search" :loading="loading" variant="tonal" density="compact"
                                 label="Search for Order ID, customer, order status, or something"
                                 prepend-inner-icon="mdi-magnify" single-line hide-details
-                                @click:prepend-inner="onSearchData">
+                                >
 
                             </v-text-field>
                         </v-col>
@@ -76,7 +76,7 @@
                     </v-row>
                     <ClientOnly>
                         <EasyDataTable empty-message="No Product found" :search-value="search" theme-color="#f97316"
-                            table-class-name="eztable" :headers="headers" :items="products">
+                            table-class-name="eztable" :headers="headers" :items="products" :loading="loading" >
                             <template #item-ProductPhoto="item">
                                 <v-img :src="API_URL + item.ProductPhoto" height="100%" class="rounded-lg"></v-img>
                             </template>
@@ -111,8 +111,10 @@ definePageMeta({
     layout: "admin",
 });
 let token: string | null
+let logger = ref('')
 if (process.client) {
     token = localStorage.getItem("token")
+    logger.value = JSON.parse(localStorage.getItem("logger"))
 }
 const selectedCategory = ref('')
 const productType = [
@@ -171,6 +173,7 @@ const search = ref("");
 const IsGas = ref('')
 
 function getProducts() {
+    loading.value = true
     http.fetch("products")
         .then((data: any) => {
             if (data.status == 200) {
@@ -235,13 +238,14 @@ const headers: Header[] = [
 ]
 
 async function saveData() {
+
     let formData = new FormData()
     formData.append("file", form.fileRecords.$value[0])
     formData.append("product_name", form.productName.$value)
     formData.append("product_category", selectedCategory.value)
     formData.append("product_description", form.productDesc.$value)
     formData.append("quantity_kg", form.productKg.$value)
-    formData.append("price_refilling", "")
+    formData.append("shop_id", logger.value.ID)
     formData.append("price_buying", form.productPrice.$value)
     formData.append("product_rate", "0.0")
     formData.append("is_gas", IsGas.value)
@@ -255,9 +259,12 @@ async function saveData() {
             "Content-Type": "form-data"
         },
         body: formData
-    }).then((data: any) => {
-        if (data.status == 200) {
-            useToast().success(data.data.message);
+    }).then((res: any) => {
+
+        console.log(res.message);
+        
+        if (res.status == 200) {
+            useToast().success(res.message);
             getProducts();
         }
     }).catch((error) => {

@@ -42,7 +42,7 @@
                             <v-text-field v-model="search" :loading="loading" variant="tonal" density="compact"
                                 label="Search for Category ID, Title or Something"
                                 prepend-inner-icon="mdi-magnify" single-line hide-details
-                                @click:prepend-inner="onSearchData">
+                                >
 
                             </v-text-field>
                         </v-col>

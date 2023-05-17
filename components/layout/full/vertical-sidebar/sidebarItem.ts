@@ -36,9 +36,9 @@ const sidebarItem: menu[] = [
         to: '/products'
     },
     {
-        title: 'Shops',
+        title: 'Stock',
         icon: BuildingStoreIcon,
-        to: '/shops'
+        to: '/stock'
     },
     {
         title: 'Zones',
