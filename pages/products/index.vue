@@ -177,7 +177,7 @@ function getProducts() {
     http.fetch("products")
         .then((data: any) => {
             if (data.status == 200) {
-                products.value = data.records;
+                products.value = data.product_records;
                 instance?.proxy?.$forceUpdate();
             }
         })
@@ -278,7 +278,7 @@ function getCategories() {
     http.fetch("categories")
         .then((data: any) => {
             if (data.status == 200) {
-                categories.value = data.records;
+                categories.value = data.category_records;
                 instance?.proxy?.$forceUpdate();
             }
         })

@@ -1,6 +1,6 @@
 export const useHttpRequest = () => {
     const config = useRuntimeConfig()
-    const API_URL = "http://localhost:8080/web/api/v1/"
+    const API_URL = "http://192.168.1.66:8080/web/api/v1/"
     let token: string | null;
     if (process.client) {
       token = localStorage.getItem("token")
