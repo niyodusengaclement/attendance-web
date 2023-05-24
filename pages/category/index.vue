@@ -61,7 +61,6 @@
                             table-class-name="eztable" :headers="headers" :items="categories">
                             <template #item-ImageUrl="item">
                                 <v-img :src="API_URL + item.ImageUrl" height="40" class="rounded-lg"></v-img>
-                                <!-- <v-img src="http://localhost:8080/web/api/v1/uploads/1683894504743290100_images-blog-4.jpg" height="100%" class="rounded-lg"></v-img> -->
                             </template>
                             <template #item-actions="item">
 
@@ -207,23 +206,21 @@ async function saveData() {
     formData.append("file", form.fileRecords.$value[0])
     formData.append("category_name", form.productName.$value)
   
-    fetch(API_URL + 'create_category', {
+    http.fetch('create_category', {
         method: "POST",
-        mode: "no-cors",
-        cache: "no-cache",
-        credentials: "same-origin",
         headers: {
             Authorization: 'Bearer ' + token,
             "Content-Type": "form-data"
         },
         body: formData
-    }).then((data: any) => {
-        useToast().success(data.message);
-        if (data.status == 200) {
-            
+    }).then((response) => {
+        
+        if (response.status == 200) {
+            useToast().success(response.message);
             getCategories();
         }
     }).catch((error) => {
+        useToast().error("Error " + error);
             console.log(error);
     }).finally();
 

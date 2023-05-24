@@ -1,5 +1,34 @@
 <template>
     <v-row>
+        <v-col cols="12" v-show="state == 3" :md="state == 1 ? 12 : 4">
+            <UiParentCard title="Editing Product Item">
+                <form role="form" @submit.prevent="handleSubmit">
+                    <v-col cols="12">
+                    
+                        <v-select label="Category" variant="outlined" density="compact" v-model="editingItem.ProductCategory"
+                            color="primary" :items="categories" item-title="Title" item-value="ID" @update:modelValue="loadProductByCategory(selectedCategory)"></v-select>
+
+                        <v-select label="Product" v-model="editingItem.ProductName" :items="products" variant="outlined" density="compact"
+                            color="primary" item-title="ProductName" item-value="ID"></v-select>
+
+                        <v-text-field variant="outlined" density="compact" label="Stock In"
+                            v-model="editingItem.StockIn" color="primary"></v-text-field>
+                  
+                            <v-text-field variant="outlined" density="compact" label="Stock Out"
+                            v-model="editingItem.StockOut" color="primary"></v-text-field>
+
+                            <v-text-field variant="outlined" density="compact" label="Stock Return"
+                            v-model="editingItem.StockReturn" color="primary"></v-text-field>
+
+
+                        <v-btn @click.prevent="saveData" :disabled="loading" class="my-4" color="success" size="large" block
+                            flat>{{
+                                loading ? 'Updating Stock Item...' : 'Update Stock Item' }}</v-btn>
+
+                    </v-col>
+                </form>
+            </UiParentCard>
+        </v-col>
         <v-col cols="12" v-show="state == 2" :md="state == 1 ? 12 : 4">
             <UiParentCard title="Adding Product Item">
                 <form role="form" @submit.prevent="handleSubmit">
@@ -24,7 +53,7 @@
                 </form>
             </UiParentCard>
         </v-col>
-        <v-col cols="12" :md="state == 2 ? 8 : 12">
+        <v-col cols="12" :md="state != 1 ? 8 : 12">
             <UiParentCard title="Inventory Products">
                 <v-card-text>
                     <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
@@ -107,7 +136,7 @@
                                         <template #item-actions="item">
                                             <div class=" row">
                                                 <v-btn size="large" flat density="compact" variant="tonal" color="success"
-                                                    class="mx-1" icon="mdi-check" >
+                                                    class="mx-1" icon="mdi-pencil" @click="editItem(item)" >
 
                                                 </v-btn>
                                                 <NuxtLink :to="'/orders/{item.ID}'">
@@ -138,7 +167,7 @@ import { Field, useValidation } from "vue3-form-validation";
 import { rules } from "~/utils/rules";
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 import FilterDataTable from "@/components/dashboard/FilterDataTable.vue"
-import { Header } from "vue3-easy-data-table"
+import { Header, Item } from "vue3-easy-data-table"
 import { useHttpRequest } from '~~/composables/useHttpRequest';
 import { log } from 'console';
 definePageMeta({layout: "admin",});
@@ -157,6 +186,7 @@ if (process.client) {
 const state = ref(1)
 const lists = ref([]);
 const loading = ref(false);
+const isEditing = ref(false);
 const products = ref([]);
 const categories = ref([]);
 const stocks = ref([])
@@ -245,7 +275,7 @@ function getCategories() {
     http.fetch("categories")
         .then((data: any) => {
             if (data.status == 200) {
-                categories.value = data.records;
+                categories.value = data.category_records;
                 instance?.proxy?.$forceUpdate();
             }
         })
@@ -288,25 +318,25 @@ let formData = new FormData()
 formData.append("product_id", selectedProduct.value)
 formData.append("shop_id", logger.value.ID)
 formData.append("quantity", form.quantity.$value)
-fetch(API_URL + 'adding_stock_item', {
+http.fetch('adding_stock_item', {
     method: "POST",
-    mode: "no-cors",
-    cache: "no-cache",
-    credentials: "same-origin",
     headers: {
         Authorization: 'Bearer ' + token,
         "Content-Type": "form-data"
     },
     body: formData
 }).then((res: any) => {
-
-    console.log(res.data);
     
     if (res.status == 200) {
         useToast().success(res.message);
+        getStockItems();
+        state.value = 1
+    }else{
+        useToast().error(res.message);
     }
 }).catch((error) => {
         console.log(error);
+        useToast().error(error.message);
 }).finally();
 }
 
@@ -339,5 +369,28 @@ function getStockItems() {
         .catch(() => { })
         .finally(() => (loading.value = false));
 }
+
+//EDITTING
+
+const editingItem = reactive({
+    ProductCategory: "",
+    ProductName: "",
+    StockOut: "",
+    StockIn: "",
+    StockReturn: "",
+    ID: 0,
+});
+
+const editItem = (val: Item) => {
+    isEditing.value = true;
+    state.value = 3
+    const {  ProductName, ProductCategory, StockIn, StockOut, StockReturn, ID } = val;
+    editingItem.ProductCategory = ProductCategory;
+    editingItem.ProductName = ProductName;
+    editingItem.StockIn = StockIn;
+    editingItem.StockOut = StockOut;
+    editingItem.StockReturn = StockReturn;
+    editingItem.ID = ID;
+};
 
 </script>
