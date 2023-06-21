@@ -16,6 +16,9 @@ export default defineNuxtConfig({
       "vue-toastification"
     ],
   },
+  modules: [
+    '@nuxtjs/tailwindcss'
+  ],
   css :[ "~/assets/styles/main.css"],
   vite: {
     define: {

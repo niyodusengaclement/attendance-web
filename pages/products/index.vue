@@ -106,127 +106,341 @@
             <UiParentCard parent-title="All Product " title="Create Product">
                 <div class="my-2">
                     <v-row>
-                        
+
                         <v-col cols="12" md="2">
-                             
-                             <div class="d-flex align-center mx-2 my-3">
-                                 <div class="w-24 h-24 pa-2 rounded-lg" :class="step >= 1 ? 'bg-secondary':'bg-borderColor'">
-                                     <PackageIcon class="mx-1 my-0" :class="step >= 1 ? 'text-white' :'text-muted'" size="25" />
-                                 </div>
-                                 <div class=" px-3">
-                                     <h6 class="text-sm text-2 pt-0 text-muted font-bold">Step 1</h6>
- 
-                                     <h6 class="pt-1 font-weight-medium text-lg text-subtitle-1" :class="step >= 1 ? 'text-secondary' : 'text-muted'"> Overvien</h6>
-                                 </div>
-                             </div>
-                         </v-col>
-                         <v-col cols="12" md="2">
-                             
-                             <div class="d-flex align-center mx-2 my-3">
-                                 <div class="w-24 h-24 pa-2 rounded-lg" :class="step >= 2 ? 'bg-secondary':'bg-borderColor'">
-                                    <FilePencilIcon class="mx-1 my-0" :class="step >= 2 ? 'text-white' :'text-muted'" size="25" />
-                                 </div>
-                                 <div class=" px-3">
-                                     <h6 class="text-sm text-2 pt-0 text-muted font-bold">Step 2</h6>
- 
-                                     <h6 class="pt-1 font-weight-medium text-lg text-subtitle-1" :class="step >= 2 ? 'text-secondary' : 'text-muted'"> Description</h6>
-                                 </div>
-                             </div>
-                         </v-col>
-                         <v-col cols="12" md="2">
-                             
-                             <div class="d-flex align-center mx-2 my-3">
-                                 <div class="w-24 h-24 pa-2 rounded-lg" :class="step >= 3 ? 'bg-secondary':'bg-borderColor'">
-                                    <CoinIcon class="mx-1 my-0" :class="step >= 3 ? 'text-white' :'text-muted'" size="25" />
-                                 </div>
-                                 <div class=" px-3">
-                                     <h6 class="text-sm text-2 pt-0 text-muted font-bold">Step 3</h6>
- 
-                                     <h6 class="pt-1 font-weight-medium text-lg text-subtitle-1" :class="step >= 3 ? 'text-secondary' : 'text-muted'"> Pricing</h6>
-                                 </div>
-                             </div>
-                         </v-col>
-                         <v-col cols="12" md="2">
-                             
-                             <div class="d-flex align-center mx-2 my-3">
-                                 <div class="w-24 h-24 pa-2 rounded-lg" :class="step >= 4 ? 'bg-secondary':'bg-borderColor'">
-                                     <CheckIcon class=" mx-1 my-0" :class="step >= 4 ? 'text-white' :'text-muted'" size="25" />
-                                 </div>
-                                 <div class=" px-3">
-                                     <h6 class="text-sm text-2 pt-0 text-muted font-bold">Step 4</h6>
- 
-                                     <h6 class="pt-1 font-weight-medium text-lg text-subtitle-1" :class="step >= 4 ? 'text-secondary' : 'text-muted'"> Confirmation</h6>
-                                 </div>
-                             </div>
-                         </v-col>
+
+                            <div class="flex align-center mx-2 my-3">
+                                <div class="pa-2 rounded-lg" :class="step >= 1 ? 'bg-secondary' : 'bg-borderColor'">
+                                    <PackageIcon class="mx-1 my-1" :class="step >= 1 ? 'text-white' : 'text-muted'"
+                                        size="25" />
+                                </div>
+                                <div class=" px-3">
+                                    <div class="text-sm text-2 pt-0 text-muted font-bold">Step 1</div>
+
+                                    <div class="pt-1 font-weight-medium text-lg text-subtitle-1"
+                                        :class="step >= 1 ? 'text-secondary' : 'text-muted'"> Overvien</div>
+                                </div>
+                            </div>
+                        </v-col>
+                        <v-col cols="12" md="2">
+
+                            <div class="d-flex align-center mx-2 my-3">
+                                <div class=" pa-2 rounded-lg" :class="step >= 2 ? 'bg-secondary' : 'bg-borderColor'">
+                                    <FilePencilIcon class="mx-1 my-1" :class="step >= 2 ? 'text-white' : 'text-muted'"
+                                        size="25" />
+                                </div>
+                                <div class=" px-3">
+                                    <div class="text-sm text-2 pt-0 text-muted font-bold">Step 2</div>
+
+                                    <div class="pt-1 font-weight-medium text-lg text-subtitle-1"
+                                        :class="step >= 2 ? 'text-secondary' : 'text-muted'"> Description</div>
+                                </div>
+                            </div>
+                        </v-col>
+                        <v-col cols="12" md="2">
+
+                            <div class="d-flex align-center mx-2 my-3">
+                                <div class=" pa-2 rounded-lg" :class="step >= 3 ? 'bg-secondary' : 'bg-borderColor'">
+                                    <CoinIcon class="mx-1 my-1" :class="step >= 3 ? 'text-white' : 'text-muted'"
+                                        size="25" />
+                                </div>
+                                <div class=" px-3">
+                                    <div class="text-sm text-2 pt-0 text-muted font-bold">Step 3</div>
+
+                                    <div class="pt-1 font-weight-medium text-lg text-subtitle-1"
+                                        :class="step >= 3 ? 'text-secondary' : 'text-muted'"> Pricing</div>
+                                </div>
+                            </div>
+                        </v-col>
+                        <v-col cols="12" md="2">
+
+                            <div class="d-flex align-center mx-2 my-3">
+                                <div class=" pa-2 rounded-lg" :class="step >= 4 ? 'bg-secondary' : 'bg-borderColor'">
+                                    <CheckIcon class=" mx-1 my-1" :class="step >= 4 ? 'text-white' : 'text-muted'"
+                                        size="25" />
+                                </div>
+                                <div class=" px-3">
+                                    <div class="text-sm text-2 pt-0 text-muted font-bold">Step 4</div>
+
+                                    <div class="pt-1 font-weight-medium text-lg text-subtitle-1"
+                                        :class="step >= 4 ? 'text-secondary' : 'text-muted'"> Confirmation</div>
+                                </div>
+                            </div>
+                        </v-col>
                     </v-row>
 
                 </div>
                 <v-divider class="mx-2 my-4"></v-divider>
-                <form ref="myForm" role="form" @submit.prevent="handleSubmit">
-                    <v-col cols="12">
-                        <v-file-input v-model="form.fileRecords.$value" density="compact" color="primary" counter
-                            label="Product Image" multiple placeholder="Select your files" prepend-icon="mdi-camera"
-                            variant="outlined" :show-size="1000" :errors="form.fileRecords.$errors">
-                            <template v-slot:selection="{ fileNames }">
-                                <template v-for="(fileName, index) in fileNames" :key="fileName">
-                                    <v-chip v-if="index < 2" color="primary" label size="small" class="me-2">
-                                        {{ fileName }}
-                                    </v-chip>
+                <v-row>
+                    <v-col cols="12" md="8">
+                        <form ref="myForm" role="form" @submit.prevent="handleSubmit">
+                            <v-row v-if="step == 1">
+                                <v-col cols="12" md="4">
+                                    <div class=" px-3">
+                                        <div class="pt-0 text-xs  font-weight-bold ">Product Images</div>
 
-                                    <span v-else-if="index === 2" class="text-overline text-grey-darken-3 mx-2">
-                                        +{{ form.fileRecords.$value.length - 2 }} File(s)
-                                    </span>
-                                </template>
-                            </template>
-                        </v-file-input>
+                                        <div class="pt-1 font-weight-light text-[10px]  text-muted"> Make your product look
+                                            more
+                                            attractive with 3:4 photos</div>
+                                    </div>
+                                </v-col>
 
-                        <v-text-field variant="outlined" density="compact" label="Product" v-model="form.productName.$value"
-                            @blur="form.productName.$validate()" color="primary"
-                            :error-messages="form.productName.$errors"></v-text-field>
+                                <v-col cols="12" md="8">
+                                    <div class="flex justify-between align-center">
 
-                        <v-select label="Category" variant="outlined" density="compact" v-model="selectedCategory"
-                            color="primary" :items="categories" item-title="Title" item-value="ID"></v-select>
+                                        <div class=" flex space-x-4">
+                                            <div v-for="i in 3"
+                                                class="h-16 w-auto overflow-hidden object-cover bg-white border-2 my-2  rounded-lg">
+                                                <img src="/images/products/s4.jpg" class="object-contain h-16" />
+                                            </div>
+                                        </div>
 
-                        <v-select label="Is Gas" v-model="IsGas" :items="productType" variant="outlined" density="compact"
-                            color="primary" item-title="label" item-value="value"></v-select>
-
-                        <v-text-field variant="outlined" v-show="IsGas == '1'" density="compact" label="Product In KG"
-                            v-model="form.productKg.$value" color="primary"></v-text-field>
-
-
-                        <v-text-field variant="outlined" density="compact" label="Price" v-model="form.productPrice.$value"
-                            @blur="form.productPrice.$validate()" color="primary"
-                            :error-messages="form.productPrice.$errors"></v-text-field>
-
-                        <v-textarea variant="outlined" :error-messages="form.productDesc.$errors" density="compact"
-                            label="Description" v-model="form.productDesc.$value" @blur="form.productDesc.$validate()"
-                            color="primary"></v-textarea>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div
+                                                    class="flex bg-lightmuted justify-center border-2 border-dashed  px-6 py-4 align-center rounded-lg">
+                                                    <PlusIcon class=" mx-1 my-1 text-muted" size="18" />
+                                                    <div class="text-secondary text-sm px-2  font-medium"> Add more (2)
+                                                    </div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                    </div>
 
 
-                        <v-btn 
-                            @click="prevPage()" 
-                            :disabled="loading" 
-                            class="my-4 mx-2" 
-                            color="primary" 
-                            variant="outlined"
-                            prepend-icon="mdi-arrow-left"
-                             flat>
-                                Previous
-                        </v-btn>
-                        <v-btn 
-                            @click="nextPage()" 
-                            :disabled="loading" 
-                            class="my-4 mx-2" 
-                            color="primary" 
-                            append-icon="mdi-arrow-right"
-                             flat>
-                                Continue
-                        </v-btn>
-                                
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <div class=" px-3">
+                                        <div class="pt-0  text-xs  font-weight-bold ">Product Video</div>
 
+                                        <div class="pt-1 font-weight-light text-[10px]  text-muted">Make your product look
+                                            more
+                                            attractive with 3:4 photos</div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="8">
+                                    <div>
+                                        <v-card elevation="0" @click="">
+                                            <div
+                                                class="flex bg-lightmuted justify-center border-2 border-dashed  px-2 py-4 align-center rounded-lg">
+                                                <PlusIcon class=" mx-1 my-1 text-muted" size="18" />
+                                                <div class="text-muted text-sm px-2 py-3 font-medium"> Drag or Click to add
+                                                    video
+                                                </div>
+                                            </div>
+                                        </v-card>
+                                    </div>
+
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <div class=" px-3">
+                                        <div class="pt-0 text-xs font-weight-bold ">Product Name</div>
+
+                                        <div class="pt-1 font-weight-light text-[10px]  text-muted"> Write your product
+                                            title that
+                                            buyers
+                                            would likely to search</div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="8">
+                                    <v-text-field variant="outlined" density="compact" v-model="form.productName.$value"
+                                        @blur="form.productName.$validate()" color="primary"
+                                        :error-messages="form.productName.$errors"></v-text-field>
+
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <div class=" px-3">
+                                        <div class="pt-0 text-xs font-weight-bold ">Category</div>
+
+                                        <div class="pt-1 font-weight-light text-[10px]  text-muted"> Choose the category and
+                                            sub-category
+                                            most suitable the product</div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="8">
+                                    <div class="flex space-x-4">
+                                        <v-select variant="outlined" density="compact" v-model="selectedCategory"
+                                            color="primary" :items="categories" item-title="Title"
+                                            item-value="ID"></v-select>
+
+                                        <v-select v-model="IsGas" :items="productType" variant="outlined" density="compact"
+                                            color="primary" item-title="label" item-value="value"></v-select>
+
+                                        <v-text-field variant="outlined" v-show="IsGas == '1'" density="compact"
+                                            v-model="form.productKg.$value" color="primary"></v-text-field>
+                                    </div>
+
+
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <div class=" px-3">
+                                        <div class="pt-0 text-xs font-weight-bold "> Kilogram Variant</div>
+
+                                        <div class="pt-1 font-weight-light text-[10px] text-muted"> Choose the category and
+                                            sub-category
+                                            most suitable the product</div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="8">
+                                    <div class="flex space-x-4">
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-white border-2  pa-2 rounded-lg">
+                                                    <div class="font-bold mx-2">3</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-lightprimary border-2 border-blue-300 pa-2 rounded-lg">
+                                                    <div class="font-bold text-secondary mx-2">6</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-white border-2  pa-2 rounded-lg">
+                                                    <div class="font-bold mx-2">9</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-lightprimary border-2 border-blue-300 pa-2 rounded-lg">
+                                                    <div class="font-bold text-secondary mx-2">12</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-lightprimary border-2 border-blue-300 pa-2 rounded-lg">
+                                                    <div class="font-bold text-secondary mx-2">15</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-lightprimary border-2 border-blue-300 pa-2 rounded-lg">
+                                                    <div class="font-bold text-secondary mx-2">20</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-lightprimary border-2 border-blue-300 pa-2 rounded-lg">
+                                                    <div class="font-bold text-secondary mx-2">25</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div class=" bg-white border-2  pa-2 rounded-lg">
+                                                    <PlusIcon class=" mx-1 my-1"
+                                                        :class="step >= 4 ? 'text-white' : 'text-muted'" size="18" />
+                                                </div>
+                                            </v-card>
+                                        </div>
+
+
+                                    </div>
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <div class=" px-3">
+                                        <div class="pt-0 text-xs font-weight-bold ">Product Variant</div>
+
+                                        <div class="pt-1 font-weight-light text-[10px]  text-muted"> Make your product look
+                                            more
+                                            attractive with 3:4 photos</div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="8">
+                                    <div class="flex justify-between">
+                                        <div class="flex space-x-4">
+                                            <div>
+                                                <v-card elevation="0" @click="">
+                                                    <div class=" bg-white border-2  pa-2 rounded-lg">
+                                                        <DropletIcon class=" mx-1 my-1 text-muted" size="18" />
+                                                    </div>
+                                                </v-card>
+                                            </div>
+                                            <div>
+                                                <v-card elevation="0" @click="">
+                                                    <div class=" bg-white border-2  pa-2 rounded-lg">
+                                                        <div class="font-bold mx-2">Green Cylinder</div>
+                                                    </div>
+                                                </v-card>
+                                            </div>
+                                            <div>
+                                                <v-card elevation="0" @click="">
+                                                    <div class=" bg-white border-2  pa-2 rounded-lg">
+                                                        <TrashIcon class=" mx-1 my-1 text-error" size="18" />
+                                                    </div>
+                                                </v-card>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <v-card elevation="0" @click="">
+                                                <div
+                                                    class="flex bg-white border-2 border-dashed  pa-2 align-center rounded-lg">
+                                                    <PlusIcon class=" mx-1 my-1 text-muted" size="18" />
+                                                    <div class="text-muted text-sm px-2 font-medium">Add new variant</div>
+                                                </div>
+                                            </v-card>
+                                        </div>
+                                    </div>
+
+                                </v-col>
+
+                            </v-row>
+                            <v-row v-if="step == 2">
+                                 
+                                <v-col cols="12" md="4">
+                                    <div class=" px-3">
+                                        <div class="pt-0 text-xs font-weight-bold ">Product Description</div>
+
+                                        <div class="pt-1 font-weight-light text-[10px]  text-muted"> Write your product
+                                            title that
+                                            buyers
+                                            would likely to search</div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="8">
+                                    <v-textarea variant="outlined" density="compact" v-model="form.productName.$value"
+                                        @blur="form.productName.$validate()" color="primary"
+                                        :error-messages="form.productName.$errors"></v-textarea>
+
+                                </v-col>
+                                 
+
+                            </v-row>
+                            <v-col cols="12">
+
+                                <v-btn @click="prevPage()" :disabled="loading" class="my-4 mx-2" color="primary"
+                                    variant="outlined" prepend-icon="mdi-arrow-left" flat>
+                                    Previous
+                                </v-btn>
+                                <v-btn @click="nextPage()" :disabled="loading" class="my-4 mx-2" color="primary"
+                                    append-icon="mdi-arrow-right" flat>
+                                    Continue
+                                </v-btn>
+
+
+                            </v-col>
+                        </form>
                     </v-col>
-                </form>
+                    <v-col cols="12" md="4">
+                        <div class="py-2 px-2 bg-borderColor rounded-lg">
+
+                        </div>
+                    </v-col>
+                </v-row>
+
             </UiParentCard>
         </v-col>
 
@@ -268,6 +482,8 @@ interface FormData {
     fileRecords: Field<File[]>;
     gas: Field<boolean>;
 }
+const fileRecords = ref([])
+const uploadUrl = ref('https://example.com')
 
 const loading = ref(false);
 const products = ref([]);
@@ -495,24 +711,28 @@ const submitEdit = () => {
 
 const nextPage = () => {
 
-if (step.value == 4) {
-    loading.value = true
+    if (step.value == 4) {
+        loading.value = true
 
-    setTimeout(() => (loading.value = false), 3000)
-} else {
-    step.value++;
-}
+        setTimeout(() => (loading.value = false), 3000)
+    } else {
+        step.value++;
+    }
 
 };
 const prevPage = () => {
-if (step.value == 1) {
-    step.value == 1
-} else {
-    step.value--;
-    loading.value = false
-}
+    if (step.value == 1) {
+        step.value == 1
+    } else {
+        step.value--;
+        loading.value = false
+    }
 
 };
+// Upload files
+const files = ref([])
+const fileDragging = ref()
+const fileDropping = ref()
 
 
 </script>

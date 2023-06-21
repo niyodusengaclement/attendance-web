@@ -10,6 +10,7 @@
   "dependencies": {
     "@fawmi/vue-google-maps": "^0.9.79",
     "@mdi/font": "^6.5.95",
+    "@nuxtjs/tailwindcss": "^6.8.0",
     "@nuxtjs/vuetify": "^1.12.3",
     "@pinia/nuxt": "^0.4.10",
     "@tiptap/starter-kit": "2.0.0-beta.192",
@@ -31,7 +32,7 @@
     "vue3-easy-data-table": "^1.5.42",
     "vue3-form-validation": "^5.1.0",
     "vue3-google-map": "^0.15.0",
-    "vue3-perfect-scrollbar": "1.6.0",
+    "vue3-perfect-scrollbar": "^1.6.1",
     "vuetify": "3.0.1",
     "yup": "^0.32.11"
   },
