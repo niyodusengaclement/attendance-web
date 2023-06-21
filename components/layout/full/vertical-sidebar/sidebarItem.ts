@@ -1,6 +1,6 @@
 import {
-    ApertureIcon,BuildingStoreIcon,ShoppingCartIcon,TruckDeliveryIcon,ChecklistIcon,Map2Icon,SteeringWheelIcon,
-    LayoutDashboardIcon, LoginIcon, MoodHappyIcon, UserPlusIcon
+    HelpIcon,BuildingStoreIcon,ShoppingCartIcon,TruckDeliveryIcon,PackageIcon,Map2Icon,SteeringWheelIcon,
+    LayoutDashboardIcon, LogoutIcon, MoodHappyIcon, UserPlusIcon
 } from 'vue-tabler-icons';
 
 export interface menu {
@@ -25,14 +25,10 @@ const sidebarItem: menu[] = [
         icon: LayoutDashboardIcon,
         to: '/dashboard'
     },
-    {
-        title: 'Product category',
-        icon: ChecklistIcon,
-        to: '/category'
-    },
+   
     {
         title: 'Products',
-        icon: ChecklistIcon,
+        icon: PackageIcon,
         to: '/products'
     },
     {
@@ -61,15 +57,15 @@ const sidebarItem: menu[] = [
         to: '/ui/shadow'
     },
    
-    { header: 'Settings' },
+    { header: 'Support' },
     {
-        title: 'Profile',
-        icon: MoodHappyIcon,
+        title: 'Help',
+        icon: HelpIcon,
         to: '/icons'
     },
     {
-        title: 'Permissions',
-        icon: ApertureIcon,
+        title: 'Logout',
+        icon: LogoutIcon,
         to: '/sample-page'
     },
 ];

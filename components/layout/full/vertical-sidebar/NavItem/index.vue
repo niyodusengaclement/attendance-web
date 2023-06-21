@@ -36,3 +36,14 @@ const props = defineProps({ item: Object, level: Number });
         </template>
     </v-list-item>
 </template>
+<style scoped>
+.scrollnavbar .v-list > .v-list-item.v-list-item--active, .scrollnavbar .v-list .v-list-item--active > .v-list-item__overlay {
+  background:rgba(166, 203, 221, 0.171) !important;
+  color:  rgb(var(--v-theme-white))  !important;
+  font-weight: 800 !important;
+}
+.scrollnavbar .v-list-group__items .v-list-item, .scrollnavbar .v-list-item {
+  
+  color: rgb(224, 231, 231);
+}
+</style>
