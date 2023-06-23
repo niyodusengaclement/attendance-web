@@ -93,10 +93,9 @@ const areaChart = {
           </div>
 
         </div>
-        <div :class="'bg-borderColor'" class="pa-2 rounded ">
-          <v-icon :color="color">{{ icon }}</v-icon>
-
-        </div>
+        <v-card  rounded="lg" height="45" width="45" elevation="0"  class="d-flex pa-2 bg-grey100 justify-center align-center ">
+               
+            </v-card>
 
 
       </div>
