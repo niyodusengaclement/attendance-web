@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      apiUrl: 'http://192.168.1.66:8080/web/api/v1/',
+      apiUrl: 'http://192.168.1.77:8080/web/api/v1/',
     }
   },
   typescript: {
@@ -16,18 +16,16 @@ export default defineNuxtConfig({
       "vue-toastification"
     ],
   },
+  modules: [
+    '@nuxtjs/tailwindcss'
+  ],
   css :[ "~/assets/styles/main.css"],
   vite: {
     define: {
       "process.env.DEBUG": false,
     },
   },
-  nitro: {
-    serveStatic: true,
-  },
-  devServerHandlers: [],
-  hooks: {
-  },
+ 
 
 })
 

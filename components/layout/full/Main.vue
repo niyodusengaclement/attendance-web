@@ -10,7 +10,7 @@ const sDrawer = ref(true);
 
 <template>
     <!------Sidebar-------->
-    <v-navigation-drawer left elevation="0"  app class="leftSidebar"  v-model="sDrawer">
+    <v-navigation-drawer left elevation="0"   app class="leftSidebar bg-primary"  v-model="sDrawer">
         <!---Logo part -->
         <div class="pa-5">
             <LayoutFullLogo />
@@ -19,8 +19,8 @@ const sDrawer = ref(true);
         <!---Navigation -->
         <!-- ---------------------------------------------- -->
         <div>
-        <perfect-scrollbar class="scrollnavbar">
-            <v-list class="pa-6">
+        <perfect-scrollbar class="scrollnavbar  bg-primary">
+            <v-list class="pa-6  bg-primary">
                 <!---Menu Loop -->
                 <template v-for="(item, i) in sidebarMenu">
                     <!---Item Sub Header -->

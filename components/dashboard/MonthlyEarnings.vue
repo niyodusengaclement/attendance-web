@@ -1,15 +1,38 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { computed } from "vue";
+import { TrendingUpIcon } from "vue-tabler-icons";
 import { useTheme } from "vuetify";
 const theme = useTheme();
-const primary = theme.current.value.colors.primary;
+const primary = theme.current.value.colors.accent;
 const secondary = theme.current.value.colors.secondary;
-
+const success = theme.current.value.colors.success;
+const info = theme.current.value.colors.info;
+const props = defineProps({
+  title: String,
+  amount: String,
+  rate: String,
+  subtitle: String,
+  color: String,
+  data: Array,
+  icon: String,
+  label: Array
+})
 /* Chart */
+const getColor = () => {
+  if (props.color == 'primary') {
+    return primary
+  } else if (props.color == 'secondary') {
+    return secondary
+  } else if (props.color == 'success') {
+    return success
+  } else {
+    return info
+  }
+}
 const areachartOptions = computed(() => {
   return {
-    labels: ["1", "2", "3", "4", "5", "6", "7"],
+    labels: props.label,
     chart: {
       type: "area",
       height: 60,
@@ -23,7 +46,7 @@ const areachartOptions = computed(() => {
       },
       group: "sparklines",
     },
-    colors: [secondary],
+    colors: [getColor()],
     stroke: {
       curve: "smooth",
       width: 2,
@@ -48,45 +71,59 @@ const areaChart = {
   series: [
     {
       name: "",
-      data: [25, 66, 20, 40, 12, 58, 20],
+      data: props.data,
     },
   ],
 };
 </script>
 <template>
-  <v-card elevation="10" class="withbg">
+  <v-card elevation="10" rounded class="withbg">
     <v-card-item>
-      <div class="d-flex align-center justify-space-between pt-sm-2">
-        <v-card-title class="text-h5">Monthly Earnings</v-card-title>
-        <v-btn size="large" icon class="bg-secondary">
-          <v-avatar size="large" class="text-white">
-            <CurrencyDollarIcon size="25" />
-          </v-avatar>
-        </v-btn>
+      <div class="flex justify-between align-center">
+        <div class="flex">
+          <div class="w-1 rounded-lg h-12" :class="'bg-' + color"> </div>
+          <div class="flex justify-left px-3 flex-col">
+            <div class="items-center text-sm mx-3 text-muted font-weight-bold">
+              {{ title }}
+            </div>
+            <div class="mx-3">
+              <h3 class="text-h3">{{ amount }}</h3>
+            </div>
+
+          </div>
+
+        </div>
+        <v-card  rounded="lg" height="45" width="45" elevation="0"  class="d-flex pa-2 bg-grey100 justify-center align-center ">
+               
+            </v-card>
+
+
       </div>
+
       <v-row>
         <v-col cols="12">
-          <div class="mt-2">
-            <h3 class="text-h3">$6,820</h3>
-            <div class="mt-1">
-              <v-avatar class="bg-lighterror text-accent" size="25">
-                <ArrowDownRightIcon size="20" />
-              </v-avatar>
-              <span class="text-subtitle-1 ml-2 font-weight-bold">+9%</span>
-              <span class="text-subtitle-1 text-muted ml-2">last year</span>
+          <div class="mt-2 space-x-4  d-flex">
+            <div class="mt-2 px-0 d-flex items-center">
+              <div>
+                <TrendingUpIcon :class="'text-' + color" size="15" />
+              </div>
+
+              <div class="text-sm font-medium ml-2" :class="'text-' + color">{{ rate }}%</div>
+            </div>
+            <div class="text-xs text-subtitle-1  mt-2 text-muted">
+              {{ subtitle }}
             </div>
           </div>
+
         </v-col>
       </v-row>
+
     </v-card-item>
-    <div class="mt-3">
-      <apexchart
-        type="area"
-        height="60"
-        :options="areachartOptions"
-        :series="areaChart.series"
-      >
-      </apexchart>
-    </div>
+
   </v-card>
 </template>
+<style scoped>
+.v-card-item {
+  padding: 24 20;
+}
+</style>

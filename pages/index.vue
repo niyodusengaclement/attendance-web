@@ -1,32 +1,59 @@
-<script setup lang="ts">
-/*-For Set Blank Layout-*/
-definePageMeta({
-  layout: "default",
-});
-</script>
 <template>
-    <div class="authentication">
-            <v-container fluid class="pa-3">
-                <v-row class="h-100vh d-flex justify-center align-center">
-                    <v-col cols="12" lg="4" xl="3" class="d-flex align-center">
-                        <v-card rounded="md" elevation="10" class="px-sm-1 px-0 withbg mx-auto" max-width="500">
-                            <v-card-item class="pa-sm-8">
-                                <div class="d-flex justify-center py-4">
-                                    <LayoutFullLogo />
-                                </div>
-                                <div class="text-body-1 text-muted text-center mb-3">Your Social Campaigns</div>
-                                <AuthLoginForm />
-                                <h6 class="text-h6 text-muted font-weight-medium d-flex justify-center align-center mt-3">
-                                    New to Shop?
-                                    <NuxtLink to="/auth/register"
-                                        class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium pl-2">
-                                        Create an account</NuxtLink>
-                                </h6>
-                            </v-card-item>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-container>
+     
+      <div>
+        <div class="bg-green-500 px-4 py-4">
+          <div class="md:max-w-6xl md:mx-auto md:flex md:items-center md:justify-between">
+            <div class="flex justify-between items-center">
+              <a href="#" class="inline-block py-2 text-white text-xl font-bold">Optimus Prisma</a>
+              <div class="inline-block cursor-pointer md:hidden">
+                <div class="bg-gray-400 w-8 mb-2" style="height: 2px;"></div>
+                <div class="bg-gray-400 w-8 mb-2" style="height: 2px;"></div>
+                <div class="bg-gray-400 w-8" style="height: 2px;"></div>
+              </div>
+            </div>
+  
+            <div>
+              <div class="hidden md:block">
+  
+              </div>
+            </div>
+            <div class="hidden md:block">
+  
+              <nuxt-link to="/auth/login"
+                class="inline-block py-2 px-8 text-green-700 bg-white hover:bg-gray-100 rounded-full">Sign in</nuxt-link>
+            </div>
+          </div>
         </div>
+  
+        <div class="bg-white md:overflow-hidden">
+          <div class="px-4 py-20 md:py-4">
+            <div class="md:max-w-6xl md:mx-auto">
+              <div class="md:flex md:flex-wrap">
+              <LandingLeftSideDesign/>
+              <LandingRightSideDesign/>
+              </div>
+            </div>
+          </div>
+          <svg class="fill-current text-white hidden md:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+            <path fill-opacity="1" d="M0,224L1440,32L1440,320L0,320Z"></path>
+          </svg>
+        </div>
+  
+        <p class="text-center text-sm p-4 text-gray-600 pt-10">
+          Created by
+          <a class="border-b text-green-500" href="https://twitter.com/mithicher" target="_blank">Qonics Inc</a>
+  
+        </p>
+      </div>
     
-</template>
+  </template>
+  
+  <script lang="ts" setup>
+  definePageMeta({
+    layout: "default"
+  })
+  </script>
+  
+  <style></style>
+  
+  

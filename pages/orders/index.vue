@@ -12,37 +12,7 @@
 
           </v-tabs>
           <v-container>
-            <v-card class="mx-auto bg-gray" flat color="grey-lighten-4">
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" md="8">
-                    <v-row>
-                      <v-col cols="12" md="3">
-                        <FilterDataTable :label="'Filter By'" :filters="[{ title: 'Name' }]" />
-                      </v-col>
-                      <v-col cols="12" md="9"> <v-text-field v-model="search" :loading="loading" variant="tonal"
-                          density="compact" label="Search for Order ID, customer, order status, or something"
-                          prepend-inner-icon="mdi-magnify" single-line hide-details @click:prepend-inner="onSearchData">
-
-                        </v-text-field></v-col>
-                    </v-row>
-
-
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="tonal">
-                      Filters
-                    </v-btn>
-                    <v-btn prepend-icon="mdi-export" color="success" class="mx-2" variant="tonal">
-                      Export
-                    </v-btn>
-
-
-                  </v-col>
-                </v-row>
-                <p> {{ orders }}</p>
-              </v-card-text>
-            </v-card>
+           
           </v-container>
           <v-window v-model="tab">
             <v-window-item v-for="n in 5" :key="n" :value="n">
@@ -58,7 +28,12 @@
                       <div class="text-primary">#{{ item.ReferenceNo }}</div>
 
                     </template>
-
+                    <template #empty-message>
+                            <div class="d-flex justify-center align-center py-3">
+                                <v-img src="/images/products/not_found.png" height="150"></v-img>
+                            </div>
+                            <p class="text-muted font-weight-light"> No Found</p>
+                        </template>
                     <template #item-actions="item">
                       <div class=" row">
                         <v-btn size="large" flat density="compact" variant="tonal" color="success" class="mx-1"
@@ -98,7 +73,6 @@ definePageMeta({
 });
 const http = useHttpRequest()
 const instance = getCurrentInstance();
-
 const lists = ref([]);
 const loading = ref(false);
 const tab = ref(null);
