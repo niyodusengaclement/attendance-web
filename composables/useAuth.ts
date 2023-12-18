@@ -9,10 +9,17 @@ export const useAuth = () => {
     return {
         headers: () => ({ Authorization: `token dsfsdfs` }),
         loading,
+
         login(email: any, passord: any, remember: any): void {
             loading.value = true
              
-            http.fetch("login", { method: 'post', body: { email: email, password: passord, remember: remember ? 1 : 0 } }).then((data: any) => {
+            http.fetch("/login", { 
+                method: 'post', 
+                body: { 
+                    email: email, 
+                    password: passord, 
+                    remember: remember ? 1 : 0 } 
+                }).then((data: any) => {
                 console.log(data.data)
                 console.log('====================================');
                 console.log("Here");

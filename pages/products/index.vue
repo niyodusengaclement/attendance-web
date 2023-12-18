@@ -5,13 +5,13 @@
             <UiParentCard parent-title="Dashboard" title="List Products">
                 <v-card-text v-show="isDeleting">
                     <v-alert prominent type="error" icon="mdi-delete" title="Delete" variant="tonal">
-                        <v-row align="center">
+                        <v-row  >
                             <v-col class="grow" cols="12" md="8">
                                 Are you show you want to detele, this item {{ deletingItem.ProductName }}
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="12" md="4" class="shrink">
-                                <v-btn size="large" color="error" @click="deleteProduct(deletingItem.ID)"
+                                <v-btn size="large" color="error" 
                                     class="mx-3">Delete Product</v-btn>
                                 <v-btn size="large" color="error" @click="isDeleting = false" variant="outlined"
                                     class="mx-3">Cancel</v-btn>
@@ -460,10 +460,7 @@ definePageMeta({
 });
 let token: string | null
 let logger = ref('')
-if (process.client) {
-    token = localStorage.getItem("token")
-    logger.value = JSON.parse(localStorage.getItem("logger"))
-}
+ 
 const state = ref(1)
 const selectedCategory = ref('')
 const productType = [
@@ -592,7 +589,7 @@ async function saveData() {
     formData.append("product_category", selectedCategory.value)
     formData.append("product_description", form.productDesc.$value)
     formData.append("quantity_kg", form.productKg.$value)
-    formData.append("shop_id", logger.value.ID)
+    formData.append("shop_id", "1")
     formData.append("price_buying", form.productPrice.$value)
     formData.append("product_rate", "0.0")
     formData.append("is_gas", IsGas.value)
@@ -670,44 +667,6 @@ const editItem = (val: Item) => {
     editingItem.ID = ID;
 };
 
-const submitEdit = () => {
-    const item = products.value.find((item) => item.ID === editingItem.ID);
-    item.ProductPhoto = editingItem.ProductPhoto;
-    item.ProductName = editingItem.ProductName;
-    item.ProductCategory = editingItem.ProductCategory;
-    item.ProductDescription = editingItem.ProductDescription;
-    item.PriceBuying = editingItem.PriceBuying;
-    item.IsGas = editingItem.IsGas;
-    item.ProductRate = editingItem.ProductRate;
-    item.PriceBuying = editingItem.PriceBuying;
-
-    formData.append("id", item.ID)
-    formData.append("product_name", item.ProductName)
-    formData.append("product_category", item.ProductCategory)
-    formData.append("product_description", item.ProductDescription)
-    formData.append("price_buying", item.PriceBuying)
-    formData.append("product_rate", "0.0")
-    formData.append("is_gas", item.IsGas)
-
-    http.fetch('update_product_item', {
-        method: "PUT",
-        headers: {
-            Authorization: 'Bearer ' + token,
-            "Content-Type": "form-data"
-        },
-        body: formData
-    }).then((res: any) => {
-        if (res.status == 200) {
-            useToast().success(res.message);
-            getProducts();
-            isEditing.value = false;
-        }
-    }).catch((error) => {
-        console.log(error);
-    }).finally(
-    );
-};
-
 
 const nextPage = () => {
 
@@ -731,9 +690,29 @@ const prevPage = () => {
 };
 // Upload files
 const files = ref([])
-const fileDragging = ref()
-const fileDropping = ref()
+const isDragging = ref(false)
+let file = ref("");
+function onChange(e: any) {
+    let files = e.target.files || e.dataTransfer.files;
 
+    if (!files.length) {
+        isDragging.value = false;
+        return;
+    }
+    if (files.size > 1000000) {
+       // responseMessage("Document exceed file size limit ", "error", 6000)
+        isDragging.value = false;
+        removeFile()
+        return;
+    }
+    file.value = files[0];
+    isDragging.value = false;
+    // uploadFile(files[0], props.documents, props.student) //Function to upload file
+}
+
+function removeFile() {
+    file.value = "";
+}
 
 </script>
 

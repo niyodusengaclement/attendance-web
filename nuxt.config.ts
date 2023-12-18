@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   },
   modules: [
     'nuxt-vue3-google-signin',
-
+    '@pinia/nuxt',
     '@nuxtjs/tailwindcss'
   ],
   css :[ "~/assets/styles/main.css"],
@@ -32,7 +32,12 @@ export default defineNuxtConfig({
       "process.env.DEBUG": false,
     },
   },
- 
+  pinia:{
+    autoImports: ["defineStore"]
+  },
+  imports: {
+    dirs: ["./stores"]
+  },
 
 })
 

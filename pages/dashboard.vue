@@ -8,6 +8,7 @@ import ProductPerformance from '@/components/dashboard/ProductPerformance.vue';
 import ProductCards from '@/components/dashboard/ProductCards.vue';
 definePageMeta({
     layout: "admin",
+    // middleware: "auth",
 });
 </script>
 <template>

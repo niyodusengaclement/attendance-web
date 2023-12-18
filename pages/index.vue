@@ -18,7 +18,7 @@
               </div>
             </div>
             <div class="hidden md:block">
-  
+
               <nuxt-link to="/auth/login"
                 class="inline-block py-2 px-8 text-green-700 bg-white hover:bg-gray-100 rounded-full">Sign in</nuxt-link>
             </div>
