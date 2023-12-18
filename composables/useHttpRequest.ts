@@ -1,7 +1,6 @@
 export const useHttpRequest = () => {
     const config = useRuntimeConfig()
-    const API_URL = "http://192.168.1.77:8080/web/api/v1/"
-    let token: string | null;
+     let token: string | null;
     if (process.client) {
       token = localStorage.getItem("token")
     }
@@ -14,7 +13,7 @@ export const useHttpRequest = () => {
         }
         params.headers = { Authorization: token }
        const promise =  new Promise((resolve, reject)=>{
-           resolve($fetch(API_URL + url, params,))
+           resolve($fetch(config.apiUrl + url, params,))
        })
 
 

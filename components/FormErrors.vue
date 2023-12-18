@@ -15,7 +15,7 @@ const hasNoError = computed<boolean>(() => {
 </script>
 
 <template>
-  <ul class="text-error text-subtitle-1 mt-1" :class="{ '!m-0': hasNoError }">
+  <ul class="text-red-500 text-[12px] mt-1" :class="{ '!m-0': hasNoError }">
     <li v-for="(error, i) in errors" :key="i">
       {{ error }}
     </li>

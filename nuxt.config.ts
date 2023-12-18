@@ -3,8 +3,13 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      apiUrl: 'http://192.168.1.77:8080/web/api/v1/',
-    }
+      apiUrl: process.env.BASE_URL,
+    },
+    googleClientId: process.env.GOOGLE_AUTH_CLIENT_ID_LOCAL,
+
+  },
+  googleSignIn: {
+    clientId: process.env.GOOGLE_AUTH_CLIENT_ID_LOCAL,
   },
   typescript: {
     shim: false
@@ -17,6 +22,8 @@ export default defineNuxtConfig({
     ],
   },
   modules: [
+    'nuxt-vue3-google-signin',
+
     '@nuxtjs/tailwindcss'
   ],
   css :[ "~/assets/styles/main.css"],

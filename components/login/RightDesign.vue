@@ -52,7 +52,7 @@
         </div>
       </div>
 
-      <div class="mt-10 w-full absolute right-0 top-0 flex rounded-lg bg-white overflow-hidden shadow-lg"
+      <div class="mt-10 w-full absolute right-0 top-24 flex rounded-lg bg-white overflow-hidden shadow-lg"
         style="transform: rotate(-8deg); margin-right: -250px; z-index: 1;">
         <div class="w-32 bg-gray-200" style="height: 560px;"></div>
         <div class="flex-1 p-6">
