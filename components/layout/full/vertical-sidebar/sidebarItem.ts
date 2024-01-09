@@ -25,7 +25,11 @@ const sidebarItem: menu[] = [
         icon: LayoutDashboardIcon,
         to: '/dashboard'
     },
-   
+    {
+        title: 'Category',
+        icon: PackageIcon,
+        to: '/category'
+    },
     {
         title: 'Products',
         icon: PackageIcon,

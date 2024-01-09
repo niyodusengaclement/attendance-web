@@ -5,14 +5,13 @@
             <UiParentCard parent-title="Dashboard" title="List Products">
                 <v-card-text v-show="isDeleting">
                     <v-alert prominent type="error" icon="mdi-delete" title="Delete" variant="tonal">
-                        <v-row align="center">
+                        <v-row>
                             <v-col class="grow" cols="12" md="8">
                                 Are you show you want to detele, this item {{ deletingItem.ProductName }}
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="12" md="4" class="shrink">
-                                <v-btn size="large" color="error" @click="deleteProduct(deletingItem.ID)"
-                                    class="mx-3">Delete Product</v-btn>
+                                <v-btn size="large" color="error" class="mx-3">Delete Product</v-btn>
                                 <v-btn size="large" color="error" @click="isDeleting = false" variant="outlined"
                                     class="mx-3">Cancel</v-btn>
                             </v-col>
@@ -58,7 +57,7 @@
                                 </div>
                             </template>
                         </EasyDataTable>
-
+                        
                     </ClientOnly>
                 </v-card-text>
 
@@ -92,9 +91,8 @@
                             v-model="editingItem.ProductDescription" color="primary"></v-textarea>
 
 
-                        <v-btn @click.prevent="submitEdit" :disabled="loading" class="my-4" color="success" size="large"
-                            block flat>{{
-                                loading ? 'Updating Item...' : 'Update Product' }}</v-btn>
+                        <v-btn :disabled="loading" class="my-4" color="success" size="large" block flat>{{
+                            loading ? 'Updating Item...' : 'Update Product' }}</v-btn>
 
                     </v-col>
                 </form>
@@ -189,7 +187,7 @@
                                     <div class="flex justify-between align-center">
 
                                         <div class=" flex space-x-4">
-                                            <div v-for="i in 3"
+                                            <div v-for="i in 1"
                                                 class="h-16 w-auto overflow-hidden object-cover bg-white border-2 my-2  rounded-lg">
                                                 <img src="/images/products/s4.jpg" class="object-contain h-16" />
                                             </div>
@@ -209,30 +207,7 @@
 
 
                                 </v-col>
-                                <v-col cols="12" md="4">
-                                    <div class=" px-3">
-                                        <div class="pt-0  text-xs  font-weight-bold ">Product Video</div>
 
-                                        <div class="pt-1 font-weight-light text-[10px]  text-muted">Make your product look
-                                            more
-                                            attractive with 3:4 photos</div>
-                                    </div>
-                                </v-col>
-
-                                <v-col cols="12" md="8">
-                                    <div>
-                                        <v-card elevation="0" @click="">
-                                            <div
-                                                class="flex bg-lightmuted justify-center border-2 border-dashed  px-2 py-4 align-center rounded-lg">
-                                                <PlusIcon class=" mx-1 my-1 text-muted" size="18" />
-                                                <div class="text-muted text-sm px-2 py-3 font-medium"> Drag or Click to add
-                                                    video
-                                                </div>
-                                            </div>
-                                        </v-card>
-                                    </div>
-
-                                </v-col>
                                 <v-col cols="12" md="4">
                                     <div class=" px-3">
                                         <div class="pt-0 text-xs font-weight-bold ">Product Name</div>
@@ -398,7 +373,7 @@
 
                             </v-row>
                             <v-row v-if="step == 2">
-                                 
+
                                 <v-col cols="12" md="4">
                                     <div class=" px-3">
                                         <div class="pt-0 text-xs font-weight-bold ">Product Description</div>
@@ -416,7 +391,7 @@
                                         :error-messages="form.productName.$errors"></v-textarea>
 
                                 </v-col>
-                                 
+
 
                             </v-row>
                             <v-col cols="12">
@@ -460,10 +435,7 @@ definePageMeta({
 });
 let token: string | null
 let logger = ref('')
-if (process.client) {
-    token = localStorage.getItem("token")
-    logger.value = JSON.parse(localStorage.getItem("logger"))
-}
+
 const state = ref(1)
 const selectedCategory = ref('')
 const productType = [
@@ -592,7 +564,7 @@ async function saveData() {
     formData.append("product_category", selectedCategory.value)
     formData.append("product_description", form.productDesc.$value)
     formData.append("quantity_kg", form.productKg.$value)
-    formData.append("shop_id", logger.value.ID)
+    formData.append("shop_id", "1")
     formData.append("price_buying", form.productPrice.$value)
     formData.append("product_rate", "0.0")
     formData.append("is_gas", IsGas.value)
@@ -670,43 +642,6 @@ const editItem = (val: Item) => {
     editingItem.ID = ID;
 };
 
-const submitEdit = () => {
-    const item = products.value.find((item) => item.ID === editingItem.ID);
-    item.ProductPhoto = editingItem.ProductPhoto;
-    item.ProductName = editingItem.ProductName;
-    item.ProductCategory = editingItem.ProductCategory;
-    item.ProductDescription = editingItem.ProductDescription;
-    item.PriceBuying = editingItem.PriceBuying;
-    item.IsGas = editingItem.IsGas;
-    item.ProductRate = editingItem.ProductRate;
-    item.PriceBuying = editingItem.PriceBuying;
-
-    formData.append("id", item.ID)
-    formData.append("product_name", item.ProductName)
-    formData.append("product_category", item.ProductCategory)
-    formData.append("product_description", item.ProductDescription)
-    formData.append("price_buying", item.PriceBuying)
-    formData.append("product_rate", "0.0")
-    formData.append("is_gas", item.IsGas)
-
-    http.fetch('update_product_item', {
-        method: "PUT",
-        headers: {
-            Authorization: 'Bearer ' + token,
-            "Content-Type": "form-data"
-        },
-        body: formData
-    }).then((res: any) => {
-        if (res.status == 200) {
-            useToast().success(res.message);
-            getProducts();
-            isEditing.value = false;
-        }
-    }).catch((error) => {
-        console.log(error);
-    }).finally(
-    );
-};
 
 
 const nextPage = () => {
@@ -733,7 +668,32 @@ const prevPage = () => {
 const files = ref([])
 const fileDragging = ref()
 const fileDropping = ref()
+let file = ref("");
+let dragging = ref(false);
 
+
+function onChange(e: any) {
+    let files = e.target.files || e.dataTransfer.files;
+
+    if (!files.length) {
+        dragging.value = false;
+        return;
+    }
+    if (files.size > 1000000) {
+        // responseMessage("Document exceed file size limit ", "error", 6000)
+        dragging.value = false;
+        removeFile()
+        return;
+    }
+    file.value = files[0];
+    dragging.value = false;
+    // uploadFile(files[0], props.documents, props.student) //Function to upload file
+}
+function removeFile() {
+    file.value = "";
+}
+
+const selectedFile = ref()
 
 </script>
 

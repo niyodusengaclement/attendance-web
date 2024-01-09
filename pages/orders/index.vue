@@ -12,14 +12,14 @@
 
           </v-tabs>
           <v-container>
-           
+
           </v-container>
           <v-window v-model="tab">
             <v-window-item v-for="n in 5" :key="n" :value="n">
               <v-container fluid>
                 <ClientOnly>
-                  <EasyDataTable empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
-                    table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" :items="lists">
+                  <EasyDataTable ref="dataTable" empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
+                    table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" hide-footer :items="lists">
                     <template #item-status="item">
                       <v-chip size="small" :color="statusClr(item.Status)"> {{ statusStr(item.Status) }} </v-chip>
 
@@ -29,18 +29,18 @@
 
                     </template>
                     <template #empty-message>
-                            <div class="d-flex justify-center align-center py-3">
-                                <v-img src="/images/products/not_found.png" height="150"></v-img>
-                            </div>
-                            <p class="text-muted font-weight-light"> No Found</p>
-                        </template>
+                      <div class="d-flex justify-center align-center py-3">
+                        <v-img src="/images/products/not_found.png" height="150"></v-img>
+                      </div>
+                      <p class="text-muted font-weight-light"> No Found</p>
+                    </template>
                     <template #item-actions="item">
                       <div class=" row">
                         <v-btn size="large" flat density="compact" variant="tonal" color="success" class="mx-1"
                           icon="mdi-check" @click="editItem(item.raw)">
 
                         </v-btn>
-                        <NuxtLink :to="'/orders/{item.ID}'">
+                        <NuxtLink :to="'/orders/'+ item.ReferenceNo">
                           <v-btn size="large" flat density="compact" variant="tonal" color="error" class="mx-1"
                             icon="mdi-delete">
 
@@ -50,6 +50,37 @@
                       </div>
                     </template>
                   </EasyDataTable>
+                  <v-col cols="12" sm="12" md="12" lg="12">
+
+                    <div class="flex align-center justify-space-between p-2   ">
+                      <h6 class="text-subtitle-1 col-sm-12  text-muted">
+
+                        Affichage: {{ currentPageFirstIndex }} - {{ currentPageLastIndex }} à
+                        {{ clientItemsLength }}
+                      </h6>
+                      <h6 class="hidden text-subtitle-1 text-muted">
+                        <span v-for="paginationNumber in maxPaginationNumber" class="px-2 text-small"
+                          :class="{ 'text-green-500 font-weight-bold': paginationNumber === currentPaginationNumber }"
+                          @click="updatePage(paginationNumber)">
+                          {{ paginationNumber }}
+                        </span>
+
+                      </h6>
+                      <div class="col-sm-12 flex rounded-xl justify-space-between ">
+                        <v-btn size="small" rounded="xl" variant="tonal" color="muted" class="mx-1"
+                          icon="mdi-chevron-left" :disabled="isFirstPage" @click="prevPage">
+
+                        </v-btn>
+                        <div class="text-white flex mx-1 bg-borderColor w-8 h-8 rounded-xl align-center justify-center">
+                          {{
+                            currentPaginationNumber }}</div>
+                        <v-btn size="small" rounded="xl" variant="tonal" color="muted" class="mx-1"
+                          icon="mdi-chevron-right" :disabled="isLastPage" @click="nextPage">
+
+                        </v-btn>
+                      </div>
+                    </div>
+                  </v-col>
                 </ClientOnly>
               </v-container>
             </v-window-item>
@@ -63,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,computed } from 'vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 import FilterDataTable from "@/components/dashboard/FilterDataTable.vue"
 import { Header } from "vue3-easy-data-table"
@@ -73,7 +104,7 @@ definePageMeta({
 });
 const http = useHttpRequest()
 const instance = getCurrentInstance();
-const lists = ref([]);
+// const lists = ref([]);
 const loading = ref(false);
 const tab = ref(null);
 const search = ref("");
@@ -92,6 +123,39 @@ const headers: Header[] = [
   { text: "Actions", value: "actions", width: 120 },
 ]
 
+const lists = ref([
+  {
+    ReferenceNo: "454845556445",
+    ProductCategory: "454845556445",
+    Package: "454845556445",
+    PaidAmount: "454845556445",
+    CreatedAt: "454845556445",
+    Status: "0",
+    PaymentMode: "454845556445",
+  }
+])
+const dataTable = ref();
+// index related
+const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
+const currentPageLastIndex = computed(() => dataTable.value?.currentPageLastIndex);
+const clientItemsLength = computed(() => dataTable.value?.clientItemsLength);
+
+// pagination related
+const maxPaginationNumber = computed(() => dataTable.value?.maxPaginationNumber);
+const currentPaginationNumber = computed(() => dataTable.value?.currentPaginationNumber);
+const isFirstPage = computed(() => dataTable.value?.isFirstPage);
+const isLastPage = computed(() => dataTable.value?.isLastPage);
+
+const nextPage = () => {
+  dataTable.value.nextPage();
+};
+const prevPage = () => {
+  dataTable.value.prevPage();
+};
+const updatePage = (paginationNumber: number) => {
+  dataTable.value.updatePage(paginationNumber);
+};
+
 function loadAllOrders() {
   loading.value = true
   http.fetch("orders")
@@ -105,7 +169,7 @@ function loadAllOrders() {
     .finally(() => (loading.value = false));
 }
 
-function loadOrderByStatus(status: string) {
+function loadOrderByStatus(status: any) {
   loading.value = true
   http.fetch("order_by_status/" + status)
     .then((data: any) => {
