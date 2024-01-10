@@ -1,6 +1,6 @@
 <template>
     <v-row>
-        <v-col cols="12" v-show="state == 1" md="4">
+        <v-col cols="12" v-show="state == 2" md="4">
             <UiParentCard parentTitle="Category" title="Add Category">
                 <form role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
@@ -59,19 +59,34 @@
                     <v-col cols="12">
                         <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="125"
                             class="bg-grey-lighten-2 border rounded-lg my-5"></v-img>
-                        <v-text-field variant="outlined" density="compact" label="Product" v-model="editingItem.title"
+                        <v-text-field variant="outlined" density="compact" label="Title" v-model="editingItem.title"
                             color="primary"></v-text-field>
 
-
-
                         <v-btn :disabled="loading" :loading="loading" @click="createCategory()" class="my-2" color="success"
-                            size="large" block flat>Update Product</v-btn>
-
+                            size="large" block flat>Update Category</v-btn>
                     </v-col>
                 </form>
             </UiParentCard>
         </v-col>
-        <v-col cols="12" md="8">
+        <!-- ADD NEW RECORD -->
+        <v-col cols="12" v-show="state == 4" md="4">
+            <UiParentCard :title="'Add Sub Category'" class="text-success">
+                <form ref="myForm" role="form" @submit.prevent="handleSubmit">
+                    <v-col cols="12">
+                        <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="125"
+                            class="bg-grey-lighten-2 border rounded-lg my-5"></v-img>
+                        <v-text-field variant="outlined" density="compact" label="Category" disabled="true"
+                            v-model="editingItem.title" color="primary"></v-text-field>
+                        <v-text-field variant="outlined" density="compact" label="Sub category"
+                            v-model="editingItem.sub_category" color="primary"></v-text-field>
+
+                        <v-btn :disabled="loading" :loading="loading" @click="createSubCategory()" class="my-2"
+                            color="primary" size="large" block flat>Save Subcategory</v-btn>
+                    </v-col>
+                </form>
+            </UiParentCard>
+        </v-col>
+        <v-col cols="12" :md="state == 1 ? '12' : '8'">
             <UiParentCard title="List Categories">
                 <v-card-text>
                     <v-row class="mb-4">
@@ -85,7 +100,7 @@
                             <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
                                 Filters
                             </v-btn>
-                            <v-btn prepend-icon="mdi-plus" @click="state = 1" color="success" class="mx-2" variant="tonal">
+                            <v-btn prepend-icon="mdi-plus" @click="state = 2" color="success" class="mx-2" variant="tonal">
                                 Add New
                             </v-btn>
                         </v-col>
@@ -96,24 +111,36 @@
                             <template #item-image_url="item">
                                 <v-img :src="image_URL + item.image_url" height="40" class="rounded-lg"></v-img>
                             </template>
+                            <template #item-count_subcategory="item">
+                                <div @click="viewSubCategory(item)">
+                                    <div
+                                        class="font-bold text priamry hover:underline underline-offset-4 hover:cursor-pointer transition duration-200">
+                                        {{ item.count_subcategory }}
+                                        Subcategories
+                                    </div>
+                                </div>
+                            </template>
                             <template #item-actions="item">
                                 <div>
-                                    <v-btn size="large" density="compact" variant="tonal" color="primary" class="mx-1"
-                                        icon="mdi-pencil" @click="editItem(item)"></v-btn>
+                                    <v-btn size="small" variant="outlined" color="primary" class="mx-1"
+                                        @click="addNewItem(item)">
+                                        Add new</v-btn>
 
-                                    <v-btn size="large" density="compact" variant="tonal" color="error" class="mx-1"
-                                        icon="mdi-delete" @click="deleteItem(item)">
+                                    <v-btn size="small" variant="outlined" color="success" class="mx-1"
+                                        @click="editItem(item)">
+                                        Update</v-btn>
+
+                                    <v-btn size="small" variant="outlined" color="error" class="mx-1"
+                                        @click="deleteItem(item)">
+                                        Delete
                                     </v-btn>
                                 </div>
                             </template>
                         </EasyDataTable>
                     </ClientOnly>
                     <v-dialog v-model="isDeleting" persistent width="auto">
-
                         <v-card>
-                            <v-card-title class="text-h5">
-                                Delete
-                            </v-card-title>
+                            <v-card-title class="text-h5"> Delete </v-card-title>
                             <v-card-text>
                                 <div class="text-lg text-center justify-center">
                                     Are you want to delete
@@ -123,18 +150,58 @@
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="error" variant="text" class="mx-1" prepend-icon="mdi-close"
+                                <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
                                     @click="isDeleting = false">
                                     Cancel
                                 </v-btn>
-                                <v-btn :loading="btnDeleteLoading" elevation="10" variant="tonal" color="error" class="mx-1"
-                                    prepend-icon="mdi-delete" @click="deleteCategory(editingItem.id)">
+                                <v-btn :loading="btnDeleteLoading" elevation="10" variant="outlined" color="error"
+                                    class="mx-1" prepend-icon="mdi-delete" @click="deleteCategory(editingItem.id)">
                                     Delete
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
 
+                    <v-dialog v-model="isViewing" persistent width="auto">
+                        <v-card width="450">
+                            <v-card-title color="success" class="text-h5 text-info pa-6">
+                                {{ editingItem.title }} Subcategory
+                            </v-card-title>
+                            <v-card-text>
+                                <table
+                                    class="d-flex flex-col space-y-3 rounded-lg table-fixed border-collapse border border-slate-500">
+                                    <thead class=" bg-borderColor rounded-t-lg  px-8 py-2">
+                                        <tr class="d-flex justify-between w-full">
+                                            <th class=" items-center align-center text-center order border-slate-600">
+                                                Title
+                                            </th>
+                                            <th class="items-center align-center text-center order border-slate-600">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="justify-between w-full d-flex  " v-for="(item, i) in sub_categories"
+                                            :key="i">
+                                            <td class="px-8 py-1   border-slate-200">{{ item.title }}</td>
+                                            <td class="px-8 py-1   border-slate-200">
+                                                <v-btn size="small" variant="text"
+                                                    @click="deleteSubCategory(item.id, item.title)" color="error">
+                                                    delete</v-btn>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" variant="text" :loading="btnDeleteLoading" class="mx-1"
+                                    prepend-icon="mdi-close" @click="isViewing = false">
+                                    Close
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                 </v-card-text>
             </UiParentCard>
         </v-col>
@@ -174,12 +241,14 @@ const { form, validateFields, resetFields } = useValidation<FormData>({
         $rules: [rules.required("Please name must be provided")],
     },
 });
-const state = ref(1)
+const state = ref(1);
 const loading = ref(false);
+const isViewing = ref(false);
 const btnDeleteLoading = ref(false);
 const isEditing = ref(false);
 const isDeleting = ref(false);
 const categories = ref([]);
+const sub_categories = ref([]);
 const search = ref("");
 let file = ref("");
 let dragging = ref(false);
@@ -222,43 +291,40 @@ async function handleSubmit() {
     }
 }
 
-function deleteCategory(id: any) {
-    btnDeleteLoading.value = true;
 
-    var formData = new FormData();
-    formData.append("title", editingItem.title);
-    formData.append("id", editingItem.id.toString());
-    http
-        .fetch("delete_category", {
-            method: "post",
-            body: formData
-        })
-        .then((data: any) => {
-            useToast().success(data.message);
-            getCategories();
-        })
-        .catch((data: any) => {
-            useToast().error("Error " + data.message);
-        })
-        .finally(() => {
-            btnDeleteLoading.value = false;
-            isDeleting.value = false;
-        });
-}
 
 const headers: Header[] = [
     { text: "Photo", value: "image_url", sortable: true },
     { text: "Category", value: "title", sortable: true },
     { text: "Sub Category", value: "count_subcategory", sortable: true },
-    { text: "Actions", value: "actions", width: 120 },
+    { text: "Actions", value: "actions", width: 300 },
 ];
 
 const editingItem = reactive({
     image_url: "",
     title: "",
+    sub_category: "",
     id: 0,
 });
 
+const addNewItem = (val: Item) => {
+    state.value = 4;
+    const { image_url, title, id } = val;
+    editingItem.image_url = image_url;
+    editingItem.title = title;
+    editingItem.id = id;
+};
+
+const viewSubCategory = (val: Item) => {
+    isViewing.value = true;
+
+    const { image_url, title, id } = val;
+    editingItem.image_url = image_url;
+    editingItem.title = title;
+    editingItem.id = id;
+
+    getSubCategories(id);
+};
 const editItem = (val: Item) => {
     isEditing.value = true;
     state.value = 3;
@@ -293,7 +359,7 @@ async function createCategory() {
             getCategories();
         })
         .catch((data: any) => {
-            useToast().error("Error " + data.message);
+            useToast().error(data.data.message);
             console.log(data);
         })
         .finally(() => {
@@ -301,6 +367,28 @@ async function createCategory() {
         });
 }
 
+async function createSubCategory() {
+    loading.value = true;
+    var formData = new FormData();
+    formData.append("category", editingItem.id.toString());
+    formData.append("title", editingItem.sub_category);
+    http
+        .fetch("create_sub_category", {
+            method: "post",
+            body: formData,
+        })
+        .then((data: any) => {
+            useToast().success(data.message);
+            getCategories();
+        })
+        .catch((data: any) => {
+            useToast().error(data.data.message);
+            console.log(data);
+        })
+        .finally(() => {
+            loading.value = false;
+        });
+}
 function getCategories() {
     http
         .fetch("all_categories")
@@ -312,5 +400,71 @@ function getCategories() {
         })
         .catch(() => { })
         .finally(() => (loading.value = false));
+}
+
+function getSubCategories(id: any) {
+    var formData = new FormData();
+    formData.append("category_id", id.toString());
+    http
+        .fetch("all_sub_categories", {
+            method: "post",
+            body: formData,
+        })
+        .then((data: any) => {
+            if (data.status == 200) {
+                sub_categories.value = data.data;
+                instance?.proxy?.$forceUpdate();
+            }
+        })
+        .catch(() => { })
+        .finally(() => (loading.value = false));
+}
+
+function deleteCategory(id: any) {
+    btnDeleteLoading.value = true;
+
+    var formData = new FormData();
+    formData.append("title", editingItem.title);
+    formData.append("id", id.toString());
+    http
+        .fetch("delete_category", {
+            method: "post",
+            body: formData,
+        })
+        .then((data: any) => {
+            useToast().success(data.message);
+            getCategories();
+        })
+        .catch((data: any) => {
+            useToast().error("Error " + data.message);
+        })
+        .finally(() => {
+            btnDeleteLoading.value = false;
+            isDeleting.value = false;
+        });
+}
+
+function deleteSubCategory(id: any, title: any) {
+    btnDeleteLoading.value = true;
+
+    var formData = new FormData();
+    formData.append("title", title.toString());
+    formData.append("id", id.toString());
+    http
+        .fetch("delete_sub_category", {
+            method: "post",
+            body: formData,
+        })
+        .then((data: any) => {
+            useToast().success(data.message);
+            getCategories();
+        })
+        .catch((data: any) => {
+            useToast().error("Error " + data.message);
+        })
+        .finally(() => {
+            btnDeleteLoading.value = false;
+            isViewing.value = false;
+        });
 }
 </script>
