@@ -4,17 +4,18 @@
         <v-col cols="12" v-show="state == 1" md="12">
             <UiParentCard parent-title="Dashboard" title="List Products">
                 <v-card-text v-show="isDeleting">
-                    <v-alert prominent type="error" icon="mdi-delete" title="Delete" variant="tonal">
+                    <v-alert prominent type="error" icon="mdi-delete" title="Delete" variant="outlined">
                         <v-row>
                             <v-col class="grow" cols="12" md="8">
                                 Are you show you want to detele, this item
-                                {{ deletingItem.ProductName }}
+                                {{ editingItem.product_name }}
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="12" md="4" class="shrink">
-                                <v-btn size="large" color="error" class="mx-3">Delete Product</v-btn>
-                                <v-btn size="large" color="error" @click="isDeleting = false" variant="outlined"
-                                    class="mx-3">Cancel</v-btn>
+                                <v-btn flat color="error" class="mx-3"><v-icon>mdi-delete</v-icon> Delete
+                                    Product</v-btn>
+                                <v-btn color="error" @click="isDeleting = false" variant="outlined"
+                                    class="mx-3"><v-icon>mdi-close</v-icon> Cancel</v-btn>
                             </v-col>
                         </v-row>
                     </v-alert>
@@ -65,37 +66,51 @@
         </v-col>
         <!-- EDITTING EXISTING RECORD -->
         <v-col cols="12" v-show="state == 3" md="12">
-            <UiParentCard :title="'Editing Record '" class="text-success">
+            <UiParentCard :title="'Updating ' + editingItem.product_name + ' product'" class="text-success">
                 <v-row>
+                    <v-col cols="12" md="4"> <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url"
+                            max-height="300" class="bg-grey-lighten-2 border rounded-lg my-5"></v-img></v-col>
+                    <v-col cols="12" md="8">
+                        <form ref="myForm" role="form" @submit.prevent="handleSubmit">
+                            <v-col cols="12">
+
+                                <v-text-field variant="outlined" density="compact" label="Product"
+                                    v-model="editingItem.product_name" color="primary"></v-text-field>
+
+                                <v-select label="Category" variant="outlined" density="compact"
+                                    v-model="editingItem.category" color="primary" :items="categories" item-title="title"
+                                    item-value="id"></v-select>
+
+                                <v-select label="Sub Category" variant="outlined" density="compact"
+                                    v-model="editingItem.category" color="primary" :items="sub_categories"
+                                    item-title="title" item-value="id"></v-select>
+
+                                <v-select label="Is Gas" v-model="editingItem.is_gas" :items="productType"
+                                    variant="outlined" density="compact" color="primary" item-title="label"
+                                    item-value="value"></v-select>
+
+                                <v-text-field variant="outlined" v-show="editingItem.is_gas == '1'" density="compact"
+                                    label="Product In KG" v-model="editingItem.quantity_kg" color="primary"></v-text-field>
+
+                                <v-text-field variant="outlined" density="compact" label="Price" v-model="editingItem.price"
+                                    color="primary"></v-text-field>
+
+                                <v-textarea variant="outlined" density="compact" label="Description"
+                                    v-model="editingItem.description" color="primary"></v-textarea>
+                                <div class="flex justify-start space-x-4">
+                                    <v-btn @click="state = 1" class="my-4" color="error" variant="outlined" size="large"
+                                        flat> <v-icon class="mr-2 ">mdi-close</v-icon> Close Update</v-btn>
+                                    <v-btn :disabled="loading" :loading="loading" class="my-4" color="primary" size="large"
+                                        flat>Update Product</v-btn>
+
+                                </div>
+
+                            </v-col>
+                        </form>
+                    </v-col>
 
                 </v-row>
-                <form ref="myForm" role="form" @submit.prevent="handleSubmit">
-                    <v-col cols="12">
-                        <v-img aspect-ratio="1/1" :src="image_url + editingItem.image_url" max-height="125"
-                            class="bg-grey-lighten-2 border rounded-lg my-5"></v-img>
-                        <v-text-field variant="outlined" density="compact" label="Product" v-model="editingItem.ProductName"
-                            color="primary"></v-text-field>
 
-                        <v-select label="Category" variant="outlined" density="compact"
-                            v-model="editingItem.ProductCategory" color="primary" :items="categories" item-title="Title"
-                            item-value="ID"></v-select>
-
-                        <v-select label="Is Gas" v-model="editingItem.IsGas" :items="productType" variant="outlined"
-                            density="compact" color="primary" item-title="label" item-value="value"></v-select>
-
-                        <v-text-field variant="outlined" v-show="editingItem.IsGas == '1'" density="compact"
-                            label="Product In KG" v-model="editingItem.IsGas" color="primary"></v-text-field>
-
-                        <v-text-field variant="outlined" density="compact" label="Price" v-model="editingItem.PriceBuying"
-                            color="primary"></v-text-field>
-
-                        <v-textarea variant="outlined" density="compact" label="Description"
-                            v-model="editingItem.ProductDescription" color="primary"></v-textarea>
-
-                        <v-btn :disabled="loading" class="my-4" color="success" size="large" block flat>{{ loading ?
-                            "Updating Item..." : "Update Product" }}</v-btn>
-                    </v-col>
-                </form>
             </UiParentCard>
         </v-col>
 
@@ -385,7 +400,7 @@
                                 </v-col>
 
                                 <v-col cols="12" md="8">
-                                    <v-text-field variant="outlined" density="compact" v-model="editingItem.PriceBuying"
+                                    <v-text-field variant="outlined" density="compact" v-model="editingItem.price"
                                         color="primary"></v-text-field>
                                 </v-col>
                             </v-row>
@@ -703,6 +718,7 @@ const editingItem = reactive({
     category: "",
     sub_category: "",
     description: "",
+    quantity_kg: "",
     price: "",
     is_gas: "",
     id: 0,
@@ -723,8 +739,8 @@ const editItem = (val: Item) => {
         product_name,
         category,
         sub_category,
-        description,
-        price,
+        product_description,
+        product_price,
         is_gas,
         id,
     } = val;
@@ -732,8 +748,8 @@ const editItem = (val: Item) => {
     editingItem.product_name = product_name;
     editingItem.category = category;
     editingItem.sub_category = sub_category;
-    editingItem.description = description;
-    editingItem.price = price;
+    editingItem.description = product_description;
+    editingItem.price = product_price;
     editingItem.is_gas = is_gas;
     editingItem.id = id;
 };
