@@ -36,18 +36,25 @@
                     </v-row>
 
                     <ClientOnly>
+
                         <EasyDataTable empty-message="No Product found" :search-value="search" theme-color="#f97316"
                             table-class-name="eztable" :headers="headers" :items="products" :loading="loading">
-                            <template #item-ProductPhoto="item">
-                                <v-img :src="API_URL + item.ProductPhoto" height="50" width="50" class="rounded-lg"></v-img>
+                            <template #item-image_url="item">
+                                <v-img :src="image_URL + item.image_url" height="50" width="50" class="rounded-lg"></v-img>
+                            </template>
+                            <template #item-is_gas="item">
+                                <div>{{ gasStr(item.is_gas) }}</div>
                             </template>
                             <template #item-actions="item">
                                 <div>
-                                    <v-btn size="large" density="compact" variant="tonal" color="primary" class="mx-1"
-                                        icon="mdi-pencil" @click="editItem(item)">
-                                    </v-btn>
-                                    <v-btn size="large" density="compact" variant="tonal" color="error"
-                                        @click="deleteItem(item)" class="mx-1" icon="mdi-delete">
+
+                                    <v-btn size="small" variant="outlined" color="success" class="mx-1"
+                                        @click="editItem(item)">
+                                        Update</v-btn>
+
+                                    <v-btn size="small" variant="outlined" color="error" class="mx-1"
+                                        @click="deleteItem(item)">
+                                        Delete
                                     </v-btn>
                                 </div>
                             </template>
@@ -59,9 +66,12 @@
         <!-- EDITTING EXISTING RECORD -->
         <v-col cols="12" v-show="state == 3" md="12">
             <UiParentCard :title="'Editing Record '" class="text-success">
+                <v-row>
+
+                </v-row>
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
-                        <v-img aspect-ratio="1/1" :src="API_URL + editingItem.ProductPhoto" max-height="125"
+                        <v-img aspect-ratio="1/1" :src="image_url + editingItem.image_url" max-height="125"
                             class="bg-grey-lighten-2 border rounded-lg my-5"></v-img>
                         <v-text-field variant="outlined" density="compact" label="Product" v-model="editingItem.ProductName"
                             color="primary"></v-text-field>
@@ -475,7 +485,8 @@ const productType = [
 let formData = new FormData();
 const http = useHttpRequest();
 const instance = getCurrentInstance();
-const API_URL = config.public.apiUrl;
+const image_URL = "http://192.168.1.77:8080/assets/images/";
+
 interface FormData {
     productName: Field<string>;
     productPrice: Field<string>;
@@ -496,7 +507,7 @@ const step = ref(1);
 const IsGas = ref("");
 const isEditing = ref(false);
 const isDeleting = ref(false);
-const selectedkg = ref("3");
+const selectedkg = ref("");
 
 const {
     form,
@@ -564,6 +575,13 @@ async function handleSubmit() {
     }
 }
 
+function gasStr(status: any) {
+    if (status == 1) {
+        return "YES";
+    } else {
+        return "NO";
+    }
+}
 function deleteProduct(status: string) {
     console.log(status);
 
@@ -599,12 +617,12 @@ const productKgs = [
 
 const headers: Header[] = [
     { text: "Photo", value: "image_url", sortable: true },
-    { text: "Product", value: "ProductName", sortable: true },
-    { text: "Category", value: "Category", sortable: true },
-    { text: "Price", value: "PriceBuying", sortable: true },
-    { text: "Type", value: "IsGas", sortable: true },
-    { text: "ProductRate", value: "ProductRate", sortable: true },
-    { text: "Actions", value: "actions", width: 120 },
+    { text: "Product", value: "product_name", sortable: true },
+    { text: "Category", value: "category", sortable: true },
+    { text: "Sub Category", value: "sub_category", sortable: true },
+    { text: "Price", value: "product_price", sortable: true },
+    { text: "Gas", value: "is_gas", sortable: true },
+    { text: "Actions", value: "actions", width: 200 },
 ];
 
 async function createProduct() {
@@ -639,6 +657,7 @@ async function createProduct() {
 
         });
 }
+
 
 function getCategories() {
     http
@@ -679,47 +698,44 @@ const onAddStockData = () => {
 //Editing
 
 const editingItem = reactive({
-    ProductPhoto: "",
-    ProductName: "",
-    ProductCategory: "",
-    ProductDescription: "",
-    PriceBuying: "",
-    IsGas: "",
-    ProductRate: "",
-    ID: 0,
+    image_url: "",
+    product_name: "",
+    category: "",
+    sub_category: "",
+    description: "",
+    price: "",
+    is_gas: "",
+    id: 0,
 });
-const deletingItem = reactive({
-    ProductName: "",
-    ID: 0,
-});
+
 const deleteItem = (val: Item) => {
     isDeleting.value = true;
-    const { ProductName, ID } = val;
-    deletingItem.ProductName = ProductName;
-    deletingItem.ID = ID;
+    const { product_name, id } = val;
+    editingItem.product_name = product_name;
+    editingItem.id = id;
 };
 
 const editItem = (val: Item) => {
     isEditing.value = true;
     state.value = 3;
     const {
-        ProductPhoto,
-        ProductName,
-        ProductCategory,
-        ProductDescription,
-        PriceBuying,
-        IsGas,
-        ProductRate,
-        ID,
+        image_url,
+        product_name,
+        category,
+        sub_category,
+        description,
+        price,
+        is_gas,
+        id,
     } = val;
-    editingItem.ProductPhoto = ProductPhoto;
-    editingItem.ProductName = ProductName;
-    editingItem.ProductCategory = ProductCategory;
-    editingItem.ProductDescription = ProductDescription;
-    editingItem.PriceBuying = PriceBuying;
-    editingItem.IsGas = IsGas;
-    editingItem.ProductRate = ProductRate;
-    editingItem.ID = ID;
+    editingItem.image_url = image_url;
+    editingItem.product_name = product_name;
+    editingItem.category = category;
+    editingItem.sub_category = sub_category;
+    editingItem.description = description;
+    editingItem.price = price;
+    editingItem.is_gas = is_gas;
+    editingItem.id = id;
 };
 
 const nextPage = () => {

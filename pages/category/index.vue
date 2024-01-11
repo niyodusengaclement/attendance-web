@@ -343,16 +343,40 @@ const deleteItem = (val: Item) => {
 async function createCategory() {
     loading.value = true;
     var formData = new FormData();
-    var formDataUpdate = new FormData();
     formData.append("category", form.productName.$value);
     formData.append("image", file.value);
     formData.append("id", "");
+    http
+        .fetch("create_category", {
+            method: "post",
+            body: formData,
+        })
+        .then((data: any) => {
+            useToast().success(data.message);
+            getCategories();
+            removeFile();
+        })
+        .catch((data: any) => {
+            useToast().error(data.data.message);
+            console.log(data);
+        })
+        .finally(() => {
+            loading.value = false;
+            form.productName.$value = "";
+
+        });
+}
+
+async function updateCategory() {
+    loading.value = true;
+    var formDataUpdate = new FormData();
+
     formDataUpdate.append("id", editingItem.id.toString());
     formDataUpdate.append("category", editingItem.title);
     http
         .fetch("create_category", {
             method: "post",
-            body: isEditing ? formDataUpdate : formData,
+            body: formDataUpdate,
         })
         .then((data: any) => {
             useToast().success(data.message);
@@ -387,6 +411,7 @@ async function createSubCategory() {
         })
         .finally(() => {
             loading.value = false;
+            editingItem.sub_category = ""
         });
 }
 function getCategories() {
