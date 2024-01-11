@@ -776,7 +776,7 @@ const editItem = (val: Item) => {
     editingItem.sub_category = sub_category;
     editingItem.description = product_description;
     editingItem.price = product_price;
-    editingItem.price = product_price;
+    editingItem.is_gas = is_gas;
     editingItem.quantity_kg = quantity_kg;
     editingItem.id = id;
 };
