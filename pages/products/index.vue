@@ -12,7 +12,8 @@
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="12" md="4" class="shrink">
-                                <v-btn flat color="error" class="mx-3"><v-icon>mdi-delete</v-icon> Delete
+                                <v-btn flat color="error" @click="deleteProduct(editingItem.id)"
+                                    :loading="btnDeletingLoading" class="mx-3"><v-icon>mdi-delete</v-icon> Delete
                                     Product</v-btn>
                                 <v-btn color="error" @click="isDeleting = false" variant="outlined"
                                     class="mx-3"><v-icon>mdi-close</v-icon> Cancel</v-btn>
@@ -77,13 +78,14 @@
                                 <v-text-field variant="outlined" density="compact" label="Product"
                                     v-model="editingItem.product_name" color="primary"></v-text-field>
 
-                                <v-select label="Category" variant="outlined" density="compact"
-                                    v-model="editingItem.category" color="primary" :items="categories" item-title="title"
-                                    item-value="id"></v-select>
+                                <v-select :label="editingItem.category + ' (Category)'" variant="outlined" density="compact"
+                                    v-model="selectedCategory" color="primary" :items="categories" item-title="title"
+                                    item-value="id" return-object
+                                    @update:model-value="getSubCategories(selectedCategory.id)"></v-select>
 
-                                <v-select label="Sub Category" variant="outlined" density="compact"
-                                    v-model="editingItem.category" color="primary" :items="sub_categories"
-                                    item-title="title" item-value="id"></v-select>
+                                <v-select :label="editingItem.sub_category + ' (SubCategory)'" variant="outlined"
+                                    density="compact" v-model="selectedSubCategory" color="primary" :items="sub_categories"
+                                    item-title="title" item-value="id" return-object></v-select>
 
                                 <v-select label="Is Gas" v-model="editingItem.is_gas" :items="productType"
                                     variant="outlined" density="compact" color="primary" item-title="label"
@@ -100,8 +102,8 @@
                                 <div class="flex justify-start space-x-4">
                                     <v-btn @click="state = 1" class="my-4" color="error" variant="outlined" size="large"
                                         flat> <v-icon class="mr-2 ">mdi-close</v-icon> Close Update</v-btn>
-                                    <v-btn :disabled="loading" :loading="loading" class="my-4" color="primary" size="large"
-                                        flat>Update Product</v-btn>
+                                    <v-btn @click="updateProduct(editingItem.id)" :disabled="loading" :loading="loading"
+                                        class="my-4" color="primary" size="large" flat>Update Product</v-btn>
 
                                 </div>
 
@@ -493,6 +495,7 @@ const state = ref(1);
 const selectedCategory = ref("");
 const selectedSubCategory = ref("");
 const isProductGas = ref(false);
+const btnDeletingLoading = ref(false);
 const productType = [
     { label: "Yes", value: "1" },
     { label: "No", value: "0" },
@@ -505,10 +508,8 @@ const image_URL = "http://192.168.1.77:8080/assets/images/";
 interface FormData {
     productName: Field<string>;
     productPrice: Field<string>;
-    productKg: Field<string>;
     productDesc: Field<string>;
-    fileRecords: Field<File[]>;
-    gas: Field<boolean>;
+
 }
 const fileRecords = ref([]);
 const uploadUrl = ref("https://example.com");
@@ -541,23 +542,13 @@ const {
         $value: "",
         $rules: [rules.min(2)("Password has to be longer than 2 characters")],
     },
-    productKg: {
-        $value: "",
-        $rules: [rules.min(1)("If Product is gas, Kg must br provided")],
-    },
     productDesc: {
         $value: "",
         $rules: [
             rules.min(30)("Product description is requireed more than 30 characters"),
         ],
     },
-    fileRecords: {
-        $value: [],
-        $rules: [rules.min(2)("Photo must be provided")],
-    },
-    gas: {
-        $value: false,
-    },
+
 });
 
 const selecteProductKg = (id: any) => {
@@ -597,16 +588,15 @@ function gasStr(status: any) {
         return "NO";
     }
 }
-function deleteProduct(status: string) {
-    console.log(status);
-
+function deleteProduct(id: any) {
+    btnDeletingLoading.value = true;
+    var formData = new FormData();
+    formData.append("id", id.toString());
+    formData.append("name", editingItem.product_name.toString());
     http
-        .fetch("delete_products/" + status, {
-            method: "DELETE",
-            headers: { Authorization: token },
-            body: {
-                id: status,
-            },
+        .fetch("delete_product", {
+            method: "POST",
+            body: formData
         })
         .then((data: any) => {
             if (data.status == 200) {
@@ -617,7 +607,10 @@ function deleteProduct(status: string) {
         .catch((error) => {
             console.log(error);
         })
-        .finally();
+        .finally(() => {
+            btnDeletingLoading.value = false;
+            isDeleting.value = false;
+        });
 }
 
 const productKgs = [
@@ -642,7 +635,7 @@ const headers: Header[] = [
 
 async function createProduct() {
     loading.value = true;
-
+    var formData = new FormData();
     formData.append("image", file.value);
     formData.append("name", form.productName.$value);
     formData.append("category", selectedCategory.value.id);
@@ -654,6 +647,38 @@ async function createProduct() {
     formData.append("is_gas", IsGas.value);
     http
         .fetch("create_new_product", {
+            method: "POST",
+            body: formData,
+        })
+        .then((res: any) => {
+            if (res.status == 200) {
+                useToast().success(res.message);
+                getProducts();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+        .finally(() => {
+            loading.value = false;
+            state.value = 1;
+
+        });
+}
+
+async function updateProduct(id: any) {
+    loading.value = true;
+    var formData = new FormData();
+    formData.append("id", id.toString());
+    formData.append("name", editingItem.product_name);
+    formData.append("category", selectedCategory.value.id);
+    formData.append("sub_category", selectedSubCategory.value.id);
+    formData.append("description", editingItem.description);
+    formData.append("kg", editingItem.quantity_kg);
+    formData.append("price", editingItem.price);
+    formData.append("is_gas", IsGas.value);
+    http
+        .fetch("update_product", {
             method: "POST",
             body: formData,
         })
@@ -741,6 +766,7 @@ const editItem = (val: Item) => {
         sub_category,
         product_description,
         product_price,
+        quantity_kg,
         is_gas,
         id,
     } = val;
@@ -750,7 +776,8 @@ const editItem = (val: Item) => {
     editingItem.sub_category = sub_category;
     editingItem.description = product_description;
     editingItem.price = product_price;
-    editingItem.is_gas = is_gas;
+    editingItem.price = product_price;
+    editingItem.quantity_kg = quantity_kg;
     editingItem.id = id;
 };
 
