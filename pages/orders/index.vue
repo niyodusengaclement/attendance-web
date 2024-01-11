@@ -3,13 +3,20 @@
     <v-col cols="12" md="12">
       <UiParentCard title="List Products">
         <v-card-text>
-          <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
-            <v-tab @click="loadAllOrders()" :value="1">All Orders</v-tab>
-            <v-tab @click="loadOrderByStatus(3)" :value="2">Completed</v-tab>
-            <v-tab @click="loadOrderByStatus(2)" :value="3">Continuing</v-tab>
-            <v-tab @click="loadOrderByStatus(0)" :value="4">Pending</v-tab>
-            <v-tab @click="loadOrderByStatus(4)" :value="5">Cancelled</v-tab>
 
+          <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
+            <v-tab @click="loadAllOrders()" :value="1">All Orders
+              <v-chip size="small" class="ma-1"> {{ lists.length ?? 0 }} </v-chip>
+            </v-tab>
+            <v-tab @click="loadOrderByStatus(3)" :value="2">Completed
+              <v-chip size="small" class="ma-1"> {{ completed }} </v-chip>
+            </v-tab>
+            <v-tab @click="loadOrderByStatus(2)" :value="3">On Delivery
+              <v-chip size="small" class="ma-1"> {{ shipping }} </v-chip></v-tab>
+            <v-tab @click="loadOrderByStatus(0)" :value="4">Pending
+              <v-chip size="small" class="ma-1"> {{ pending }} </v-chip></v-tab>
+            <v-tab @click="loadOrderByStatus(4)" :value="5">Cancelled
+              <v-chip size="small" class="ma-1"> {{ cancelled }} </v-chip></v-tab>
           </v-tabs>
           <v-container>
 
@@ -18,10 +25,12 @@
             <v-window-item v-for="n in 5" :key="n" :value="n">
               <v-container fluid>
                 <ClientOnly>
-                  <EasyDataTable ref="dataTable" empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
-                    table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" hide-footer :items="lists">
+                  <EasyDataTable ref="dataTable" empty-message="No Order found" :search-value="search"
+                    theme-color="#5d87ff" table-class-name="eztable" :headers="headers" :loading="loading" :items="lists"
+                    v-model:items-selected="orderSelected" :rows-per-page="15">
+
                     <template #item-status="item">
-                      <v-chip size="small" :color="statusClr(item.Status)"> {{ statusStr(item.Status) }} </v-chip>
+                      <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
 
                     </template>
                     <template #item-ReferenceNo="item">
@@ -40,7 +49,7 @@
                           icon="mdi-check" @click="editItem(item.raw)">
 
                         </v-btn>
-                        <NuxtLink :to="'/orders/'+ item.ReferenceNo">
+                        <NuxtLink :to="'/orders/' + item.ReferenceNo">
                           <v-btn size="large" flat density="compact" variant="tonal" color="error" class="mx-1"
                             icon="mdi-delete">
 
@@ -50,37 +59,7 @@
                       </div>
                     </template>
                   </EasyDataTable>
-                  <v-col cols="12" sm="12" md="12" lg="12">
 
-                    <div class="flex align-center justify-space-between p-2   ">
-                      <h6 class="text-subtitle-1 col-sm-12  text-muted">
-
-                        Affichage: {{ currentPageFirstIndex }} - {{ currentPageLastIndex }} à
-                        {{ clientItemsLength }}
-                      </h6>
-                      <h6 class="hidden text-subtitle-1 text-muted">
-                        <span v-for="paginationNumber in maxPaginationNumber" class="px-2 text-small"
-                          :class="{ 'text-green-500 font-weight-bold': paginationNumber === currentPaginationNumber }"
-                          @click="updatePage(paginationNumber)">
-                          {{ paginationNumber }}
-                        </span>
-
-                      </h6>
-                      <div class="col-sm-12 flex rounded-xl justify-space-between ">
-                        <v-btn size="small" rounded="xl" variant="tonal" color="muted" class="mx-1"
-                          icon="mdi-chevron-left" :disabled="isFirstPage" @click="prevPage">
-
-                        </v-btn>
-                        <div class="text-white flex mx-1 bg-borderColor w-8 h-8 rounded-xl align-center justify-center">
-                          {{
-                            currentPaginationNumber }}</div>
-                        <v-btn size="small" rounded="xl" variant="tonal" color="muted" class="mx-1"
-                          icon="mdi-chevron-right" :disabled="isLastPage" @click="nextPage">
-
-                        </v-btn>
-                      </div>
-                    </div>
-                  </v-col>
                 </ClientOnly>
               </v-container>
             </v-window-item>
@@ -94,9 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted,computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
-import FilterDataTable from "@/components/dashboard/FilterDataTable.vue"
 import { Header } from "vue3-easy-data-table"
 import { useHttpRequest } from '~~/composables/useHttpRequest';
 definePageMeta({
@@ -104,36 +82,30 @@ definePageMeta({
 });
 const http = useHttpRequest()
 const instance = getCurrentInstance();
-// const lists = ref([]);
 const loading = ref(false);
 const tab = ref(null);
 const search = ref("");
+const pending = ref(0);
+const completed = ref(0);
+const shipping = ref(0);
+const cancelled = ref(0);
 onMounted(() => {
   loadAllOrders();
 })
 
 const headers: Header[] = [
-  { text: "Order ID", value: "ReferenceNo", sortable: true },
-  { text: "Customer", value: "ProductCategory", sortable: true },
-  { text: "Package", value: "PaidAmount", sortable: true },
-  { text: "Price", value: "PaidAmount", sortable: true },
-  { text: "Delivery Date", value: "CreatedAt", sortable: true },
-  { text: "Delivery Status", value: "Status", sortable: true },
-  { text: "Payment Mode", value: "PaymentMode", sortable: true },
+  { text: "Order ID", value: "reference_code", sortable: true },
+  { text: "Customer", value: "customer_name", sortable: true },
+  { text: "Package", value: "packages", sortable: true },
+  { text: "Price", value: "amount_paid", sortable: true },
+  { text: "Payment Mode", value: "payment_mode", sortable: true },
+  { text: "Delivery Status", value: "status", sortable: true },
+  { text: "Delivery Date", value: "updated_at", sortable: true },
   { text: "Actions", value: "actions", width: 120 },
 ]
 
-const lists = ref([
-  {
-    ReferenceNo: "454845556445",
-    ProductCategory: "454845556445",
-    Package: "454845556445",
-    PaidAmount: "454845556445",
-    CreatedAt: "454845556445",
-    Status: "0",
-    PaymentMode: "454845556445",
-  }
-])
+const lists = ref([])
+const orderSelected = ref([])
 const dataTable = ref();
 // index related
 const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
@@ -158,10 +130,14 @@ const updatePage = (paginationNumber: number) => {
 
 function loadAllOrders() {
   loading.value = true
-  http.fetch("orders")
+  http.fetch("fetch_orders")
     .then((data: any) => {
       if (data.status == 200) {
         lists.value = data.records;
+        pending.value = data.pending;
+        cancelled.value = data.cancelled;
+        shipping.value = data.shipping;
+        completed.value = data.completed;
         instance?.proxy?.$forceUpdate();
       }
     })
@@ -171,7 +147,12 @@ function loadAllOrders() {
 
 function loadOrderByStatus(status: any) {
   loading.value = true
-  http.fetch("order_by_status/" + status)
+  let formData = new FormData();
+  formData.append("status", status)
+  http.fetch("fetch_orders", {
+    method: "POST",
+    body: formData
+  })
     .then((data: any) => {
       if (data.status == 200) {
         lists.value = data.records;
@@ -185,7 +166,7 @@ function loadOrderByStatus(status: any) {
 
 const statusStr = (status: string) => {
   if (status == "1") {
-    return "Approved";
+    return "Completed";
   } else if (status == "2") {
     return "On Delivery";
   } else if (status == "3") {

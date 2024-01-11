@@ -72,31 +72,31 @@
                     </v-tabs>
                     <v-container>
                         <v-card class="mx-auto bg-gray" flat color="grey-lighten-4">
-                           <v-row>
-                                        <v-col cols="12" md="8">
-                                            <v-row>
-                                                <v-col cols="12" md="3">
-                                                    <FilterDataTable :label="'Filter By'" :filters="[{ title: 'Low Stock' }]" />
-                                                </v-col>
-                                                <v-col cols="12" md="9">
-                                                    <v-text-field variant="outlined" v-model="search" :loading="loading"
-                                                        outlined density="compact"
-                                                        label="Search for Order ID, customer, order status, or something"
-                                                        prepend-inner-icon="mdi-magnify" single-line hide-details
-                                                        @click:prepend-inner="onSearchData">
-                                                    </v-text-field></v-col>
-                                            </v-row>
+                            <v-row>
+                                <v-col cols="12" md="8">
+                                    <v-row>
+                                        <v-col cols="12" md="3">
+                                            <FilterDataTable :label="'Filter By'" :filters="[{ title: 'Low Stock' }]" />
                                         </v-col>
-                                        <v-col cols="12" md="4" class="flex justify-end">
-                                            <v-btn prepend-icon="mdi-plus" color="primary" class="mx-2" variant="tonal"
-                                                @click="onAddStockData">
-                                                Add Stock
-                                            </v-btn>
-                                            <v-btn prepend-icon="mdi-export" color="success" class="mx-2" variant="tonal">
-                                                Export
-                                            </v-btn>
-                                        </v-col>
+                                        <v-col cols="12" md="9">
+                                            <v-text-field variant="outlined" v-model="search" :loading="loading" outlined
+                                                density="compact"
+                                                label="Search for Order ID, customer, order status, or something"
+                                                prepend-inner-icon="mdi-magnify" single-line hide-details
+                                                @click:prepend-inner="onSearchData">
+                                            </v-text-field></v-col>
                                     </v-row>
+                                </v-col>
+                                <v-col cols="12" md="4" class="flex justify-end">
+                                    <v-btn prepend-icon="mdi-plus" color="primary" class="mx-2" variant="tonal"
+                                        @click="onAddStockData">
+                                        Add Stock
+                                    </v-btn>
+                                    <v-btn prepend-icon="mdi-export" color="success" class="mx-2" variant="tonal">
+                                        Export
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
                         </v-card>
                     </v-container>
                     <v-window v-model="tab">
@@ -121,7 +121,7 @@
 
                                         <template #item-actions="item">
                                             <div class="row">
-                                                <v-btn size="small" flat variant="outlined" color="success" class="mx-1"
+                                                <v-btn size="small" flat variant="outlined" color="info" class="mx-1"
                                                     @click="editItem(item)">
                                                     <v-icon>mdi-plus</v-icon> Update Stock
                                                 </v-btn>
