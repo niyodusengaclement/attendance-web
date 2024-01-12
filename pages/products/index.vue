@@ -47,6 +47,12 @@
                             <template #item-is_gas="item">
                                 <div>{{ gasStr(item.is_gas) }}</div>
                             </template>
+                            <template #empty-message>
+                                <div class="d-flex justify-center align-center py-3">
+                                    <v-img src="/images/products/not_found.png" height="150"></v-img>
+                                </div>
+                                <p class="text-muted font-weight-light"> No Found</p>
+                            </template>
                             <template #item-actions="item">
                                 <div>
 
@@ -427,9 +433,9 @@
                                         indeterminate></v-progress-linear>
                                 </template>
 
-                                <v-img class="rounded-lg" cover height="250" :src="selectedFiles.length >= 1
+                                <v-img class="rounded-lg" contain height="250" :src="selectedFiles.length >= 1
                                     ? selectedFiles[0].url
-                                    : imagePreview
+                                    : '/images/placeholder.jpg'
                                     "></v-img>
 
                                 <v-card-item>
@@ -503,8 +509,7 @@ const productType = [
 let formData = new FormData();
 const http = useHttpRequest();
 const instance = getCurrentInstance();
-const image_URL = "http://192.168.1.77:8080/assets/images/";
-
+const image_URL = config.public.imageURL;
 interface FormData {
     productName: Field<string>;
     productPrice: Field<string>;
@@ -823,6 +828,7 @@ function onChange(e: any) {
 }
 function removeFile() {
     file.value = "";
+    selectedFiles.value = [];
 }
 
 const selectedFiles = ref([]);

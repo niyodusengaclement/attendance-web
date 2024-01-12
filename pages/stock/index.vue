@@ -24,8 +24,8 @@
                         <div class="flex justify-between space-x-4">
                             <v-btn @click="state = 1" class="my-4" color="error" variant="outlined" size="large" flat> Close
                             </v-btn>
-                            <v-btn @click.prevent="saveData" :disabled="loading" class="my-4" color="success" size="large"
-                                flat> Update Product Stock</v-btn>
+                            <v-btn @click.prevent="saveData" :disabled="loading" :loading="loading" class="my-4"
+                                color="success" size="large" flat> Update Product Stock</v-btn>
                         </div>
 
                     </v-col>
@@ -160,10 +160,8 @@ if (process.client) {
     token = localStorage.getItem("token");
     logger.value = JSON.parse(localStorage.getItem("logger"));
 }
-
-const image_URL = "http://192.168.1.77:8080/assets/images/";
-
-
+const image_URL = config.public.imageURL;
+const imagePreview = ref("/images/placeholder.jpg");
 const state = ref(1);
 const lists = ref([]);
 const loading = ref(false);
@@ -308,6 +306,7 @@ async function handleSubmit() {
     }
 }
 async function saveData() {
+    loading.value = true
     console.log(logger.value.id);
 
     let formData = new FormData();

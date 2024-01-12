@@ -3,12 +3,17 @@
         <v-col cols="12" v-show="state == 2" md="4">
             <UiParentCard parentTitle="Category" title="Add Category">
                 <form role="form" @submit.prevent="handleSubmit">
+
+                    <v-img class="rounded-lg " height="100" :src="selectedFiles.length >= 1
+                        ? selectedFiles[0].url
+                        : '/images/placeholder.jpg'
+                        "></v-img>
                     <v-col cols="12">
                         <div v-if="!file" class="mt-5">
                             <toast />
                             <div :class="['dropZone', dragging ? 'dropZone-over' : '']" @dragenter="dragging = true"
                                 @dragleave="dragging = false">
-                                <div class="dropZone-info" @drag="onChange">
+                                <div class="dropZone-info" @drag="onFileSelect">
                                     <div class="d-flex flex-col items-center justify-center">
                                         <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +27,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <input type="file" @change="onChange" />
+                                <input type="file" @change="onFileSelect" />
                             </div>
                         </div>
                         <div v-else class="dropZone-uploaded mt-5">
@@ -62,7 +67,7 @@
                         <v-text-field variant="outlined" density="compact" label="Title" v-model="editingItem.title"
                             color="primary"></v-text-field>
 
-                        <v-btn :disabled="loading" :loading="loading" @click="createCategory()" class="my-2" color="success"
+                        <v-btn :disabled="loading" :loading="loading" @click="updateCategory()" class="my-2" color="success"
                             size="large" block flat>Update Category</v-btn>
                     </v-col>
                 </form>
@@ -107,9 +112,15 @@
                     </v-row>
                     <ClientOnly>
                         <EasyDataTable empty-message="No Product found" :search-value="search" theme-color="#f97316"
-                            table-class-name="eztable" :headers="headers" :items="categories">
+                            table-class-name="eztable" :headers="headers" :items="categories" :loading="loading">
                             <template #item-image_url="item">
                                 <v-img :src="image_URL + item.image_url" height="40" class="rounded-lg"></v-img>
+                            </template>
+                            <template #empty-message>
+                                <div class="d-flex justify-center align-center py-3">
+                                    <v-img src="/images/products/not_found.png" height="150"></v-img>
+                                </div>
+                                <p class="text-muted font-weight-light"> No Found</p>
                             </template>
                             <template #item-count_subcategory="item">
                                 <div @click="viewSubCategory(item)">
@@ -229,8 +240,8 @@ const productType = [
 ];
 const http = useHttpRequest();
 const instance = getCurrentInstance();
-const API_URL = config.public.apiUrl;
-const image_URL = "http://192.168.1.77:8080/assets/images/";
+const image_URL = config.public.imageURL;
+// const image_URL = process.env.IMAGE_URL;
 interface FormData {
     productName: Field<string>;
 }
@@ -272,6 +283,7 @@ function onChange(e: any) {
 }
 function removeFile() {
     file.value = "";
+    selectedFiles.value = [];
 }
 
 onMounted(() => {
@@ -362,6 +374,7 @@ async function createCategory() {
         })
         .finally(() => {
             loading.value = false;
+            state.value = 1;
             form.productName.$value = "";
 
         });
@@ -415,6 +428,8 @@ async function createSubCategory() {
         });
 }
 function getCategories() {
+    loading.value = true;
+
     http
         .fetch("all_categories")
         .then((data: any) => {
@@ -491,5 +506,32 @@ function deleteSubCategory(id: any, title: any) {
             btnDeleteLoading.value = false;
             isViewing.value = false;
         });
+}
+
+
+const selectedFiles = ref([]);
+
+function onFileSelect(e: any) {
+    let files = e.target.files || e.dataTransfer.files;
+    if (files.length === 0) return;
+    for (let i = 0; i < files.length; i++) {
+        if (files[i].type.split("/")[0] != "image") continue;
+        if (
+            !selectedFiles.value.some((event: any) => event.name === files[i].name)
+        ) {
+            if (selectedFiles.value.length > 1) {
+                useToast().error("res.message");
+                return;
+            }
+
+            selectedFiles.value.push({
+                name: files[i].name,
+                url: URL.createObjectURL(files[i]),
+            });
+        }
+    }
+
+    file.value = files[0];
+    console.log(selectedFiles);
 }
 </script>
