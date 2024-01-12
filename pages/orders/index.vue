@@ -33,8 +33,15 @@
                       <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
 
                     </template>
-                    <template #item-ReferenceNo="item">
-                      <div class="text-primary">#{{ item.ReferenceNo }}</div>
+                    <template #item-reference_code="item">
+                      <NuxtLink :to="'/orders/' + item.reference_code">
+                        <div class="text-primary font-bold">#{{ item.reference_code }}</div>
+                      </NuxtLink>
+                    </template>
+                    <template #item-packages="item">
+                      <div @click="editItem(item)" class="text-primary cursor-pointer font-bold">{{ item.packages }}
+                        Packages
+                      </div>
 
                     </template>
                     <template #empty-message>
@@ -45,13 +52,12 @@
                     </template>
                     <template #item-actions="item">
                       <div class=" row">
-                        <v-btn size="large" flat density="compact" variant="tonal" color="success" class="mx-1"
-                          icon="mdi-check" @click="editItem(item.raw)">
-
+                        <v-btn size="small" flat variant="tonal" color="success" class="mx-1" @click="editItem(item.raw)">
+                          <v-icon class="mr-2">mdi-check</v-icon> Approve
                         </v-btn>
-                        <NuxtLink :to="'/orders/' + item.ReferenceNo">
-                          <v-btn size="large" flat density="compact" variant="tonal" color="error" class="mx-1"
-                            icon="mdi-delete">
+                        <NuxtLink :to="'/orders/' + item.reference_code">
+                          <v-btn size="small" flat variant="outlined" color="info" class="mx-1">View
+                            <v-icon class="ml-2">mdi-chevron-right</v-icon>
 
                           </v-btn>
                         </NuxtLink>
@@ -61,6 +67,44 @@
                   </EasyDataTable>
 
                 </ClientOnly>
+                <v-dialog v-model="isViewing" persistent width="auto">
+                  <v-card width="450">
+                    <v-card-title color="success" class="text-h5 font-bold text-info pa-6">
+                      {{ editingItem.customer_name + " #" + editingItem.reference_code }}
+                    </v-card-title>
+                    <v-card-text>
+                      <table
+                        class="d-flex flex-col space-y-3 rounded-lg table-fixed border-collapse border border-slate-500">
+                        <thead class=" bg-borderColor rounded-t-lg  px-8 py-2">
+                          <tr class="d-flex justify-between w-full">
+                            <th class=" items-center align-center text-center order border-slate-600">
+                              Title
+                            </th>
+                            <th class="items-center align-center text-center order border-slate-600">
+                              Action
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr class="justify-between w-full d-flex border-b-1 my-2 mx-2 border-slate-300 "
+                            v-for="(item, i) in packages" :key="i">
+                            <td class="px-4 py-1 text-xs  border-slate-200 " width="220">{{ item.item_name }}</td>
+                            <td class="px-4 py-1 text-xs  border-slate-200">x {{ item.quantity }}</td>
+                            <td class="px-4 py-1 text-xs font-bold  border-slate-200">{{ item.item_price }} Frw</td>
+
+                          </tr>
+                        </tbody>
+                      </table>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" variant="text" :loading="btnDeleteLoading" class="mx-1"
+                        prepend-icon="mdi-close" @click="isViewing = false">
+                        Close
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </v-container>
             </v-window-item>
 
@@ -75,7 +119,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
-import { Header } from "vue3-easy-data-table"
+import { Header, Item } from "vue3-easy-data-table"
 import { useHttpRequest } from '~~/composables/useHttpRequest';
 definePageMeta({
   layout: "admin",
@@ -83,15 +127,23 @@ definePageMeta({
 const http = useHttpRequest()
 const instance = getCurrentInstance();
 const loading = ref(false);
+const isViewing = ref(false);
 const tab = ref(null);
 const search = ref("");
 const pending = ref(0);
+const packages = ref([]);
 const completed = ref(0);
 const shipping = ref(0);
 const cancelled = ref(0);
 onMounted(() => {
   loadAllOrders();
 })
+
+const editingItem = reactive({
+  reference_code: "",
+  customer_name: "",
+  id: 0,
+});
 
 const headers: Header[] = [
   { text: "Order ID", value: "reference_code", sortable: true },
@@ -101,32 +153,11 @@ const headers: Header[] = [
   { text: "Payment Mode", value: "payment_mode", sortable: true },
   { text: "Delivery Status", value: "status", sortable: true },
   { text: "Delivery Date", value: "updated_at", sortable: true },
-  { text: "Actions", value: "actions", width: 120 },
+  { text: "Actions", value: "actions", width: 220 },
 ]
 
 const lists = ref([])
 const orderSelected = ref([])
-const dataTable = ref();
-// index related
-const currentPageFirstIndex = computed(() => dataTable.value?.currentPageFirstIndex);
-const currentPageLastIndex = computed(() => dataTable.value?.currentPageLastIndex);
-const clientItemsLength = computed(() => dataTable.value?.clientItemsLength);
-
-// pagination related
-const maxPaginationNumber = computed(() => dataTable.value?.maxPaginationNumber);
-const currentPaginationNumber = computed(() => dataTable.value?.currentPaginationNumber);
-const isFirstPage = computed(() => dataTable.value?.isFirstPage);
-const isLastPage = computed(() => dataTable.value?.isLastPage);
-
-const nextPage = () => {
-  dataTable.value.nextPage();
-};
-const prevPage = () => {
-  dataTable.value.prevPage();
-};
-const updatePage = (paginationNumber: number) => {
-  dataTable.value.updatePage(paginationNumber);
-};
 
 function loadAllOrders() {
   loading.value = true
@@ -163,6 +194,23 @@ function loadOrderByStatus(status: any) {
     .finally(() => (loading.value = false));
 }
 
+function loadPackagesList(orderId: any) {
+  loading.value = true
+  let formData = new FormData();
+  formData.append("orderId", orderId)
+  http.fetch("fetch_order_details", {
+    method: "POST",
+    body: formData
+  })
+    .then((data: any) => {
+      if (data.status == 200) {
+        packages.value = data.packages;
+        instance?.proxy?.$forceUpdate();
+      }
+    })
+    .catch(() => { })
+    .finally(() => (loading.value = false));
+}
 
 const statusStr = (status: string) => {
   if (status == "1") {
@@ -198,5 +246,19 @@ const onSearchData = () => {
     loading.value = false
   }, 2000)
 }
+
+const editItem = (val: Item) => {
+  isViewing.value = true;
+
+  const { reference_code, customer_name, id } =
+    val;
+
+  loadPackagesList(id);
+
+  editingItem.reference_code = reference_code;
+  editingItem.reference_code = reference_code;
+  editingItem.id = id;
+
+};
 
 </script>
