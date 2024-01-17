@@ -236,7 +236,7 @@ const dataSectors = ref([
 <template>
   <v-row>
     <v-col cols="12">
-      <GoogleMap api-key="AIzaSyC4ErBNYPdhgC4cs6tAsoWoOEkRbXhJM3o" :scrollwheel="controls" :zoomControl="true"
+      <GoogleMap api-key="AIzaSyDHq7ERLIFZX2Mi79e0P_SIi5SL4ujwsw8" :scrollwheel="controls" :zoomControl="true"
         :fullscreenControl="controls" :mapTypeControl="controls" :streetViewControl="controls" :styles="options"
         style="width: 100%; height: 600px;" :center="center" :zoom="15">
 

@@ -52,7 +52,7 @@
                     </template>
                     <template #item-actions="item">
                       <div class=" row">
-                        <v-btn size="small" flat variant="tonal" color="success" class="mx-1" @click="editItem(item.raw)">
+                        <v-btn size="small" flat variant="tonal" color="success" class="mx-1" @click="approveItem(item)">
                           <v-icon class="mr-2">mdi-check</v-icon> Approve
                         </v-btn>
                         <NuxtLink :to="'/orders/' + item.reference_code">
@@ -105,6 +105,29 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
+
+                <v-dialog v-model="isApprove" persistent width="auto">
+                  <v-card width="450">
+                    <v-card-title color="success" class="text-h5 font-bold text-info pa-6">
+                      {{ editingItem.customer_name + " #" + editingItem.reference_code }}
+                    </v-card-title>
+                    <v-card-text>
+
+                      <v-select v-model="selectedDeliveryId" :items="drivers" variant="outlined" density="compact"
+                        label="Assign Driver" color="primary" item-title="names" item-value="id" return-object></v-select>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+                        @click="isApprove = false">
+                        Close
+                      </v-btn> <v-btn color="success" :loading="btnApproveLoading" flat variant="tonal" class="mx-1"
+                        prepend-icon="mdi-check" @click="approveOrderClient(editingItem.id)">
+                        Approve Order
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </v-container>
             </v-window-item>
 
@@ -128,13 +151,17 @@ const http = useHttpRequest()
 const instance = getCurrentInstance();
 const loading = ref(false);
 const isViewing = ref(false);
+const isApprove = ref(false);
+const btnApproveLoading = ref(false);
 const tab = ref(null);
 const search = ref("");
+const drivers = ref([]);
 const pending = ref(0);
 const packages = ref([]);
 const completed = ref(0);
 const shipping = ref(0);
 const cancelled = ref(0);
+const selectedDeliveryId = ref()
 onMounted(() => {
   loadAllOrders();
 })
@@ -193,7 +220,18 @@ function loadOrderByStatus(status: any) {
     .catch(() => { })
     .finally(() => (loading.value = false));
 }
-
+function loadAllDrivers() {
+  loading.value = true
+  http.fetch("get_all_drivers")
+    .then((data: any) => {
+      if (data.status == 200) {
+        drivers.value = data.drivers;
+        instance?.proxy?.$forceUpdate();
+      }
+    })
+    .catch(() => { })
+    .finally(() => (loading.value = false));
+}
 function loadPackagesList(orderId: any) {
   loading.value = true
   let formData = new FormData();
@@ -210,6 +248,32 @@ function loadPackagesList(orderId: any) {
     })
     .catch(() => { })
     .finally(() => (loading.value = false));
+}
+
+function approveOrderClient(id: any) {
+  btnApproveLoading.value = true;
+  var formData = new FormData();
+  formData.append("orderId", id.toString());
+  formData.append("driverId", selectedDeliveryId.value.toString());
+  formData.append("status", "1");
+  http
+    .fetch("approve_client_order", {
+      method: "POST",
+      body: formData
+    })
+    .then((data: any) => {
+      if (data.status == 200) {
+        useToast().success(data.message);
+        loadAllOrders();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      btnApproveLoading.value = false;
+      isApprove.value = false;
+    });
 }
 
 const statusStr = (status: string) => {
@@ -256,7 +320,18 @@ const editItem = (val: Item) => {
   loadPackagesList(id);
 
   editingItem.reference_code = reference_code;
+  editingItem.customer_name = customer_name;
+  editingItem.id = id;
+
+};
+
+const approveItem = (val: Item) => {
+  isApprove.value = true;
+  const { reference_code, customer_name, id } =
+    val;
+  loadAllDrivers();
   editingItem.reference_code = reference_code;
+  editingItem.customer_name = customer_name;
   editingItem.id = id;
 
 };
