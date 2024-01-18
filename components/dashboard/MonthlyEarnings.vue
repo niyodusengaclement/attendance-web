@@ -15,7 +15,7 @@ const props = defineProps({
   subtitle: String,
   color: String,
   data: Array,
-  icon: String,
+  icon: Object,
   label: Array
 })
 /* Chart */
@@ -83,7 +83,7 @@ const areaChart = {
         <div class="flex">
           <div class="w-1 rounded-lg h-12" :class="'bg-' + color"> </div>
           <div class="flex justify-left px-3 flex-col">
-            <div class="items-center text-sm mx-3 text-muted font-weight-bold">
+            <div :class="'text-' + color" class="items-center text-sm mx-3  pb-2 font-weight-bold">
               {{ title }}
             </div>
             <div class="mx-3">
@@ -93,9 +93,10 @@ const areaChart = {
           </div>
 
         </div>
-        <v-card  rounded="lg" height="45" width="45" elevation="0"  class="d-flex pa-2 bg-grey100 justify-center align-center ">
-               
-            </v-card>
+        <v-card rounded="lg" height="50" width="50" elevation="0"
+          class="d-flex pa-2 bg-grey100 justify-center align-center ">
+          <component :is="icon" size="30" :color="color" stroke-width="1.5" :class="'text-' + color"></component>
+        </v-card>
 
 
       </div>

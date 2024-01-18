@@ -401,6 +401,7 @@ async function updateCategory() {
         })
         .finally(() => {
             loading.value = false;
+            state.value = 1;
         });
 }
 

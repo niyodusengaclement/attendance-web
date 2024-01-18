@@ -255,7 +255,7 @@ function approveOrderClient(id: any) {
   var formData = new FormData();
   formData.append("orderId", id.toString());
   formData.append("driverId", selectedDeliveryId.value.toString());
-  formData.append("status", "1");
+  formData.append("status", "2");
   http
     .fetch("approve_client_order", {
       method: "POST",

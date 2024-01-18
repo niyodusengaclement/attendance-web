@@ -22,12 +22,13 @@ type productPerformanceType = {
 
 /*Products card types*/
 type productsCards = {
-    title: string;
-    link: string;
-    photo: string;
-    salesPrice: number;
-    price: number;
-    rating: number;
+  title: string;
+  category: string;
+  link: string;
+  photo: string;
+  salesPrice: number;
+  price: number;
+  rating: number;
 };
 
 export type { recentTrans, productPerformanceType, productsCards }
