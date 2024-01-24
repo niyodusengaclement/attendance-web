@@ -43,7 +43,7 @@
              <v-row>
               <v-col cols="12" md="7"></v-col>
               <v-col cols="12" md="5"><div class="col-md-4 w-100 my-4 space-y-3">
-                <div class="flex justify-between">
+                <!-- <div class="flex justify-between">
                   <div class="text-muted text-small">Subtotal</div>
                   <div class="text-dark font-medium text-small">$83.74</div>
                 </div>
@@ -54,10 +54,10 @@
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Discount</div>
                   <div class="text-error font-medium text-small">- $10</div>
-                </div>
+                </div> -->
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Total</div>
-                  <div class="text-dark font-bold  ">$73.74</div>
+                  <div class="text-dark font-bold  ">{{ order.amount_paid}}Rwf</div>
                 </div>
               </div></v-col>
              </v-row>
@@ -75,19 +75,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="product in orderDetials" :key="product" class="month-item">
+                <tr v-for="product in orderProducts" :key="product.id" class="month-item">
                   <td>
                     <h6 class="text-subtitle-1 underline-none text-primary font-weight-bold">#{{ product.id }}
                     </h6>
                   </td>
                   <td>
-                    <div class="text-13 text-muted">{{ product.name }}</div>
+                    <div class="text-13 text-muted">{{ product.product_name }}</div>
                   </td>
                   <td>
                     <div class="text-13 text-muted">{{ product.quantity }}</div>
                   </td>
                   <td>
-                    <div class="text-13 text-muted">{{ product.price }}</div>
+                    <div class="text-13 text-muted">{{ product.product_price }}</div>
                   </td>
 
 
@@ -115,11 +115,11 @@
                   image="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"></v-avatar>
               </template>
 
-              <v-list-item-title>{{ order.client ?? 'Client Name' }}</v-list-item-title>
+              <v-list-item-title>{{ order.customer_name ?? 'Client Name' }}</v-list-item-title>
 
-              <v-list-item-subtitle class="text-13">Email: {{ order.clientPhone ?? 'dallyjones4@yahoo.com'
+              <v-list-item-subtitle class="text-13">Email: {{ order.email ?? 'dallyjones4@yahoo.com'
               }}</v-list-item-subtitle>
-              <v-list-item-subtitle class="text-13">Phone: {{ order.clientPhone ?? '+250785100000'
+              <v-list-item-subtitle class="text-13">Phone: {{ order.phone_number ?? '+250785100000'
               }}</v-list-item-subtitle>
 
 
@@ -201,7 +201,7 @@ const http = useHttpRequest()
 const tab = ref(null);
 const orderId = ref(route.params.id);
 const order = ref([]);
-// const orderDetials = ref([]);
+// const orderProducts = ref([]);
 const deliveryLocations = ref([]);
 const driver = ref([]);
 const loading = ref(false)
@@ -214,24 +214,20 @@ onMounted(() => {
   console.log(orderId)
 })
 
-const orderDetials = [
-  { id: 1, name: "Gas 12 Kg", quantity: "2", price: "12000" },
-
-
-]
+const orderProducts = ref([])
 
 
 
 function loadOrderById() {
   loading.value = true
-  http.fetch("order/" + orderId)
+  http.fetch("order_details/" + orderId.value)
     .then((data) => {
       if (data.status == 200) {
         // lists.value = data.records;
-        order.value = data.order;
-        driver.value = data.driver;
-        orderDetials.value = data.details;
-        deliveryLocations.value = data.delivery_address
+        order.value = data.details[0];
+        //driver.value = data.driver;
+        orderProducts.value = data.products;
+        //deliveryLocations.value = data.delivery_address
         instance?.proxy?.$forceUpdate();
       }
     })
