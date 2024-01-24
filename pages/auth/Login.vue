@@ -9,23 +9,9 @@ import {
 
 definePageMeta({
   layout: "default",
-  middleware: "already-auth"
 });
 let user: any;
-const loading = ref(false);
-const userStore = useUserStore();
 
-const signIn = async () => {
-  loading.value = true;
-  await userStore.signIn({
-    username: "kminchelle",
-    password: "0lelplR"
-    // username: form.email.$value,
-    // password: form.password.$value,
-    
-   });
-  
-};
 // handle success event
 const handleLoginSuccess = async (response: CredentialResponse) => {
   const { credential } = response;
@@ -36,6 +22,9 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
       body: {
         token: credential
       }
+    }).then((data) => {
+      console.log(" DATDA _" + data.name);
+      window.location.href = '/dashboard'
     })
   }
 
@@ -54,7 +43,9 @@ function toggle(value: boolean) {
 import { Field, useValidation } from "vue3-form-validation";
 import { rules } from "~/utils/rules";
 import { useAuth } from '~~/composables/useAuth';
-const { login } = useAuth();
+const { login, loading } = useAuth();
+const api = useApi();
+
 // const toast = useToast();
 const checkbox = ref(true);
 
@@ -88,11 +79,15 @@ async function handleSubmit() {
   try {
     const formData = await validateFields();
     login(form.email.$value, form.password.$value, form.remember.$value);
-
   } catch (e) {
 
   }
 }
+
+
+
+
+
 </script>
 <template>
   <div>
@@ -141,9 +136,10 @@ async function handleSubmit() {
 
                 <div class="my-4 flex items-center justify-end space-x-4">
 
-                  <v-btn @click.prevent="signIn()" :disabled="loading" color="primary" size="large" block
-                    flat>{{ loading ? 'Loading...' : 'Sign in' }}</v-btn>
- 
+                  <v-btn @click.prevent="handleSubmit" :disabled="loading" :loading="loading" rounded="xl" color="primary" size="large"
+                    block flat>
+                    Login</v-btn>
+
                 </div>
 
                 <div class="flex items-center justify-between mb-8">
@@ -165,7 +161,5 @@ async function handleSubmit() {
       </svg>
     </div>
   </div>
-    
- 
 </template>
   

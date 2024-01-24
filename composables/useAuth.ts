@@ -2,90 +2,93 @@
 import { useHttpRequest } from "./useHttpRequest";
 
 export const useAuth = () => {
-    // const toast = useToast()
-    const http = useHttpRequest()
-    const current_location = useCookie('current_location');
-    const loading = ref(false)
-    return {
-        headers: () => ({ Authorization: `token dsfsdfs` }),
-        loading,
+  // const toast = useToast()
+  const http = useHttpRequest();
+  const current_location = useCookie("current_location");
+  const loading = ref(false);
+  return {
+    headers: () => ({ Authorization: `token dsfsdfs` }),
+    loading,
+    login(email: any, passord: any, remember: any): void {
+      loading.value = true;
 
-        login(email: any, passord: any, remember: any): void {
-            loading.value = true
-             
-            http.fetch("/login", { 
-                method: 'post', 
-                body: { 
-                    email: email, 
-                    password: passord, 
-                    remember: remember ? 1 : 0 } 
-                }).then((data: any) => {
-                console.log(data.data)
-                console.log('====================================');
-                console.log("Here");
-                console.log('====================================');
-                if (data.status == 200) {
-                    localStorage.setItem('token', data.token)
-                    localStorage.setItem('logger', JSON.stringify(data.data))
-                    useToast().success("Login Successful");
-                    // navigateTo(current_location.value??"/dashboard")
-                    if (remember) {
-                        localStorage.setItem('userType', '1')
-                        window.location.href = '/students/' + data.data.ID
-                    } else {
-                        window.location.href = '/dashboard'
-                        localStorage.setItem('userType', '0')
-                    }
-                    console.log("login succeed")
-                }
-            }).catch((data) => {
-            //   console.log("data.data.message");
-              useToast().error(data.data.message);
-            }).finally(() => loading.value = false)
-        },
-        
-        testlogin(email: any, password: any, remember: any): void  {
-            const data =  http.fetch('login', {
-              method: 'POST',
-            //   mode: 'no-cors',
-              headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': "*",
-                'Access-Control-Allow-Credentials': 'true'
-              },
-              body: JSON.stringify({
-                email: email,
-                password: password
-              })
-            }).then((data) =>{
-                console.log('====================================');
-                console.log(data);
-                console.log('====================================');
-                if (data.status == 200) {
-                    localStorage.setItem('token', data.token)
-                    localStorage.setItem('logger', JSON.stringify(data.data))
-                    console.log('====================================');
-                    console.log("AHAHHHH");
-                    console.log('====================================');
-                    // navigateTo(current_location.value??"/dashboard")
-                    if (remember) {
-                        localStorage.setItem('userType', '1')
-                        window.location.href = '/students/' + data.data.ID
-                    } else {
-                        window.location.href = '/dashboard'
-                        localStorage.setItem('userType', '0')
-                    }
-                    console.log("login succeed")
-                }
-            }).catch((data) => {
-                console.log(data);
-              }).finally(() => loading.value = false)
-        },
-        checkLoginStatus: () => http.fetch("verifyToken").then((data: any) => {
-            if (data.status == 200) {
-                navigateTo(current_location.value ?? "/dashboard")
-                console.log("login succeed")
+      http
+        .fetch("login", {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": "true",
+          },
+          body: { email: email, password: passord, remember: remember ? 1 : 0 },
+        })
+        .then((data: any) => {
+          console.log(data);
+          if (data.status == 200) {
+            localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("logger", JSON.stringify(data.data));
+            navigateTo("/dashboard");
+            console.log("login succeed");
+          }
+        })
+        .catch((data) => {
+          useToast().error(data.data.message);
+        })
+        .finally(() => (loading.value = false));
+    },
+
+    testlogin(email: any, password: any, remember: any): void {
+      const data = http
+        .fetch("login", {
+          method: "POST",
+          //   mode: 'no-cors',
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": "true",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        })
+        .then((data) => {
+          console.log("====================================");
+          console.log(data);
+          console.log("====================================");
+          if (data.status == 200) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("logger", JSON.stringify(data.data));
+            console.log("====================================");
+            console.log("AHAHHHH");
+            console.log("====================================");
+            // navigateTo(current_location.value??"/dashboard")
+            if (remember) {
+              localStorage.setItem("userType", "1");
+              window.location.href = "/students/" + data.data.ID;
+            } else {
+              window.location.href = "/dashboard";
+              localStorage.setItem("userType", "0");
             }
-        }).catch(() => { navigateTo({ path: '/auth/login' }) })
-    }
-}
+            console.log("login succeed");
+          }
+        })
+        .catch((data) => {
+          console.log(data);
+        })
+        .finally(() => (loading.value = false));
+    },
+    checkLoginStatus: () =>
+      http
+        .fetch("verifyToken")
+        .then((data: any) => {
+          if (data.status == 200) {
+            navigateTo(current_location.value ?? "/dashboard");
+            console.log("login succeed");
+          }
+        })
+        .catch(() => {
+          navigateTo({ path: "/auth/login" });
+        }),
+  };
+};
