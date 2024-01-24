@@ -10,14 +10,15 @@ const http = useHttpRequest()
 const instance = getCurrentInstance();
 const search = ref("");
 const lists = ref([]);
+const showForm = ref(false)
+const title = ref("")
+const loading = ref(false)
 const headers: Header[] = [
-    { text: "ID", value: "ReferenceNo", sortable: true },
-    { text: "Title", value: "ProductCategory", sortable: true },
-    { text: "Address", value: "PaidAmount", sortable: true },
+    { text: "ID", value: "id", sortable: true },
+    { text: "Title", value: "title", sortable: true },
     { text: "Status", value: "Status", sortable: true },
     { text: "Actions", value: "actions", width: 120 },
 ]
-
 const statusStr = (status: string) => {
     if (status == "1") {
         return "Approved";
@@ -45,20 +46,79 @@ const statusClr = (status: string) => {
         return "warning";
     }
 }
+const handleSubmit = () => {
+
+}
+
+function createZone()
+{
+    http.fetch("createZone", {
+        method: 'post',
+        body: {
+            title: title.value
+        }
+    })
+    .then((data) => {
+        useToast().success(data.message);
+    })
+    .catch(data => {
+        useToast().error(data.data.message);
+
+    })
+}
+
+function getAllZones()
+{
+    http.fetch("get_all_zones")
+    .then(res => {
+        lists.value = res
+    })
+    .catch(err => {
+        console.log(err.response.message);
+        
+    })
+}
+
+onMounted(() => {
+    getAllZones()
+})
 
 </script>
 <template>
     <v-row>
-        <v-col cols="12" md="12">
+        <v-col cols="12" v-if="showForm" md="4" lg="4">
+            <UiParentCard :title="'Add New Zone'" class="text-success">
+                <form ref="myForm" role="form" @submit.prevent="handleSubmit">
+                    <v-col cols="12">
+                        <v-text-field variant="outlined" density="compact" label="Category"
+                            v-model="title" color="primary"></v-text-field>
+
+                        <v-btn :disabled="loading" :loading="loading" @click="createZone()" class="my-2"
+                            color="primary" size="large" block flat>Save Zone</v-btn>
+                    </v-col>
+                </form>
+            </UiParentCard>
+        </v-col>
+        <v-col>
             <UiParentCard parent-title="Dashboard" title="Zones">
+                <v-row class="mb-4">
+                        <v-col cols="12" md="8">
+                            <v-text-field v-model="search" variant="outlined" density="compact"
+                                label="Search for Title" prepend-inner-icon="mdi-magnify" single-line
+                                hide-details>
+                            </v-text-field>
+                        </v-col>
+                        <v-col class="flex" cols="12" md="4">
+                            <v-btn prepend-icon="mdi-plus" @click="showForm = true" color="success" class="mx-2" variant="tonal">
+                                Add New
+                            </v-btn>
+                        </v-col>
+                    </v-row>
                 <ClientOnly>
                     <EasyDataTable empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
                         table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" :items="lists">
                         <template #item-status="item">
-                            <v-chip size="small" :color="statusClr(item.Status)"> {{ statusStr(item.Status) }} </v-chip>
-                        </template>
-                        <template #item-ReferenceNo="item">
-                            <div class="text-primary">#{{ item.ReferenceNo }}</div>
+                            <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
                         </template>
 
                         <template #empty-message>
