@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { MoonIcon, EyeIcon, EyeOffIcon } from 'vue-tabler-icons';
+import { useUserStore } from '~/stores/users/user';
+
 import {
   GoogleSignInButton,
   type CredentialResponse,
@@ -49,7 +51,7 @@ const checkbox = ref(true);
 
 interface FormData {
   email: Field<string>;
-  password: Field<File[]>;
+  password: Field<string>;
   remember: Field<boolean>;
 }
 const {
@@ -66,7 +68,7 @@ const {
     $rules: [rules.email("Please enter a valid email address")],
   },
   password: {
-    $value: [],
+    $value:"",
     $rules: [rules.min(6)("Password has to be longer than 6 characters")],
   },
   remember: {

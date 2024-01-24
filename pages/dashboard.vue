@@ -9,6 +9,7 @@ import ProductCards from '@/components/dashboard/ProductCards.vue';
 import { TrendingUpIcon, TruckDeliveryIcon, ShoppingCartIcon, HistoryIcon, BuildingWarehouseIcon } from "vue-tabler-icons";
 definePageMeta({
     layout: "admin",
+    // middleware: "auth",
 });
 
 const http = useHttpRequest()
