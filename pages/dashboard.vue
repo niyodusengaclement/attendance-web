@@ -10,30 +10,46 @@ import { TrendingUpIcon, TruckDeliveryIcon, ShoppingCartIcon, HistoryIcon, Build
 definePageMeta({
     layout: "admin",
 });
+
+const http = useHttpRequest()
+const records = ref([])
+function getDashboardData()
+{
+    http.fetch("get_dashboard_data")
+    .then(res => {
+        records.value = res
+    })
+    .catch(() => {
+
+    })
+}
+onMounted(() => {
+    getDashboardData()
+})
 </script>
 <template>
     <v-row>
         <v-col cols="12">
             <v-row>
                 <v-col cols="12" lg="3">
-                    <MonthlyEarning title="Shops" amount="1,450" rate="+15.8" subtitle="Since last week"
+                    <MonthlyEarning title="Completed" :amount="records?.completed" rate="+15.8" subtitle="Since last week"
                         :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[12, 45, 12, 72, 46, 10, 69]"
-                        color="secondary" :icon="BuildingWarehouseIcon" />
+                        color="success" :icon="BuildingWarehouseIcon" />
                 </v-col>
                 <v-col cols="12" lg="3">
-                    <MonthlyEarning title="On Delivery" amount="19" rate="+15.8" subtitle="last week"
+                    <MonthlyEarning title="On Delivery" :amount="records?.inDerively" rate="+15.8" subtitle="last week"
                         :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[5, 45, 12, 62, 56, 20, 65]"
-                        color="success" :icon="TruckDeliveryIcon" />
+                        color="warning" :icon="TruckDeliveryIcon" />
                 </v-col>
                 <v-col cols="12" lg="3">
-                    <MonthlyEarning title="Orders" amount="122" rate="+15.8" subtitle="Now today's "
+                    <MonthlyEarning title="Orders" :amount="records?.records" rate="+15.8" subtitle="Now today's "
                         :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[61, 8, 12, 78, 20, 55, 5]"
                         color="info" :icon="ShoppingCartIcon" />
                 </v-col>
                 <v-col cols="12" lg="3">
-                    <MonthlyEarning title="History" amount="45000" rate="+9.8" subtitle="last week"
+                    <MonthlyEarning title="Cancelled" :amount="records?.cancelled" rate="+9.8" subtitle="last week"
                         :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[45, 10, 12, 40, 13, 52, 18]"
-                        color="warning" :icon="HistoryIcon" />
+                        color="error" :icon="HistoryIcon" />
                 </v-col>
                 <!-- Sales overview -->
                 <v-col cols="12" lg="8">

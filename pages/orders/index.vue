@@ -34,7 +34,7 @@
 
                     </template>
                     <template #item-reference_code="item">
-                      <NuxtLink :to="'/orders/' + item.reference_code">
+                      <NuxtLink :to="'/orders/' + item.id">
                         <div class="text-primary font-bold">#{{ item.reference_code }}</div>
                       </NuxtLink>
                     </template>
@@ -55,7 +55,7 @@
                         <v-btn size="small" flat variant="tonal" color="success" class="mx-1" @click="approveItem(item)">
                           <v-icon class="mr-2">mdi-check</v-icon> Approve
                         </v-btn>
-                        <NuxtLink :to="'/orders/' + item.reference_code">
+                        <NuxtLink :to="'/orders/' + item.id">
                           <v-btn size="small" flat variant="outlined" color="info" class="mx-1">View
                             <v-icon class="ml-2">mdi-chevron-right</v-icon>
 
