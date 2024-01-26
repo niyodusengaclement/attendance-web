@@ -21,7 +21,7 @@ const headers: Header[] = [
 ]
 const statusStr = (status: string) => {
     if (status == "1") {
-        return "Approved";
+        return "Open";
     } else if (status == "2") {
         return "On Delivery";
     } else if (status == "3") {
@@ -29,13 +29,13 @@ const statusStr = (status: string) => {
     } else if (status == "4") {
         return "Cancelled";
     } else {
-        return "Pending";
+        return "Closed";
     }
 }
 
 const statusClr = (status: string) => {
     if (status == "1") {
-        return "primary";
+        return "success";
     } else if (status == "2") {
         return "secondary";
     } else if (status == "3") {
@@ -43,40 +43,64 @@ const statusClr = (status: string) => {
     } else if (status == "4") {
         return "error";
     } else {
-        return "warning";
+        return "error";
     }
 }
-const handleSubmit = () => {
 
-}
-
-function createZone()
-{
+function createZone() {
+    loading.value = true
+    const formData = new FormData()
+    formData.append("title", title.value)
     http.fetch("createZone", {
         method: 'post',
-        body: {
-            title: title.value
-        }
+        body: formData
     })
-    .then((data) => {
-        useToast().success(data.message);
-    })
-    .catch(data => {
-        useToast().error(data.data.message);
+        .then((data) => {
+            useToast().success(data.message);
+            showForm.value = false
+            getAllZones()
+        })
+        .catch(data => {
+            useToast().error(data.data.message);
 
-    })
+        })
+        .finally(() => {
+            loading.value = false
+        })
 }
 
-function getAllZones()
-{
+function getAllZones() {
+    loading.value = true
     http.fetch("get_all_zones")
-    .then(res => {
-        lists.value = res
+        .then(res => {
+            lists.value = res
+        })
+        .catch(err => {
+            console.log(err.response.message);
+
+        })
+        .finally(() => {
+            loading.value = false
+        })
+}
+
+function changeZoneStatus(status: any, id: string) 
+{
+    const formData = new FormData()
+    formData.append("id", id)
+    formData.append("status", status)
+    http.fetch("changeZoneStatus", {
+        method: "post",
+        body: formData
     })
-    .catch(err => {
-        console.log(err.response.message);
-        
-    })
+        .then((data) => {
+            useToast().success(data.message);
+            getAllZones()
+        })
+        .catch(data => {
+            useToast().error(data.data.message);
+
+        })
 }
 
 onMounted(() => {
@@ -90,11 +114,11 @@ onMounted(() => {
             <UiParentCard :title="'Add New Zone'" class="text-success">
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
-                        <v-text-field variant="outlined" density="compact" label="Category"
-                            v-model="title" color="primary"></v-text-field>
+                        <v-text-field variant="outlined" density="compact" label="Zone Name" v-model="title"
+                            color="primary"></v-text-field>
 
-                        <v-btn :disabled="loading" :loading="loading" @click="createZone()" class="my-2"
-                            color="primary" size="large" block flat>Save Zone</v-btn>
+                        <v-btn :disabled="loading" :loading="loading" @click="createZone()" class="my-2" color="primary"
+                            size="large" block flat>Save Zone</v-btn>
                     </v-col>
                 </form>
             </UiParentCard>
@@ -102,23 +126,31 @@ onMounted(() => {
         <v-col>
             <UiParentCard parent-title="Dashboard" title="Zones">
                 <v-row class="mb-4">
-                        <v-col cols="12" md="8">
-                            <v-text-field v-model="search" variant="outlined" density="compact"
-                                label="Search for Title" prepend-inner-icon="mdi-magnify" single-line
-                                hide-details>
-                            </v-text-field>
-                        </v-col>
-                        <v-col class="flex" cols="12" md="4">
-                            <v-btn prepend-icon="mdi-plus" @click="showForm = true" color="success" class="mx-2" variant="tonal">
-                                Add New
-                            </v-btn>
-                        </v-col>
-                    </v-row>
+                    <v-col cols="12" md="8">
+                        <v-text-field v-model="search" variant="outlined" density="compact" label="Search for Title"
+                            prepend-inner-icon="mdi-magnify" single-line hide-details>
+                        </v-text-field>
+                    </v-col>
+                    <v-col class="flex" cols="12" md="4">
+                        <v-btn prepend-icon="mdi-plus" @click="showForm = true" color="success" class="mx-2"
+                            variant="tonal">
+                            Add New
+                        </v-btn>
+                    </v-col>
+                </v-row>
                 <ClientOnly>
                     <EasyDataTable empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
                         table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" :items="lists">
                         <template #item-status="item">
                             <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
+                        </template>
+                        <template #item-actions="item">
+                            <div class="flex justify-between space-x-3">
+                                <v-btn variant="outlined" size="small" color="error" v-if="item.status === '1'"
+                                    @click="changeZoneStatus(0,item.id)"> <v-icon>mdi-close</v-icon> Close</v-btn>
+                                <v-btn variant="outlined" size="small" color="success" v-else @click="changeZoneStatus(1,item.id)">
+                                    <v-icon>mdi-check</v-icon> Open</v-btn>
+                            </div>
                         </template>
 
                         <template #empty-message>

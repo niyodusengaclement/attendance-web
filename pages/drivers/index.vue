@@ -106,6 +106,24 @@ function loadAllDrivers() {
         .catch(() => { })
         .finally(() => (loading.value = false));
 }
+function changeDriverStatus(status: any, id: string) 
+{
+    const formData = new FormData()
+    formData.append("id", id)
+    formData.append("status", status)
+    http.fetch("changeDriverStatus", {
+        method: "post",
+        body: formData
+    })
+        .then((data) => {
+            useToast().success(data.message);
+            loadAllDrivers()
+        })
+        .catch(data => {
+            useToast().error(data.data.message);
+
+        })
+}
 
 const statusStr = (status: string) => {
     if (status == "1") {
@@ -185,8 +203,8 @@ onMounted(() => {
                         </template>
                         <template #item-actions="item">
                             <div class="flex justify-between space-x-3">
-                                <v-btn variant="outlined" size="small" color="error"> <v-icon
-                                        color="error">mdi-close</v-icon> Block</v-btn>
+                                <v-btn variant="outlined" size="small" color="error" v-if="item.status == '1'" @click="changeDriverStatus(0,item.id)"><v-icon>mdi-close</v-icon> Block</v-btn>
+                                <v-btn variant="outlined" size="small" color="success" v-else @click="changeDriverStatus(1,item.id)"> <v-icon>mdi-check</v-icon> Enable</v-btn>
                             </div>
                         </template>
 
