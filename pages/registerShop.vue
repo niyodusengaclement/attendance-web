@@ -58,8 +58,6 @@ async function handleSubmit() {
             return
         }
         
-        console.log(formData);
-        
         http.fetch("createShop", {
             method: "post",
             body: {
