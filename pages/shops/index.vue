@@ -26,6 +26,7 @@ const headers: Header[] = [
 ]
 const latitude = ref("")
 const longitude = ref("")
+const user = JSON.parse(localStorage.getItem("logger"))
 interface FormData {
     email: Field<string>;
     password: Field<string>;
@@ -139,7 +140,10 @@ function changeShopStatus(status: any, id: string) {
     formData.append("status", status)
     http.fetch("changeShopStatus", {
         method: "post",
-        body: formData
+        body: {
+            "id":id,
+            "status":status
+        }
     })
         .then((data) => {
             useToast().success(data.message);
@@ -187,7 +191,6 @@ async function handleSubmit() {
 
     }
 }
-
 
 function getLocation() {
     if (navigator.geolocation) {
@@ -327,7 +330,7 @@ onMounted(() => {
                             Add New
                         </v-btn>
                     </v-col>
-                    <v-col class="flex" cols="12" md="2">
+                    <v-col class="flex" cols="12" md="2" v-if="user.category === '1'">
                         <v-badge color="error" content="0" inline>
                             <v-btn prepend-icon="mdi-plus" color="primary" class="mx-2" to="/shops/request">
                                 Requests

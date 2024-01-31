@@ -5,17 +5,25 @@ export const useHttpRequest = () => {
   if (process.client) {
     token = localStorage.getItem("token");
   }
+
+  const setAuthorizationHeader = (params: any) => {
+    if (!params.headers) {
+      params.headers = new Headers();
+    }
+    params.headers.set("Authorization", "Bearer " + token);
+  };
+
   return {
-    //RequestInit replaced by any on params
     async fetch(url: RequestInfo, params?: any): Promise<any> {
-      // console.log("Base Public url: " + config.public.apiUrl)
       if (!params) {
         params = {};
       }
-      params.headers = { Authorization: "Bearer " + token };
+      setAuthorizationHeader(params);
+
       const promise = new Promise((resolve, reject) => {
         resolve($fetch(API_URL + url, params));
       });
+
       promise.catch((res) => {
         if (res.status == 401) {
           navigateTo({ path: "/auth/login" });
@@ -23,20 +31,20 @@ export const useHttpRequest = () => {
           return res.data;
         }
       });
+
       return promise;
     },
+    
     async fetch_v2(url: RequestInfo, params?: any): Promise<any> {
-      // console.log("Base Public url: " + config.public.apiUrl)
       if (!params) {
         params = {};
       }
-      params.headers = { Authorization: "Bearer " + token };
+      setAuthorizationHeader(params);
+
       const promise = new Promise((resolve, reject) => {
         resolve($fetch(API_URL + url, params));
       });
-      //  if(dd.status == 401){
-      //      console.log("redfsd fsd fsdf sdf")
-      //  }
+
       promise.catch((res) => {
         if (res.data.status == 401) {
           navigateTo({ path: "/auth/login" });
@@ -45,6 +53,7 @@ export const useHttpRequest = () => {
           return res;
         }
       });
+
       return promise;
     },
   };

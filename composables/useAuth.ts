@@ -15,11 +15,11 @@ export const useAuth = () => {
       http
         .fetch("login", {
           method: "post",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": "true",
-          },
+          // headers: {
+          //   "Content-Type": "application/json",
+          //   "Access-Control-Allow-Origin": "*",
+          //   "Access-Control-Allow-Credentials": "true",
+          // },
           body: { email: email, password: passord, remember: remember ? 1 : 0 },
         })
         .then((data: any) => {

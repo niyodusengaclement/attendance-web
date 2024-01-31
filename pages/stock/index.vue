@@ -318,10 +318,6 @@ async function saveData() {
     http
         .fetch("adding_stock_item", {
             method: "POST",
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-Type": "form-data",
-            },
             body: formData,
         })
         .then((res: any) => {
