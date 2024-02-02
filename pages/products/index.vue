@@ -394,6 +394,9 @@
                                         @blur="form.productPrice.$validate()" color="primary"
                                         :error-messages="form.productPrice.$errors"></v-text-field>
                                 </v-col>
+
+                            </v-row>
+                            <v-row v-show="IsGas == '1'">
                                 <v-col cols="12" md="4">
                                     <div class="px-3">
                                         <div class="pt-0 text-xs font-weight-bold">
@@ -425,7 +428,7 @@
                         </form>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <div class="py-2 px-2 bg-slate-100 rounded-lg mx-2">
+                        <div class="py-2 px-0 bg-slate-100 rounded-lg mx-2">
                             <v-card v-show="selectedFiles.length > 0" variant="text" color="gray" class="mx-auto my-0"
                                 max-width="370">
                                 <template v-slot:loader="{ isActive }">
@@ -448,7 +451,7 @@
                                             selectedSubCategory.title }}, </span>
                                     </v-card-subtitle>
 
-                                    <div v-if="isProductGas" class="py-2 flex space-x-2 items-center">
+                                    <div v-show="IsGas == '1'" class="py-2 flex space-x-2 items-center">
                                         <v-icon color="success" icon="mdi-fire-circle" size="x-large"></v-icon>
                                         <v-chip size="small" variant="tonal" color="primary">
                                             {{ selectedkg }} Kg</v-chip>
