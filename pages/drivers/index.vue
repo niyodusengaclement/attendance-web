@@ -35,7 +35,7 @@ const headers: Header[] = [
     { text: "ID", value: "id", sortable: true },
     { text: "Names", value: "names", sortable: true },
     { text: "Phone", value: "phone", sortable: true },
-    { text: "Type", value: "type", sortable: true },
+    { text: "Status", value: "type", sortable: true },
     { text: "Code", value: "code", sortable: true },
     { text: "Actions", value: "actions", width: 120 },
 ]
