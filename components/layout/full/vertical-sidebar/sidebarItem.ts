@@ -50,6 +50,11 @@ const sidebarItem: menu[] = [
     to: "/stock",
   },
   {
+    title: "Shops",
+    icon: MoodHappyIcon,
+    to: "/shops",
+  },
+  {
     title: "Zones",
     icon: Map2Icon,
     to: "/zones",

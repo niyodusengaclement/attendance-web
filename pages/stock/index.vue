@@ -42,6 +42,9 @@
 
                         <v-select label="Select product" v-model="selectedProduct" :items="products" variant="outlined"
                             density="compact" color="primary" item-title="text" item-value="value"></v-select>
+                        
+                        <v-select label="Select Stoch type" v-model="form.type.$value" :items="stockType" variant="outlined"  @blur="form.type.$validate()"
+                            density="compact" color="primary" item-title="text" :error-messages="form.type.$errors" item-value="value"></v-select>
 
                         <v-text-field variant="outlined" density="compact" label="Number of Items"
                             v-model="form.quantity.$value" @blur="form.quantity.$validate()" color="primary"
@@ -188,6 +191,11 @@ const stockItemType = [
     { label: "Accessories", value: "1" },
     { label: "Gas", value: "2" },
 ];
+const stockType = [
+    { text: "Stock in", value: "1" },
+    { text: "New stock", value: "2" },
+    { text: "stock return", value: "3" },
+];
 const headers: Header[] = [
     { text: "ID", value: "ReferenceNo", sortable: true },
     { text: "Photo", value: "image_url", sortable: true },
@@ -289,6 +297,7 @@ const onAddStockData = () => {
 
 interface FormData {
     quantity: Field<string>;
+    type: Field<string>;
 }
 const { form, validating, validateFields, resetFields } =
     useValidation<FormData>({
@@ -296,33 +305,24 @@ const { form, validating, validateFields, resetFields } =
             $value: "",
             $rules: [rules.required("Please qty must be provided")],
         },
+        type: {
+            $value: "",
+            $rules: [rules.required("Please qty must be provided")],
+        },
     });
 
-async function handleSubmit() {
-    try {
-        const formData = await validateFields();
-    } catch (e) {
-        //    useToast().error(e.message);
-    }
-}
 async function saveData() {
     loading.value = true
-    console.log(logger.value.id);
 
-    let formData = new FormData();
-    formData.append("product_id", editingItem.product_id);
-    formData.append("shop_id", logger.value.shop_id);
-    formData.append("stock_in", editingItem.new_stock_in.toString());
-    formData.append("stock_out", editingItem.new_stock_out.toString());
-    formData.append("stock_return", editingItem.new_stock_return.toString());
+    const formData = await validateFields();
     http
         .fetch("adding_stock_item", {
             method: "POST",
-            headers: {
-                Authorization: "Bearer " + token,
-                "Content-Type": "form-data",
+            body: {
+                product_id: selectedProduct
+                ,type: formData.type
+                ,quantity: formData.quantity
             },
-            body: formData,
         })
         .then((res: any) => {
             if (res.status == 200) {
