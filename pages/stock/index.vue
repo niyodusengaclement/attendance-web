@@ -173,7 +173,7 @@ const products = ref([]);
 const categories = ref([]);
 const stocks = ref([]);
 const tab = ref(null);
-const selectedCategory = ref("");
+const selectedCategory = ref([]);
 const selectedProduct = ref("");
 const selectedType = ref('');
 const selectedAction = ref('');
@@ -307,7 +307,7 @@ const { form, validating, validateFields, resetFields } =
         },
         type: {
             $value: "",
-            $rules: [rules.required("Please qty must be provided")],
+            $rules: [rules.required("Please type must be choosed")],
         },
     });
 
@@ -319,9 +319,10 @@ async function saveData() {
         .fetch("adding_stock_item", {
             method: "POST",
             body: {
-                product_id: selectedProduct
+                product_id: selectedProduct.value
                 ,type: formData.type
                 ,quantity: formData.quantity
+                ,category: selectedCategory.value.title
             },
         })
         .then((res: any) => {
