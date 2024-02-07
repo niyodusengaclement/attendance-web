@@ -14,6 +14,17 @@ const loading = ref(false);
 const isEditing = ref(false);
 const isDeleting = ref(false);
 const lists = ref([]);
+const plateNumber = ref("")
+const plateNumbers = ref([])
+const isLoading = ref(false)
+const searchCode = ref()
+const states = [
+    { name: 'Florida', abbr: 'FL', id: 1 },
+    { name: 'Georgia', abbr: 'GA', id: 2 },
+    { name: 'Nebraska', abbr: 'NE', id: 3 },
+    { name: 'California', abbr: 'CA', id: 4 },
+    { name: 'New York', abbr: 'NY', id: 5 },
+]
 
 interface FormData {
     names: Field<string>;
@@ -73,9 +84,9 @@ async function createDriver() {
         .fetch("create_driver", {
             method: "post",
             body: {
-                names: formData.names ,
+                names: formData.names,
                 phone: formData.phone,
-                type: formData.type, 
+                type: formData.type,
                 vehicleId: formData.vehicleId,
                 vehicleOwner: formData.vehicleOwner,
                 ownerPhone: formData.ownerPhone,
@@ -143,8 +154,35 @@ const statusClr = (status: string) => {
     }
 }
 
+function getVehicles(itemTitle, value, item) {
+    
+    http.fetch("getVehicles", {
+        method: "post",
+        body: {
+            value
+        }
+    })
+    .then(res => {
+        plateNumbers.value = res
+    })
+    .catch(err => {
+        useToast().error(err.data.message)
+    })
+}
+function customFilter(itemTitle, queryText, item) {
+    console.log(queryText);
+    
+    const textOne = item.raw.name.toLowerCase()
+    const textTwo = item.raw.abbr.toLowerCase()
+    const searchText = queryText.toLowerCase()
+
+    return textOne.indexOf(searchText) > -1 ||
+        textTwo.indexOf(searchText) > -1
+}
+
 onMounted(() => {
     loadAllDrivers();
+    getVehicles('','','')
 })
 
 </script>
@@ -162,21 +200,55 @@ onMounted(() => {
                         <v-text-field variant="outlined" density="compact" label="Phone" v-model="form.phone.$value"
                             @blur="form.phone.$validate()" color="primary"
                             :error-messages="form.phone.$errors"></v-text-field>
-                        <label for="" class="mb-5">Vehicle Information</label>
-                        <v-select label="Select Vehicle Type" v-model="form.type.$value" :items="vehicleType"
-                            variant="outlined" @blur="form.type.$validate()" density="compact" color="primary"
-                            item-title="text" :error-messages="form.type.$errors" item-value="value"></v-select>
+                        <p
+                            class="mb-4 text-small font-extrabold leading-none tracking-tight text-gray-900 md:text-small lg:text-small">
+                            VEHICLE INFORMATION</p>
+                        <div class="mt-4">
+                            <p class="font-small text-blue-600 dark:text-blue-500 hover:underline text-right rtl:text-left">
+                                Use existing vehicle</p>
+                        </div>
+                        <div>
+                            <v-select label="Select Vehicle Type" v-model="form.type.$value" :items="vehicleType"
+                                variant="outlined" @blur="form.type.$validate()" density="compact" color="primary"
+                                item-title="text" :error-messages="form.type.$errors" item-value="value"></v-select>
 
-                        <v-text-field variant="outlined" density="compact" label="Plate Nummber" v-if="form.type.$value !== '1'" v-model="form.vehicleId.$value"
-                            @blur="form.vehicleId.$validate()" color="primary"
-                            :error-messages="form.vehicleId.$errors"></v-text-field>
+                            <v-text-field variant="outlined" density="compact" label="Plate Nummber"
+                                v-if="form.type.$value !== '1'" v-model="form.vehicleId.$value"
+                                @blur="form.vehicleId.$validate()" color="primary"
+                                :error-messages="form.vehicleId.$errors"></v-text-field>
+                        </div>
+                        <v-autocomplete v-model="plateNumber" :items="plateNumbers" :loading="isLoading"
+                            :custom-filter="getVehicles" hide-no-data hide-selected item-text="plate_number" outlined
+                            item-value="id" label="vehicle plate number" class="mt-3">
+                        </v-autocomplete>
 
-                        <v-text-field variant="outlined" density="compact" label="Vehicle owner" v-model="form.vehicleOwner.$value"
-                            @blur="form.vehicleOwner.$validate()" color="primary"
+                        <v-autocomplete :items="states" :custom-filter="getVehicles" base-color="white" item-text="plate_number" variant="outlined"
+                            item-value="id" label="vehicle plate number"></v-autocomplete>
+                        <!-- <template v-slot:selection="{ item }">
+                            <span>
+                                {{ item.title }}
+                            </span>
+                        </template>
+                        <template v-slot:item="{ item }">
+                            <v-list-item-content>
+                                <v-list-item-title>{{ item.code }}</v-list-item-title>
+                                <v-list-item-subtitle>{{ item.title }}</v-list-item-subtitle>
+                            </v-list-item-content>
+                        </template> -->
+
+                        <p
+                            class="mb-4 text-small font-extrabold leading-none tracking-tight text-gray-900 md:text-small lg:text-small">
+                            VEHICLE OWNER INFORMATION</p>
+                        <div class="mt-4">
+                            <p class="font-small text-blue-600 dark:text-blue-500 hover:underline text-right rtl:text-left">
+                                Use existing Owner</p>
+                        </div>
+                        <v-text-field variant="outlined" density="compact" label="Vehicle owner"
+                            v-model="form.vehicleOwner.$value" @blur="form.vehicleOwner.$validate()" color="primary"
                             :error-messages="form.vehicleOwner.$errors"></v-text-field>
 
-                        <v-text-field variant="outlined" density="compact" label="Phone number/owner" v-model="form.ownerPhone.$value"
-                            @blur="form.ownerPhone.$validate()" color="primary"
+                        <v-text-field variant="outlined" density="compact" label="Phone number/owner"
+                            v-model="form.ownerPhone.$value" @blur="form.ownerPhone.$validate()" color="primary"
                             :error-messages="form.ownerPhone.$errors"></v-text-field>
 
                         <v-btn :disabled="loading" :loading="loading" @click="createDriver()" class="my-2" color="primary"
