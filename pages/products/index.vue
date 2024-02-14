@@ -42,7 +42,7 @@
                         <EasyDataTable empty-message="No Product found" :search-value="search" theme-color="#f97316"
                             table-class-name="eztable" :headers="headers" :items="products" :loading="loading">
                             <template #item-image_url="item">
-                                <v-img :src="image_URL + item.image_url" height="50" width="50" class="rounded-lg"></v-img>
+                                <v-img :src="image_URL + item.image_url" height="50" width="50" class="rounded-lg"></v-img> 
                             </template>
                             <template #item-is_gas="item">
                                 <div>{{ gasStr(item.is_gas) }}</div>

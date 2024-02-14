@@ -7,7 +7,7 @@ export const useAuth = () => {
   const current_location = useCookie("current_location");
   const loading = ref(false);
   return {
-    headers: () => ({ Authorization: `token dsfsdfs` }),
+    headers: () => ({ Authorization: `token` }),
     loading,
     login(email: any, passord: any, remember: any): void {
       loading.value = true;
