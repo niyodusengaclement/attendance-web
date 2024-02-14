@@ -43,7 +43,7 @@
                         <v-select label="Select product" v-model="selectedProduct" :items="products" variant="outlined"
                             density="compact" color="primary" item-title="text" item-value="value"></v-select>
                         
-                        <v-select label="Select Stoch type" v-model="form.type.$value" :items="stockType" variant="outlined"  @blur="form.type.$validate()"
+                        <v-select label="Select Stock type" v-model="form.type.$value" :items="stockType" variant="outlined"  @blur="form.type.$validate()"
                             density="compact" color="primary" item-title="text" :error-messages="form.type.$errors" item-value="value"></v-select>
 
                         <v-text-field variant="outlined" density="compact" label="Number of Items"
@@ -52,6 +52,31 @@
 
                         <v-btn @click.prevent="saveData" :disabled="loading" class="my-4" color="primary" size="large" block
                             flat>{{ loading ? "Creating Item..." : "Create New Item" }}</v-btn>
+                    </v-col>
+                </form>
+            </UiParentCard>
+        </v-col>
+        <v-col cols="12" v-show="state == 4" :md="state == 1 ? 12 : 4">
+            <UiParentCard title="Moving Product to branch">
+                <form role="form" @submit.prevent="handleSubmit">
+                    <v-col cols="12">
+                        <v-select label="Select Category" variant="outlined" density="compact" v-model="selectedCategory"
+                            color="primary" :items="categories" item-title="title" item-value="id"
+                            @update:modelValue="loadProductByCategory(selectedCategory.id)" return-object></v-select>
+
+                        <v-select label="Select product" v-model="selectedProduct" :items="products" variant="outlined"
+                            density="compact" color="primary" item-title="text" item-value="value"></v-select>
+                         <v-select label="Select branch" v-model="selectedBranch" :items="branches" variant="outlined"
+                            density="compact" color="primary" item-title="shop_name" item-value="id"></v-select>
+                        
+                        <v-select label="Select Stock type" v-if="selectedCategory.title === 'Gas'" v-model="type" :items="MoveType" variant="outlined"
+                            density="compact" color="primary" item-title="text"  item-value="value"></v-select>
+
+                        <v-text-field variant="outlined" density="compact" label="Number of Items"
+                            v-model="quantity" color="primary"></v-text-field>
+
+                        <v-btn @click.prevent="moveStock" :disabled="loading" :loading="loading" class="my-4" color="primary" size="large" block
+                            flat>{{ loading ? "Moving Stock..." : "Move to branch" }}</v-btn>
                     </v-col>
                 </form>
             </UiParentCard>
@@ -81,7 +106,7 @@
                                         <v-col cols="12" md="3">
                                             <FilterDataTable :label="'Filter By'" :filters="[{ title: 'Low Stock' }]" />
                                         </v-col>
-                                        <v-col cols="12" md="9">
+                                        <v-col cols="12" md="7">
                                             <v-text-field variant="outlined" v-model="search" :loading="loading" outlined
                                                 density="compact"
                                                 label="Search for Order ID, customer, order status, or something"
@@ -91,12 +116,15 @@
                                     </v-row>
                                 </v-col>
                                 <v-col cols="12" md="4" class="flex justify-end">
-                                    <v-btn prepend-icon="mdi-plus" color="primary" class="mx-2" variant="tonal"
+                                    <v-btn v-if="state != 2" prepend-icon="mdi-plus" color="primary" class="mx-2" variant="tonal"
                                         @click="onAddStockData">
                                         Add Stock
                                     </v-btn>
                                     <v-btn prepend-icon="mdi-export" color="success" class="mx-2" variant="tonal">
                                         Export
+                                    </v-btn>
+                                    <v-btn v-if="state != 4" prepend-icon="mdi-export" color="info" class="mx-2" variant="tonal" @click="onMoveastock()">
+                                        Move Stock
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -173,11 +201,15 @@ const products = ref([]);
 const categories = ref([]);
 const stocks = ref([]);
 const tab = ref(null);
-const selectedCategory = ref("");
+const selectedCategory = ref([]);
 const selectedProduct = ref("");
 const selectedType = ref('');
 const selectedAction = ref('');
 const search = ref("");
+const quantity = ref("");
+const selectedBranch = ref("");
+const type = ref("");
+const branches = ref([]);
 onMounted(() => {
     loadStockProducts();
 });
@@ -195,6 +227,10 @@ const stockType = [
     { text: "Stock in", value: "1" },
     { text: "New stock", value: "2" },
     { text: "stock return", value: "3" },
+];
+const MoveType = [
+    { text: "Filled Gas", value: "1" },
+    { text: "Empty cylinder", value: "2" },
 ];
 const headers: Header[] = [
     { text: "ID", value: "ReferenceNo", sortable: true },
@@ -295,6 +331,34 @@ const onAddStockData = () => {
     console.log("State = " + state.value);
 };
 
+const onMoveastock = () => {
+    state.value = 4;
+    getCategories();
+    getAllShops()
+}
+
+const moveStock = () => {
+    loading.value = true
+    http.fetch("moveStock", {
+        method: "post",
+        body: {
+            product_id: selectedProduct.value,
+            branch: selectedBranch.value,
+            type: type.value,
+            quantity: quantity.value
+        }
+    })
+    .then(res => {
+        useToast().success(res.message)
+    })
+    .catch(err => {
+        useToast().error(err.data.message)
+    })
+    .finally(() => {
+        loading.value = false
+    })
+}
+
 interface FormData {
     quantity: Field<string>;
     type: Field<string>;
@@ -303,11 +367,11 @@ const { form, validating, validateFields, resetFields } =
     useValidation<FormData>({
         quantity: {
             $value: "",
-            $rules: [rules.required("Please qty must be provided")],
+            $rules: [rules.required("Please quantity must be provided")],
         },
         type: {
             $value: "",
-            $rules: [rules.required("Please qty must be provided")],
+            $rules: [rules.required("Please type must be choosed")],
         },
     });
 
@@ -319,9 +383,10 @@ async function saveData() {
         .fetch("adding_stock_item", {
             method: "POST",
             body: {
-                product_id: selectedProduct
+                product_id: selectedProduct.value
                 ,type: formData.type
                 ,quantity: formData.quantity
+                ,category: selectedCategory.value.title
             },
         })
         .then((res: any) => {
@@ -360,6 +425,16 @@ function loadProductByCategory(id: any) {
         .finally(() => (loading.value = false));
 }
 
+function getAllShops() {
+    http.fetch("get_all_Shops")
+        .then(res => {
+            branches.value = res
+        })
+        .catch(err => {
+            console.log(err.response.message);
+
+        })
+}
 
 
 //EDITTING

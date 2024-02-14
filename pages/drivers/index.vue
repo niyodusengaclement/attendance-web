@@ -14,10 +14,22 @@ const loading = ref(false);
 const isEditing = ref(false);
 const isDeleting = ref(false);
 const lists = ref([]);
+const plateNumber = ref("")
+const plateNumbers = ref([])
+const isLoading = ref(false)
+const searchCode = ref()
+const states = [
+    { name: 'Florida', abbr: 'FL', id: 1 },
+    { name: 'Georgia', abbr: 'GA', id: 2 },
+    { name: 'Nebraska', abbr: 'NE', id: 3 },
+    { name: 'California', abbr: 'CA', id: 4 },
+    { name: 'New York', abbr: 'NY', id: 5 },
+]
 
 interface FormData {
     names: Field<string>;
     phone: Field<string>;
+    type: Field<string>;
 }
 
 const { form, validateFields, resetFields } = useValidation<FormData>({
@@ -28,6 +40,10 @@ const { form, validateFields, resetFields } = useValidation<FormData>({
     phone: {
         $value: "",
         $rules: [rules.required("Please name must be provided")],
+    },
+    type: {
+        $value: "",
+        $rules: [rules.required("Please type must be choosed")],
     },
 });
 
@@ -40,43 +56,24 @@ const headers: Header[] = [
     { text: "Actions", value: "actions", width: 120 },
 ]
 const state = ref(1);
-
-
-const editingItem = reactive({
-    names: "",
-    phone: "",
-    code: "",
-    type: "",
-    document: "",
-    id: 0,
-});
-const editItem = (val: Item) => {
-    isEditing.value = true;
-    state.value = 3;
-    const { names, code, phone, type, document, id } = val;
-    editingItem.names = names;
-    editingItem.phone = phone;
-    editingItem.code = code;
-    editingItem.type = type;
-    editingItem.id = id;
-};
-const deleteItem = (val: Item) => {
-    isDeleting.value = true;
-    const { names, id } = val;
-    editingItem.names = names;
-    editingItem.id = id;
-};
+const vehicleType = [
+    { text: "Bike", value: "1" },
+    { text: "Motorbike", value: "2" },
+    { text: "Car", value: "3" },
+];
 
 async function createDriver() {
     loading.value = true;
-    var formData = new FormData();
-    formData.append("names", form.names.$value);
-    formData.append("phone", form.phone.$value);
-    formData.append("type", editingItem.type);
+    var formData = await validateFields()
     http
         .fetch("create_driver", {
             method: "post",
-            body: formData,
+            body: {
+                names: formData.names,
+                phone: formData.phone,
+                type: formData.type,
+                vehicleId: plateNumber.value,
+            },
         })
         .then((data: any) => {
             useToast().success(data.message);
@@ -106,8 +103,7 @@ function loadAllDrivers() {
         .catch(() => { })
         .finally(() => (loading.value = false));
 }
-function changeDriverStatus(status: any, id: string) 
-{
+function changeDriverStatus(status: any, id: string) {
     const formData = new FormData()
     formData.append("id", id)
     formData.append("status", status)
@@ -141,13 +137,6 @@ const statusClr = (status: string) => {
     }
 }
 
-async function handleSubmit() {
-    try {
-        const formData = await validateFields();
-    } catch (e) {
-        console.log(e);
-    }
-}
 onMounted(() => {
     loadAllDrivers();
 })
@@ -158,19 +147,21 @@ onMounted(() => {
         <!-- ADD NEW RECORD -->
         <v-col cols="12" v-show="state == 2" md="4">
             <UiParentCard :title="'Create Driver'" class="text-success">
-                <form ref="myForm" role="form" @submit.prevent="handleSubmit">
+
+                <form ref="myForm" role="form" @submit.prevent="createDriver">
                     <v-col cols="12">
-
-
                         <v-text-field variant="outlined" density="compact" label="Name" v-model="form.names.$value"
                             @blur="form.names.$validate()" color="primary"
                             :error-messages="form.names.$errors"></v-text-field>
                         <v-text-field variant="outlined" density="compact" label="Phone" v-model="form.phone.$value"
                             @blur="form.phone.$validate()" color="primary"
                             :error-messages="form.phone.$errors"></v-text-field>
+                        <v-select label="Select Vehicle Type" v-model="form.type.$value" :items="vehicleType"
+                            variant="outlined" @blur="form.type.$validate()" density="compact" color="primary"
+                            item-title="text" :error-messages="form.type.$errors" item-value="value"></v-select>
 
-                        <v-text-field variant="outlined" density="compact" label="Category" v-model="editingItem.type"
-                            color="primary"></v-text-field>
+                        <v-text-field variant="outlined" density="compact" label="Plate Nummber"
+                            v-if="form.type.$value !== '1'" v-model="plateNumber" color="primary"></v-text-field>
 
                         <v-btn :disabled="loading" :loading="loading" @click="createDriver()" class="my-2" color="primary"
                             size="large" block flat>Save Driver</v-btn>
@@ -199,12 +190,14 @@ onMounted(() => {
                     <EasyDataTable empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
                         table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" :items="lists">
                         <template #item-type="item">
-                            <v-chip size="small" :color="statusClr(item.type)"> {{ statusStr(item.type) }} </v-chip>
+                            <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
                         </template>
                         <template #item-actions="item">
                             <div class="flex justify-between space-x-3">
-                                <v-btn variant="outlined" size="small" color="error" v-if="item.status == '1'" @click="changeDriverStatus(0,item.id)"><v-icon>mdi-close</v-icon> Block</v-btn>
-                                <v-btn variant="outlined" size="small" color="success" v-else @click="changeDriverStatus(1,item.id)"> <v-icon>mdi-check</v-icon> Enable</v-btn>
+                                <v-btn variant="outlined" size="small" color="error" v-if="item.status == '1'"
+                                    @click="changeDriverStatus(0, item.id)"><v-icon>mdi-close</v-icon> Block</v-btn>
+                                <v-btn variant="outlined" size="small" color="success" v-else
+                                    @click="changeDriverStatus(1, item.id)"> <v-icon>mdi-check</v-icon> Enable</v-btn>
                             </div>
                         </template>
 
