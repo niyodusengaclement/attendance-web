@@ -74,6 +74,8 @@
         <!-- EDITTING EXISTING RECORD -->
         <v-col cols="12" v-show="state == 3" md="12">
             <UiParentCard :title="'Updating ' + editingItem.product_name + ' product'" class="text-success">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
+                </v-btn>
                 <v-row>
                     <v-col cols="12" md="4"> <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url"
                             max-height="300" class="bg-grey-lighten-2 border rounded-lg my-5"></v-img></v-col>
@@ -125,6 +127,8 @@
         <!-- CREATING NEW RECORD -->
         <v-col cols="12" v-show="state == 2" md="12">
             <UiParentCard parent-title="All Product " title="Create Product">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
+                </v-btn>
                 <div class="my-2">
                     <v-row>
                         <v-col cols="12" md="3">
@@ -575,7 +579,14 @@ function getProducts() {
         .catch(() => { })
         .finally(() => (loading.value = false));
 }
-
+function reset() {
+    resetFields()
+    state.value = 1
+    IsGas.value = ''
+    isEditing.value = false
+    isDeleting.value = false
+    selectedkg.value = ''
+}
 onMounted(() => {
     getProducts();
     getCategories();

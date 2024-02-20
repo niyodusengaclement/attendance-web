@@ -6,16 +6,16 @@
 
           <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
             <v-tab @click="loadAllOrders()" :value="1">All Orders
-              <v-chip size="small" class="ma-1"> {{ lists.length ?? 0 }} </v-chip>
+              <v-chip size="small" class="ma-1"> {{ completed + shipping + pending + cancelled }} </v-chip>
             </v-tab>
-            <v-tab @click="loadOrderByStatus(3)" :value="2">Completed
+            <v-tab @click="loadAllOrders('1')" :value="2">Completed
               <v-chip size="small" class="ma-1"> {{ completed }} </v-chip>
             </v-tab>
-            <v-tab @click="loadOrderByStatus(2)" :value="3">On Delivery
+            <v-tab @click="loadAllOrders('2')" :value="3">On Delivery
               <v-chip size="small" class="ma-1"> {{ shipping }} </v-chip></v-tab>
-            <v-tab @click="loadOrderByStatus(0)" :value="4">Pending
+            <v-tab @click="loadAllOrders('0')" :value="4">Pending
               <v-chip size="small" class="ma-1"> {{ pending }} </v-chip></v-tab>
-            <v-tab @click="loadOrderByStatus(4)" :value="5">Cancelled
+            <v-tab @click="loadAllOrders('4')" :value="5">Cancelled
               <v-chip size="small" class="ma-1"> {{ cancelled }} </v-chip></v-tab>
           </v-tabs>
           <v-container>
@@ -51,10 +51,15 @@
                       <p class="text-muted font-weight-light"> No Found</p>
                     </template>
                     <template #item-actions="item">
-                      <div class=" row">
-                        <v-btn size="small" flat variant="tonal" color="success" class="mx-1" @click="approveItem(item)">
-                          <v-icon class="mr-2">mdi-check</v-icon> Approve
-                        </v-btn>
+                      <v-row  justify="end">
+                        <template v-if="item.status !== '1' && item.status !== '4' ">
+                          <v-btn size="small" flat variant="tonal" color="error" class="mx-1" @click="approveOrderClient(item.id, '4')">
+                            <v-icon class="mr-2">mdi-close</v-icon> Cancel
+                          </v-btn>
+                          <v-btn size="small"  v-if="item.status == '0' " flat variant="tonal" color="success" class="mx-1" @click="approveItem(item)">
+                            <v-icon class="mr-2">mdi-check</v-icon> Approve
+                          </v-btn>
+                        </template>
                         <NuxtLink :to="'/orders/' + item.id">
                           <v-btn size="small" flat variant="outlined" color="info" class="mx-1">View
                             <v-icon class="ml-2">mdi-chevron-right</v-icon>
@@ -62,7 +67,7 @@
                           </v-btn>
                         </NuxtLink>
 
-                      </div>
+                      </v-row>
                     </template>
                   </EasyDataTable>
 
@@ -161,7 +166,7 @@ const packages = ref([]);
 const completed = ref(0);
 const shipping = ref(0);
 const cancelled = ref(0);
-const selectedDeliveryId = ref()
+const selectedDeliveryId = ref('')
 onMounted(() => {
   loadAllOrders();
 })
@@ -186,9 +191,12 @@ const headers: Header[] = [
 const lists = ref([])
 const orderSelected = ref([])
 
-function loadAllOrders() {
+function loadAllOrders(status = '') {
   loading.value = true
-  http.fetch("fetch_orders")
+  http.fetch("fetch_orders", {
+    method: "post",
+    body: {status}
+  })
     .then((data: any) => {
       if (data.status == 200) {
         lists.value = data.records;
@@ -222,7 +230,7 @@ function loadOrderByStatus(status: any) {
 }
 function loadAllDrivers() {
   loading.value = true
-  http.fetch("get_all_drivers")
+  http.fetch("get_all_drivers/0")
     .then((data: any) => {
       if (data.status == 200) {
         drivers.value = data.drivers;
@@ -250,16 +258,16 @@ function loadPackagesList(orderId: any) {
     .finally(() => (loading.value = false));
 }
 
-function approveOrderClient(id: any) {
+function approveOrderClient(id: any,status = '2') {
   btnApproveLoading.value = true;
   var formData = new FormData();
   formData.append("orderId", id.toString());
   formData.append("driverId", selectedDeliveryId.value.toString());
-  formData.append("status", "2");
+  formData.append("status", status);
   http
     .fetch("approve_client_order", {
       method: "POST",
-      body: formData
+      body: formData,
     })
     .then((data: any) => {
       if (data.status == 200) {

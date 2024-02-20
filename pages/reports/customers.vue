@@ -7,6 +7,8 @@ definePageMeta({
     layout: "admin",
 });
 const http = useHttpRequest()
+const config = useRuntimeConfig()
+const token = localStorage.getItem("token")
 const search = ref("");
 const lists = ref([]);
 const showForm = ref(false)
@@ -17,7 +19,7 @@ const headers: Header[] = [
     { text: "Client name", value: "customer_name", sortable: true },
     { text: "Client Phone", value: "phone_number", sortable: true },
     { text: "Email", value: "email", sortable: true },
-    { text: "complered Orders", value: "compleredOrders", sortable: true },
+    { text: "completed Orders", value: "completedOrders", sortable: true },
     { text: "All Oders", value: "allOders", sortable: true },
     { text: "Status", value: "status", width: 120 },
     // { text: "Actions", value: "actions", width: 120 },
@@ -42,7 +44,7 @@ const statusClr = (status: string) => {
 
 function allClients() {
     loading.value = true
-    http.fetch("allClients")
+    http.fetch("allClients/0")
         .then(res => {
             lists.value = res
         })
@@ -59,6 +61,9 @@ function allClients() {
 onMounted(() => {
     allClients()
 })
+const download = computed(() => {
+  return config.public.apiUrl + "allClients/1/" + token
+})
 
 </script>
 <template>
@@ -72,10 +77,12 @@ onMounted(() => {
                         </v-text-field>
                     </v-col>
                     <v-col class="flex" cols="12" md="2">
-                        <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
-                            variant="tonal">
-                            Export
-                        </v-btn>
+                        <form :action="download" method="post" target="_blank">
+                            <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
+                                variant="tonal" type="submit">
+                                Export
+                            </v-btn>
+                        </form>
                     </v-col>
                 </v-row>
                 <ClientOnly>

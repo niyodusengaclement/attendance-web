@@ -142,12 +142,12 @@ async function handleSubmit() {
 
                 </div>
 
-                <div class="flex items-center justify-between mb-8">
+                <!-- <div class="flex items-center justify-between mb-8">
                   <div class="w-full h-[1px] bg-gray-300"></div>
                   <span class="text-sm uppercase mx-6 text-gray-400">Or</span>
                   <div class="w-full h-[1px] bg-gray-300"></div>
                 </div>
-                <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
+                <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
               </form>
 
 

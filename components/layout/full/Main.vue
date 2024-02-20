@@ -27,7 +27,7 @@ const sDrawer = ref(true);
                     <LayoutFullVerticalSidebarNavGroup :item="item" v-if="item.header" :key="item.title" />
 
                     <!---Single Item-->
-                    <LayoutFullVerticalSidebarNavItem :item="item" v-else class="leftPadding" />
+                    <LayoutFullVerticalSidebarNavItem :key="i" :item="item" v-else class="leftPadding" />
                     <!---End Single Item-->
                 </template>
             </v-list>

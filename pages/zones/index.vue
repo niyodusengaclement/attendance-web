@@ -102,7 +102,10 @@ function changeZoneStatus(status: any, id: string)
 
         })
 }
-
+function reset() {
+    title.value = ''
+    showForm.value = false
+}
 onMounted(() => {
     getAllZones()
 })
@@ -112,6 +115,8 @@ onMounted(() => {
     <v-row>
         <v-col cols="12" v-if="showForm" md="4" lg="4">
             <UiParentCard :title="'Add New Zone'" class="text-success">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
+                </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
                         <v-text-field variant="outlined" density="compact" label="Zone Name" v-model="title"

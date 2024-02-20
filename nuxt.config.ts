@@ -18,7 +18,11 @@ export default defineNuxtConfig({
     transpile: ["vuetify", "@fawmi/vue-google-maps", "vue-toastification"],
   },
   modules: ["nuxt-vue3-google-signin", "@nuxtjs/tailwindcss"],
-  css: ["~/assets/styles/main.css"],
+  css: [
+    "~/assets/styles/main.css",
+    "primevue/resources/themes/lara-light-teal/theme.css", //theme
+    "primevue/resources/primevue.min.css",
+  ],
   vite: {
     define: {
       "process.env.DEBUG": false,

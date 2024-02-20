@@ -9,6 +9,8 @@ definePageMeta({
 });
 const http = useHttpRequest()
 const instance = getCurrentInstance();
+const config = useRuntimeConfig()
+const token = localStorage.getItem("token")
 const search = ref("");
 const loading = ref(false);
 const isEditing = ref(false);
@@ -93,7 +95,7 @@ async function createDriver() {
 
 function loadAllDrivers() {
     loading.value = true
-    http.fetch("get_all_drivers")
+    http.fetch("get_all_drivers/0")
         .then((data: any) => {
             if (data.status == 200) {
                 lists.value = data.drivers;
@@ -136,18 +138,25 @@ const statusClr = (status: string) => {
         return "warning";
     }
 }
-
+function reset() {
+    resetFields()
+    state.value = 1
+}
 onMounted(() => {
     loadAllDrivers();
 })
 
+const download = computed(() => {
+  return config.public.apiUrl + "get_all_drivers/1/" + token
+})
 </script>
 <template>
     <v-row>
         <!-- ADD NEW RECORD -->
         <v-col cols="12" v-show="state == 2" md="4">
             <UiParentCard :title="'Create Driver'" class="text-success">
-
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
+                </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="createDriver">
                     <v-col cols="12">
                         <v-text-field variant="outlined" density="compact" label="Name" v-model="form.names.$value"
@@ -160,7 +169,7 @@ onMounted(() => {
                             variant="outlined" @blur="form.type.$validate()" density="compact" color="primary"
                             item-title="text" :error-messages="form.type.$errors" item-value="value"></v-select>
 
-                        <v-text-field variant="outlined" density="compact" label="Plate Nummber"
+                        <v-text-field variant="outlined" density="compact" label="Plate Number"
                             v-if="form.type.$value !== '1'" v-model="plateNumber" color="primary"></v-text-field>
 
                         <v-btn :disabled="loading" :loading="loading" @click="createDriver()" class="my-2" color="primary"
@@ -172,7 +181,7 @@ onMounted(() => {
         <v-col cols="12" :md="state == 1 ? '12' : '8'">
             <UiParentCard parent-title="Dashboard" title="Drivers">
                 <v-row class=" flex mb-4 justify-between">
-                    <v-col cols="12" md="8">
+                    <v-col cols="12" md="6">
                         <v-text-field v-model="search" :loading="loading" variant="outlined" density="compact"
                             label="Search for Title or Something" prepend-inner-icon="mdi-magnify" single-line hide-details>
                         </v-text-field>
@@ -184,6 +193,14 @@ onMounted(() => {
                         <v-btn prepend-icon="mdi-plus" @click="state = 2" color="success" class="mx-2" variant="tonal">
                             Add New Driver
                         </v-btn>
+                    </v-col>
+                    <v-col class="flex" cols="12" md="2">
+                        <form :action="download" method="post" target="_blank">
+                            <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
+                                variant="tonal" type="submit">
+                                Export
+                            </v-btn>
+                        </form>
                     </v-col>
                 </v-row>
                 <ClientOnly>

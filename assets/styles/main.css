@@ -109,3 +109,9 @@
   transform: translate(0, -50%);
   text-align: center;
 }
+
+.close-btn {
+  position: absolute !important;
+  right: 15px;
+  top: 10px;
+}

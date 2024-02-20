@@ -38,6 +38,7 @@ interface FormData {
 const {
     form,
     validateFields,
+    resetFields
 } = useValidation<FormData>({
     email: {
         $value: "",
@@ -96,7 +97,10 @@ const statusClr = (status: string) => {
         return "error";
     }
 }
-
+function reset() {
+    resetFields()
+    showForm.value = false
+}
 function createShop() {
     loading.value = true
     const formData = new FormData()
@@ -241,6 +245,8 @@ onMounted(() => {
     <v-row>
         <v-col cols="12" v-if="showForm" md="4" lg="4">
             <UiParentCard :title="'Add New Shop'" class="text-success">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
+                </v-btn>
                 <v-card-subtitle>Fill this form to register shop</v-card-subtitle>
                 <form @submit.prevent="handleSubmit">
                     <div class="flex flex-col my-7 group">
