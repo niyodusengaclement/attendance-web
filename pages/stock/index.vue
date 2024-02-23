@@ -94,17 +94,17 @@
             <UiParentCard title="Inventory Products">
                 <v-card-text>
                     <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
-                        <v-tab @click="loadAllOrders()" :value="1">All Products
+                        <v-tab @click="loadStockProducts('ALL')" :value="1">All Products
                             <v-chip size="small" class="ma-1"> {{ lists.length ?? 0 }} </v-chip>
                         </v-tab>
-                        <v-tab @click="loadOrderByStatus(3)" :value="2">Available Stock
+                        <!-- <v-tab @click="loadStockProducts(3)" :value="2">Available Stock
                             <v-chip size="small" class="ma-1"> 0 </v-chip>
-                        </v-tab>
-                        <v-tab @click="loadOrderByStatus(2)" :value="3">Low On Stock
+                        </v-tab> -->
+                        <!-- <v-tab @click="loadStockProducts('2')" :value="3">Low On Stock
+                            <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab> -->
+                        <v-tab @click="loadStockProducts('OUTOFSTOCK')" :value="2">Out of Stock
                             <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab>
-                        <v-tab @click="loadOrderByStatus(0)" :value="4">Out of Stock
-                            <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab>
-                        <v-tab @click="loadOrderByStatus(4)" :value="5">Return in Stock
+                        <v-tab @click="loadStockProducts('RETURNSTOCK')" :value="3">Return in Stock
                             <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab>
                     </v-tabs>
                     <v-container>
@@ -118,21 +118,21 @@
                                         <v-col cols="12" md="7">
                                             <v-text-field variant="outlined" v-model="search" :loading="loading" outlined
                                                 density="compact"
-                                                label="Search for Order ID, customer, order status, or something"
+                                                label="Search by product name"
                                                 prepend-inner-icon="mdi-magnify" single-line hide-details
                                                 @click:prepend-inner="onSearchData">
                                             </v-text-field></v-col>
                                     </v-row>
                                 </v-col>
                                 <v-col cols="12" md="4" class="flex justify-end">
-                                    <v-btn v-if="state != 2" prepend-icon="mdi-plus" color="primary" class="mx-2"
+                                    <v-btn v-if="state != 2  && logger.category != '1'" prepend-icon="mdi-plus" color="primary" class="mx-2"
                                         variant="tonal" @click="onAddStockData">
                                         Add Stock
                                     </v-btn>
                                     <v-btn prepend-icon="mdi-export" color="success" class="mx-2" variant="tonal">
                                         Export
                                     </v-btn>
-                                    <v-btn v-if="state != 4" prepend-icon="mdi-export" color="info" class="mx-2"
+                                    <v-btn v-if="state != 4 && logger.category == '2'" prepend-icon="mdi-export" color="info" class="mx-2"
                                         variant="tonal" @click="onMoveastock()">
                                         Move Stock
                                     </v-btn>
@@ -141,7 +141,7 @@
                         </v-card>
                     </v-container>
                     <v-window v-model="tab">
-                        <v-window-item v-for="n in 5" :key="n" :value="n">
+                        <v-window-item v-for="n in 3" :key="n" :value="n">
                             <v-container fluid>
                                 <ClientOnly>
                                     <EasyDataTable empty-message="No Order found" :search-value="search"
@@ -162,11 +162,11 @@
 
                                         <template #item-actions="item">
                                             <div class="row">
-                                                <v-btn size="small" flat variant="outlined" color="info" class="mx-1"
+                                                <v-btn size="small" v-if="logger.category != '1'" flat variant="outlined" color="info" class="mx-1"
                                                     @click="editItem(item)">
                                                     <v-icon>mdi-plus</v-icon> Update Stock
                                                 </v-btn>
-
+                                                <span v-else>-</span>
                                             </div>
                                         </template>
                                     </EasyDataTable>
@@ -253,10 +253,10 @@ const headers: Header[] = [
     { text: "Actions", value: "actions", width: 120 },
 ];
 
-function loadStockProducts() {
+function loadStockProducts(type: string) {
     loading.value = true;
     let formData = new FormData();
-    formData.append("id", "");
+    formData.append("type", type);
     http
         .fetch("get_stock_products", {
             method: "POST",
@@ -270,20 +270,6 @@ function loadStockProducts() {
                 useToast().error(data.message);
             }
 
-        })
-        .catch(() => { })
-        .finally(() => (loading.value = false));
-}
-
-function loadOrderByStatus(status: any) {
-    loading.value = true;
-    http
-        .fetch("order_by_status/" + status)
-        .then((data: any) => {
-            if (data.status == 200) {
-                lists.value = data.records;
-                instance?.proxy?.$forceUpdate();
-            }
         })
         .catch(() => { })
         .finally(() => (loading.value = false));

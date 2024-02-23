@@ -2,6 +2,10 @@
   <v-row>
     <v-col cols="12" md="12">
       <UiParentCard title="List Products">
+        <v-chip class="ma-2 close-btn" color="info" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
+          :model-value="true">
+          Total Amount: <strong>{{ totalAmount + ' Rwf' }}</strong>
+        </v-chip>
         <v-card-text>
 
           <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
@@ -51,12 +55,14 @@
                       <p class="text-muted font-weight-light"> No Found</p>
                     </template>
                     <template #item-actions="item">
-                      <v-row  justify="end">
-                        <template v-if="item.status !== '1' && item.status !== '4' ">
-                          <v-btn size="small" flat variant="tonal" color="error" class="mx-1" @click="approveOrderClient(item.id, '4')">
+                      <v-row justify="end">
+                        <template v-if="item.status !== '1' && item.status !== '4'">
+                          <v-btn size="small" flat variant="tonal" color="error" class="mx-1"
+                            @click="approveOrderClient(item.id, '4')">
                             <v-icon class="mr-2">mdi-close</v-icon> Cancel
                           </v-btn>
-                          <v-btn size="small"  v-if="item.status == '0' " flat variant="tonal" color="success" class="mx-1" @click="approveItem(item)">
+                          <v-btn size="small" v-if="item.status == '0'" flat variant="tonal" color="success" class="mx-1"
+                            @click="approveItem(item)">
                             <v-icon class="mr-2">mdi-check</v-icon> Approve
                           </v-btn>
                         </template>
@@ -158,6 +164,7 @@ const loading = ref(false);
 const isViewing = ref(false);
 const isApprove = ref(false);
 const btnApproveLoading = ref(false);
+const totalAmount = ref(0);
 const tab = ref(null);
 const search = ref("");
 const drivers = ref([]);
@@ -195,7 +202,7 @@ function loadAllOrders(status = '') {
   loading.value = true
   http.fetch("fetch_orders", {
     method: "post",
-    body: {status}
+    body: { status }
   })
     .then((data: any) => {
       if (data.status == 200) {
@@ -204,6 +211,11 @@ function loadAllOrders(status = '') {
         cancelled.value = data.cancelled;
         shipping.value = data.shipping;
         completed.value = data.completed;
+
+        totalAmount.value = data.records.filter(obj => obj.status === '1').reduce((sum, obj) => sum + parseInt(obj.amount_paid), 0);
+        console.log(totalAmount.value);
+        
+
         instance?.proxy?.$forceUpdate();
       }
     })
@@ -211,23 +223,7 @@ function loadAllOrders(status = '') {
     .finally(() => (loading.value = false));
 }
 
-function loadOrderByStatus(status: any) {
-  loading.value = true
-  let formData = new FormData();
-  formData.append("status", status)
-  http.fetch("fetch_orders", {
-    method: "POST",
-    body: formData
-  })
-    .then((data: any) => {
-      if (data.status == 200) {
-        lists.value = data.records;
-        instance?.proxy?.$forceUpdate();
-      }
-    })
-    .catch(() => { })
-    .finally(() => (loading.value = false));
-}
+
 function loadAllDrivers() {
   loading.value = true
   http.fetch("get_all_drivers/0")
@@ -258,7 +254,7 @@ function loadPackagesList(orderId: any) {
     .finally(() => (loading.value = false));
 }
 
-function approveOrderClient(id: any,status = '2') {
+function approveOrderClient(id: any, status = '2') {
   btnApproveLoading.value = true;
   var formData = new FormData();
   formData.append("orderId", id.toString());

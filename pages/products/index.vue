@@ -25,7 +25,7 @@
                     <v-row class="mb-4">
                         <v-col cols="12" md="9">
                             <v-text-field v-model="search" :loading="loading" variant="tonal" density="compact"
-                                label="Search for Order ID, customer, order status, or something"
+                                label="Search for product name"
                                 prepend-inner-icon="mdi-magnify" single-line hide-details>
                             </v-text-field>
                         </v-col>
@@ -316,7 +316,7 @@
 
                                         <v-select v-show="isProductGas" v-model="IsGas" :items="productType"
                                             variant="outlined" density="compact" color="primary" item-title="label"
-                                            item-value="value" label="Type"></v-select>
+                                            item-value="value" label="is Gas"></v-select>
                                     </div>
                                 </v-col>
 
@@ -380,44 +380,48 @@
                                 </v-col>
                             </v-row>
                             <v-row v-if="step == 3">
-                                <v-col cols="12" md="4">
-                                    <div class="px-3">
-                                        <div class="pt-0 text-xs font-weight-bold">
-                                            Product Price
-                                        </div>
-
-                                        <div class="pt-1 font-weight-light text-[10px] text-muted">
-                                            Write your product title that buyers would likely to
-                                            search
-                                        </div>
-                                    </div>
+                                <v-col>
+                                    <v-row>
+                                        <v-col cols="12" md="4">
+                                            <div class="px-3">
+                                                <div class="pt-0 text-xs font-weight-bold">
+                                                    Product Price
+                                                </div>
+        
+                                                <div class="pt-1 font-weight-light text-[10px] text-muted">
+                                                    Write your product title that buyers would likely to
+                                                    search
+                                                </div>
+                                            </div>
+                                        </v-col>
+        
+                                        <v-col cols="12" md="8">
+                                            <v-text-field variant="outlined" density="compact" v-model="form.productPrice.$value"
+                                                @blur="form.productPrice.$validate()" color="primary"
+                                                :error-messages="form.productPrice.$errors"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row v-show="IsGas == '1'">
+                                        <v-col cols="12" md="4">
+                                            <div class="px-3">
+                                                <div class="pt-0 text-xs font-weight-bold">
+                                                    Product Refilling Price
+                                                </div>
+        
+                                                <div class="pt-1 font-weight-light text-[10px] text-muted">
+                                                    Write your product title that buyers would likely to
+                                                    search
+                                                </div>
+                                            </div>
+                                        </v-col>
+        
+                                        <v-col cols="12" md="8">
+                                            <v-text-field variant="outlined" density="compact" v-model="editingItem.price"
+                                                color="primary"></v-text-field>
+                                        </v-col>
+                                    </v-row>
                                 </v-col>
 
-                                <v-col cols="12" md="8">
-                                    <v-text-field variant="outlined" density="compact" v-model="form.productPrice.$value"
-                                        @blur="form.productPrice.$validate()" color="primary"
-                                        :error-messages="form.productPrice.$errors"></v-text-field>
-                                </v-col>
-
-                            </v-row>
-                            <v-row v-show="IsGas == '1'">
-                                <v-col cols="12" md="4">
-                                    <div class="px-3">
-                                        <div class="pt-0 text-xs font-weight-bold">
-                                            Product Refilling Price
-                                        </div>
-
-                                        <div class="pt-1 font-weight-light text-[10px] text-muted">
-                                            Write your product title that buyers would likely to
-                                            search
-                                        </div>
-                                    </div>
-                                </v-col>
-
-                                <v-col cols="12" md="8">
-                                    <v-text-field variant="outlined" density="compact" v-model="editingItem.price"
-                                        color="primary"></v-text-field>
-                                </v-col>
                             </v-row>
                             <v-col cols="12">
                                 <v-btn @click="prevPage()" :disabled="loading" class="my-4 mx-2" color="primary"
@@ -552,7 +556,7 @@ const {
     },
     productPrice: {
         $value: "",
-        $rules: [rules.min(2)("Password has to be longer than 2 characters")],
+        $rules: [rules.min(2)("product price has to be longer than 2 characters")],
     },
     productDesc: {
         $value: "",

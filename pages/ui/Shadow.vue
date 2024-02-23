@@ -315,7 +315,7 @@ onMounted(() => {
                             prepend-inner-icon="mdi-magnify" single-line hide-details>
                         </v-text-field>
                     </v-col>
-                    <v-col class="flex" cols="12" md="2">
+                    <v-col v-if="false" class="flex" cols="12" md="2">
                         <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
                             variant="tonal">
                             Export

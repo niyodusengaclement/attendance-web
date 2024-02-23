@@ -101,28 +101,6 @@ function reset() {
     resetFields()
     showForm.value = false
 }
-function createShop() {
-    loading.value = true
-    const formData = new FormData()
-    formData.append("title", title.value)
-    http.fetch("createShop", {
-        method: 'post',
-        body: formData
-    })
-        .then((data) => {
-            useToast().success(data.message);
-            showForm.value = false
-            getAllShops()
-        })
-        .catch(data => {
-            useToast().error(data.data.message);
-
-        })
-        .finally(() => {
-            loading.value = false
-        })
-}
-
 function getAllShops() {
     loading.value = true
     http.fetch("get_all_Shops")
@@ -145,8 +123,8 @@ function changeShopStatus(status: any, id: string) {
     http.fetch("changeShopStatus", {
         method: "post",
         body: {
-            "id":id,
-            "status":status
+            "id": id,
+            "status": status
         }
     })
         .then((data) => {
@@ -231,9 +209,9 @@ function handleError(error: any) {
 }
 function getZones() {
     http.fetch("getZonesForForm")
-    .then(res => {
-        zones.value = res
-    })
+        .then(res => {
+            zones.value = res
+        })
 }
 onMounted(() => {
     getAllShops()
@@ -243,7 +221,7 @@ onMounted(() => {
 </script>
 <template>
     <v-row>
-        <v-col cols="12" v-if="showForm" md="4" lg="4">
+        <v-col cols="12" v-if="showForm && parseInt(user.category) <= 2" md="4" lg="4">
             <UiParentCard :title="'Add New Shop'" class="text-success">
                 <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
                 </v-btn>
@@ -287,8 +265,8 @@ onMounted(() => {
                     </div>
                     <div class="flex flex-col my-7 group">
                         <v-select :items="zones" v-model="form.zone.$value" variant="outlined" density="compact"
-                            @blur="form.zone.$validate()" :error-messages="form.zone.$errors" label="Choose Zone" color="primary" item-title="text"
-                            item-value="value"></v-select>
+                            @blur="form.zone.$validate()" :error-messages="form.zone.$errors" label="Choose Zone"
+                            color="primary" item-title="text" item-value="value"></v-select>
                     </div>
 
                     <div class="flex flex-col my-7">
@@ -330,7 +308,7 @@ onMounted(() => {
                             prepend-inner-icon="mdi-magnify" single-line hide-details>
                         </v-text-field>
                     </v-col>
-                    <v-col class="flex" cols="12" md="2">
+                    <v-col class="flex" cols="12" md="2" v-if="parseInt(user.category) <= 2">
                         <v-btn prepend-icon="mdi-plus" @click="showForm = true; getZones()" color="success" class="mx-2"
                             variant="tonal">
                             Add New

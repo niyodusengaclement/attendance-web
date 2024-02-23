@@ -11,6 +11,7 @@ const http = useHttpRequest()
 const instance = getCurrentInstance();
 const config = useRuntimeConfig()
 const token = localStorage.getItem("token")
+const logger = JSON.parse(localStorage.getItem("logger"))
 const search = ref("");
 const loading = ref(false);
 const isEditing = ref(false);
@@ -55,6 +56,7 @@ const headers: Header[] = [
     { text: "Phone", value: "phone", sortable: true },
     { text: "Status", value: "type", sortable: true },
     { text: "Code", value: "code", sortable: true },
+    { text: "Completed order", value: "orders", sortable: true },
     { text: "Actions", value: "actions", width: 120 },
 ]
 const state = ref(1);
@@ -190,11 +192,11 @@ const download = computed(() => {
                         <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
                             Filters
                         </v-btn>
-                        <v-btn prepend-icon="mdi-plus" @click="state = 2" color="success" class="mx-2" variant="tonal">
+                        <v-btn  v-if="logger.category === '1'" prepend-icon="mdi-plus" @click="state = 2" color="success" class="mx-2" variant="tonal">
                             Add New Driver
                         </v-btn>
                     </v-col>
-                    <v-col class="flex" cols="12" md="2">
+                    <v-col v-if="logger.category === '1'" class="flex" cols="12" md="2">
                         <form :action="download" method="post" target="_blank">
                             <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
                                 variant="tonal" type="submit">

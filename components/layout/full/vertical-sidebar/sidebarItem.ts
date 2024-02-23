@@ -23,6 +23,7 @@ export interface menu {
   chipIcon?: string;
   children?: menu[];
   disabled?: boolean;
+  expanded?: boolean;
   type?: string;
   subCaption?: string;
 }
@@ -73,6 +74,17 @@ const sidebarItem: menu[] = [
     title: "Shipments",
     icon: TruckDeliveryIcon,
     to: "/ui/shadow",
+  },
+  {
+    title: "Reports",
+    icon: TruckDeliveryIcon,
+    to: "/ui/shadow",
+    expanded: true,
+    children: [ 
+      { title: "Shipments", to: "/ui/shadow" },
+      { title: "Shipments", to: "/ui/shadow" },
+      { title: "Shipments", to: "/ui/shadow" },
+    ]
   },
 ];
 
