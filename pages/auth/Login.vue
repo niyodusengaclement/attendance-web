@@ -11,7 +11,14 @@ definePageMeta({
   layout: "default",
 });
 let user: any;
-
+const http = useHttpRequest()
+const state = ref(1)
+const otp = ref('')
+const dataLoading = ref(false)
+const email = ref("")
+const password = ref("")
+const confirmPassword = ref("")
+const model = ref("Phone")
 // handle success event
 const handleLoginSuccess = async (response: CredentialResponse) => {
   const { credential } = response;
@@ -38,6 +45,71 @@ const handleLoginError = () => {
 const show = ref(false)
 function toggle(value: boolean) {
   show.value = value
+}
+
+function getOtp() {
+  dataLoading.value = true
+  http.fetch("getOtp", {
+    method: "post",
+    body: {
+      value: email.value,
+      type: model.value
+    }
+  })
+  .then(res => {
+    useToast().success(res.message)
+    state.value = 3
+  })
+  .catch(err => {
+    useToast().error(err.data.message)
+  })
+  .finally(() => {
+    dataLoading.value = false
+  })
+}
+function verifyOtp() {
+  dataLoading.value = true
+  http.fetch("verifyOtp", {
+    method: "post",
+    body: {
+      otp: otp.value,
+      value: email.value,
+      type: model.value
+    }
+  })
+  .then(res => {
+    // useToast().success(res.message)
+    state.value = 4
+  })
+  .catch(err => {
+    useToast().error(err.data.message)
+  })
+  .finally(() => {
+    dataLoading.value = false
+  })
+}
+function saveNewPassword() {
+  dataLoading.value = true
+  http.fetch("saveNewPassword", {
+    method: "post",
+    body: {
+      password: password.value,
+      confirm: confirmPassword.value,
+      value: email.value,
+      type: model.value,
+      otp: otp.value
+    }
+  })
+  .then(res => {
+    useToast().success(res.message)
+    state.value = 1
+  })
+  .catch(err => {
+    useToast().error(err.data.message)
+  })
+  .finally(() => {
+    dataLoading.value = false
+  })
 }
 
 import { Field, useValidation } from "vue3-form-validation";
@@ -95,7 +167,7 @@ async function handleSubmit() {
       <div class="px-4 py-20 md:py-4">
         <div class="md:max-w-6xl md:mx-auto">
           <div class="md:flex md:flex-wrap">
-            <div class="md:w-1/2  md:text-left md:pt-28">
+            <div v-if="state == 1" class="md:w-1/2  md:text-left md:pt-28">
               <h1 class="font-bold text-primary text-3xl md:text-5xl leading-tight mb-4">
                 Login
               </h1>
@@ -141,16 +213,116 @@ async function handleSubmit() {
                     Login</v-btn>
 
                 </div>
+                <v-row justify="end">
+                  <v-btn  color="primary" @click="state = 2" size="large" flat variant="text">Forgot Password?</v-btn>
+                </v-row>
 
                 <!-- <div class="flex items-center justify-between mb-8">
                   <div class="w-full h-[1px] bg-gray-300"></div>
                   <span class="text-sm uppercase mx-6 text-gray-400">Or</span>
                   <div class="w-full h-[1px] bg-gray-300"></div>
-                </div>
-                <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
+                </div> -->
+                <!-- <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
               </form>
+            </div>
+            <div v-if="state == 2" class="md:w-1/2  md:text-left md:pt-28">
+              <h1 class="font-bold text-primary text-3xl md:text-5xl leading-tight mb-4">
+                Reset Password
+              </h1>
+              <p class="text-left md:text-xl text-gray-600 md:mb-12 mt-2">Enter Your {{ model }} to reset your password
+              </p>
+              <form @submit.prevent="getOtp" class="  md:text-sm md:pr-48">
+                <v-switch
+                  v-model="model"
+                  hide-details
+                  inset
+                  color="#1F394A"
+                  readonly
+                  true-value="Phone"
+                  false-value="Email"
+                  :label="`Using ${model}`"
+                ></v-switch>
+                <div class="flex flex-col my-4 group">
+                  <label for="email" class="text-gray-700 text-sm  group-focus:text-orange-400">{{ model }}</label>
+                  <input type="email" name="email" id="email" v-model="email"
+                    class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                    :placeholder="`Enter your user ${model}`">
+                </div>
 
+                <div class="my-4 flex items-center justify-end space-x-4">
+                  <v-btn @click.prevent="getOtp" :disabled="dataLoading" :loading="dataLoading" rounded="xl" color="primary" size="large"
+                    block flat>
+                    Reset Password</v-btn>
+                </div>
+              </form>
+            </div>
+            <div v-if="state == 3" class="md:w-1/2  md:text-left md:pt-28">
+              <h1 class="font-bold text-primary text-3xl md:text-5xl leading-tight mb-4">
+                Reset OTP
+              </h1>
+              <p class="text-left md:text-xl text-gray-600 md:mb-12 mt-2">Enter OTP sent to you
+              </p>
+              <form @submit.prevent="handleSubmit" class="  md:text-sm md:pr-48">
+                <div class="flex flex-col my-4 group">
+                  <label for="email" class="text-gray-700 text-sm  group-focus:text-orange-400">OTP</label>
+                  <v-otp-input
+                    v-model="otp"
+                    :loading="dataLoading"
+                    variant="solo"
+                    length="6"
+                  ></v-otp-input>
+                </div>
 
+                <div class="my-4 flex items-center justify-end space-x-4">
+                  <v-btn @click.prevent="verifyOtp" :disabled="dataLoading" :loading="dataLoading" rounded="xl" color="primary" size="large"
+                    block flat>
+                    Verify OTP</v-btn>
+                </div>
+              </form>
+            </div>
+            <div v-if="state == 4" class="md:w-1/2  md:text-left md:pt-28">
+              <h1 class="font-bold text-primary text-3xl md:text-5xl leading-tight mb-4">
+                Reset OTP
+              </h1>
+              <p class="text-left md:text-xl text-gray-600 md:mb-12 mt-2">Enter OTP sent to you
+              </p>
+              <form @submit.prevent="handleSubmit" class="  md:text-sm md:pr-48">
+                <div class="flex flex-col my-4">
+                  <label for="password" class="text-gray-700 text-sm">Password</label>
+                  <div x-data="{ show: true }" class="relative flex items-center mt-2">
+                    <input :type="show ? 'text' : 'password'" name="password" id="password" v-model="password"
+                      class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                      placeholder="Enter your password">
+                    <div
+                      class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
+                      <EyeIcon @click="toggle(true)" size="18" class="text-gray-400" :class="show ? 'hidden' : ''" />
+                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400" :class="!show ? 'hidden' : ''" />
+                    </div>
+
+                  </div>
+
+                </div>
+                <div class="flex flex-col my-4">
+                  <label for="password" class="text-gray-700 text-sm">Confirm Password</label>
+                  <div x-data="{ show: true }" class="relative flex items-center mt-2">
+                    <input :type="show ? 'text' : 'password'" name="password" id="password" v-model="confirmPassword"
+                      class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                      placeholder="Enter your password">
+                    <div
+                      class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
+                      <EyeIcon @click="toggle(true)" size="18" class="text-gray-400" :class="show ? 'hidden' : ''" />
+                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400" :class="!show ? 'hidden' : ''" />
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="my-4 flex items-center justify-end space-x-4">
+                  <v-btn @click.prevent="saveNewPassword" :disabled="dataLoading" :loading="dataLoading" rounded="xl" color="primary" size="large"
+                    block flat>
+                    Save New Password</v-btn>
+                </div>
+              </form>
             </div>
             <LoginRightDesign />
           </div>
