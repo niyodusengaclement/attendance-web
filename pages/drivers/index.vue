@@ -15,19 +15,13 @@ const logger = JSON.parse(localStorage.getItem("logger"))
 const search = ref("");
 const loading = ref(false);
 const isEditing = ref(false);
-const isDeleting = ref(false);
+const showDialog = ref(false);
 const lists = ref([]);
 const plateNumber = ref("")
-const plateNumbers = ref([])
-const isLoading = ref(false)
-const searchCode = ref()
-const states = [
-    { name: 'Florida', abbr: 'FL', id: 1 },
-    { name: 'Georgia', abbr: 'GA', id: 2 },
-    { name: 'Nebraska', abbr: 'NE', id: 3 },
-    { name: 'California', abbr: 'CA', id: 4 },
-    { name: 'New York', abbr: 'NY', id: 5 },
-]
+const editingItem = reactive({
+    title: "",
+    id: 0,
+});
 
 interface FormData {
     names: Field<string>;
@@ -93,7 +87,11 @@ async function createDriver() {
 
         });
 }
-
+const blockItem = (val: Item) => {
+    showDialog.value = true;
+    editingItem.title = val.names;
+    editingItem.id = val.id;
+};
 
 function loadAllDrivers() {
     loading.value = true
@@ -107,7 +105,8 @@ function loadAllDrivers() {
         .catch(() => { })
         .finally(() => (loading.value = false));
 }
-function changeDriverStatus(status: any, id: string) {
+function changeDriverStatus(status: any, id: any) {
+    loading.value = true
     const formData = new FormData()
     formData.append("id", id)
     formData.append("status", status)
@@ -117,11 +116,17 @@ function changeDriverStatus(status: any, id: string) {
     })
         .then((data) => {
             useToast().success(data.message);
+            showDialog.value = false;
+            editingItem.title = "";
+            editingItem.id = 0
             loadAllDrivers()
         })
         .catch(data => {
             useToast().error(data.data.message);
 
+        })
+        .finally(() => {
+            loading.value = false
         })
 }
 
@@ -149,7 +154,7 @@ onMounted(() => {
 })
 
 const download = computed(() => {
-  return config.public.apiUrl + "get_all_drivers/1/" + token
+    return config.public.apiUrl + "get_all_drivers/1/" + token
 })
 </script>
 <template>
@@ -192,14 +197,15 @@ const download = computed(() => {
                         <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
                             Filters
                         </v-btn>
-                        <v-btn  v-if="logger.category === '1'" prepend-icon="mdi-plus" @click="state = 2" color="success" class="mx-2" variant="tonal">
+                        <v-btn v-if="logger.category === '1'" prepend-icon="mdi-plus" @click="state = 2" color="success"
+                            class="mx-2" variant="tonal">
                             Add New Driver
                         </v-btn>
                     </v-col>
                     <v-col v-if="logger.category === '1'" class="flex" cols="12" md="2">
                         <form :action="download" method="post" target="_blank">
-                            <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
-                                variant="tonal" type="submit">
+                            <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2" variant="tonal"
+                                type="submit">
                                 Export
                             </v-btn>
                         </form>
@@ -214,7 +220,7 @@ const download = computed(() => {
                         <template #item-actions="item">
                             <div class="flex justify-between space-x-3">
                                 <v-btn variant="outlined" size="small" color="error" v-if="item.status == '1'"
-                                    @click="changeDriverStatus(0, item.id)"><v-icon>mdi-close</v-icon> Block</v-btn>
+                                    @click="blockItem(item)"><v-icon>mdi-close</v-icon> Block</v-btn>
                                 <v-btn variant="outlined" size="small" color="success" v-else
                                     @click="changeDriverStatus(1, item.id)"> <v-icon>mdi-check</v-icon> Enable</v-btn>
                             </div>
@@ -229,6 +235,29 @@ const download = computed(() => {
                     </EasyDataTable>
                 </ClientOnly>
             </UiParentCard>
+            <v-dialog v-model="showDialog" persistent width="auto">
+                <v-card>
+                    <v-card-title class="text-h5"> Block Driver </v-card-title>
+                    <v-card-text>
+                        <div class="text-lg text-center justify-center">
+                            Are you want to Block this driver:
+                            <span class="font-bold"> {{ editingItem.title }} </span>
+                            ?
+                        </div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+                            @click="showDialog = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn :loading="btnDeleteLoading" elevation="10" variant="outlined" color="error" class="mx-1"
+                            prepend-icon="mdi-delete" @click="changeDriverStatus(0, `${editingItem.id}`)">
+                            Block
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-col>
     </v-row>
 </template>

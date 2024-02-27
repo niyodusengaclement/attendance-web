@@ -117,23 +117,26 @@
                                         </v-col>
                                         <v-col cols="12" md="7">
                                             <v-text-field variant="outlined" v-model="search" :loading="loading" outlined
-                                                density="compact"
-                                                label="Search by product name"
+                                                density="compact" label="Search by product name"
                                                 prepend-inner-icon="mdi-magnify" single-line hide-details
                                                 @click:prepend-inner="onSearchData">
                                             </v-text-field></v-col>
                                     </v-row>
                                 </v-col>
                                 <v-col cols="12" md="4" class="flex justify-end">
-                                    <v-btn v-if="state != 2  && logger.category != '1'" prepend-icon="mdi-plus" color="primary" class="mx-2"
-                                        variant="tonal" @click="onAddStockData">
+                                    <v-btn v-if="state != 2 && logger.category != '1'" prepend-icon="mdi-plus"
+                                        color="primary" class="mx-2" variant="tonal" @click="onAddStockData">
                                         Add Stock
                                     </v-btn>
-                                    <v-btn prepend-icon="mdi-export" color="success" class="mx-2" variant="tonal">
-                                        Export
-                                    </v-btn>
-                                    <v-btn v-if="state != 4 && logger.category == '2'" prepend-icon="mdi-export" color="info" class="mx-2"
-                                        variant="tonal" @click="onMoveastock()">
+                                    <form :action="download" method="post" target="_blank">
+                                        <input type="hidden" name="type" v-model="slctdType">
+                                        <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
+                                            variant="tonal" type="submit">
+                                            Export
+                                        </v-btn>
+                                    </form>
+                                    <v-btn v-if="state != 4 && logger.category == '2'" prepend-icon="mdi-export"
+                                        color="info" class="mx-2" variant="tonal" @click="onMoveastock()">
                                         Move Stock
                                     </v-btn>
                                 </v-col>
@@ -162,8 +165,8 @@
 
                                         <template #item-actions="item">
                                             <div class="row">
-                                                <v-btn size="small" v-if="logger.category != '1'" flat variant="outlined" color="info" class="mx-1"
-                                                    @click="editItem(item)">
+                                                <v-btn size="small" v-if="logger.category != '1'" flat variant="outlined"
+                                                    color="info" class="mx-1" @click="editItem(item)">
                                                     <v-icon>mdi-plus</v-icon> Update Stock
                                                 </v-btn>
                                                 <span v-else>-</span>
@@ -219,9 +222,10 @@ const search = ref("");
 const quantity = ref("");
 const selectedBranch = ref("");
 const type = ref("");
+const slctdType = ref("")
 const branches = ref([]);
 onMounted(() => {
-    loadStockProducts();
+    loadStockProducts('');
 });
 const stockOptionType = [
     { label: "Stock IN", value: "1" },
@@ -255,10 +259,11 @@ const headers: Header[] = [
 
 function loadStockProducts(type: string) {
     loading.value = true;
+    slctdType.value = type
     let formData = new FormData();
     formData.append("type", type);
     http
-        .fetch("get_stock_products", {
+        .fetch("get_stock_products/0", {
             method: "POST",
             body: formData
         })
@@ -332,7 +337,9 @@ const onMoveastock = () => {
     getCategories();
     getAllShops()
 }
-
+const download = computed(() => {
+    return API_URL + "get_stock_products/1/" + token
+})
 const moveStock = () => {
     loading.value = true
     http.fetch("moveStock", {

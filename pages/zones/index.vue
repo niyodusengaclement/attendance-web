@@ -19,6 +19,17 @@ const headers: Header[] = [
     { text: "Status", value: "Status", sortable: true },
     { text: "Actions", value: "actions", width: 120 },
 ]
+const showDialog = ref(false);
+const editingItem = reactive({
+    title: "",
+    id: 0,
+});
+const closeZone = (val: Item) => {
+    showDialog.value = true;
+    editingItem.title = val.title;
+    editingItem.id = val.id;
+};
+
 const statusStr = (status: string) => {
     if (status == "1") {
         return "Open";
@@ -84,8 +95,8 @@ function getAllZones() {
         })
 }
 
-function changeZoneStatus(status: any, id: string) 
-{
+function changeZoneStatus(status: any, id: string) {
+    loading.value = true
     const formData = new FormData()
     formData.append("id", id)
     formData.append("status", status)
@@ -95,11 +106,16 @@ function changeZoneStatus(status: any, id: string)
     })
         .then((data) => {
             useToast().success(data.message);
+            showDialog.value = false;
+            editingItem.title = '';
+            editingItem.id = 0
             getAllZones()
         })
         .catch(data => {
             useToast().error(data.data.message);
-
+        })
+        .finally(() => {
+            loading.value = false
         })
 }
 function reset() {
@@ -152,8 +168,9 @@ onMounted(() => {
                         <template #item-actions="item">
                             <div class="flex justify-between space-x-3">
                                 <v-btn variant="outlined" size="small" color="error" v-if="item.status === '1'"
-                                    @click="changeZoneStatus(0,item.id)"> <v-icon>mdi-close</v-icon> Close</v-btn>
-                                <v-btn variant="outlined" size="small" color="success" v-else @click="changeZoneStatus(1,item.id)">
+                                    @click="closeZone(item)"> <v-icon>mdi-close</v-icon> Close</v-btn>
+                                <v-btn variant="outlined" size="small" color="success" v-else
+                                    @click="changeZoneStatus(1, item.id)">
                                     <v-icon>mdi-check</v-icon> Open</v-btn>
                             </div>
                         </template>
@@ -167,6 +184,29 @@ onMounted(() => {
                     </EasyDataTable>
                 </ClientOnly>
             </UiParentCard>
+            <v-dialog v-model="showDialog" persistent width="auto">
+                <v-card>
+                    <v-card-title class="text-h5"> Close Zone </v-card-title>
+                    <v-card-text>
+                        <div class="text-lg text-center justify-center">
+                            Are you want to Close this Zone:
+                            <span class="font-bold"> {{ editingItem.title }} </span>
+                            ?
+                        </div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+                            @click="showDialog = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn :loading="loading" elevation="10" variant="outlined" color="error" class="mx-1"
+                            prepend-icon="mdi-delete" @click="changeZoneStatus(0, `${editingItem.id}`)">
+                            Close
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-col>
     </v-row>
 </template>

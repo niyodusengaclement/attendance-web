@@ -27,6 +27,17 @@ const headers: Header[] = [
 const latitude = ref("")
 const longitude = ref("")
 const user = JSON.parse(localStorage.getItem("logger"))
+const showDialog = ref(false);
+const editingItem = reactive({
+    title: "",
+    id: 0,
+});
+
+const closeShop = (val: Item) => {
+    showDialog.value = true;
+    editingItem.title = val.shop_name;
+    editingItem.id = val.id;
+};
 interface FormData {
     email: Field<string>;
     password: Field<string>;
@@ -117,6 +128,7 @@ function getAllShops() {
 }
 
 function changeShopStatus(status: any, id: string) {
+    loading.value = true
     const formData = new FormData()
     formData.append("id", id)
     formData.append("status", status)
@@ -129,11 +141,16 @@ function changeShopStatus(status: any, id: string) {
     })
         .then((data) => {
             useToast().success(data.message);
+            showDialog.value = false;
+            editingItem.title = "";
+            editingItem.id = 0
             getAllShops()
         })
         .catch(data => {
             useToast().error(data.data.message);
-
+        })
+        .finally(() => {
+            loading.value = false
         })
 }
 
@@ -215,7 +232,6 @@ function getZones() {
 }
 onMounted(() => {
     getAllShops()
-    getLocation()
 })
 
 </script>
@@ -309,7 +325,7 @@ onMounted(() => {
                         </v-text-field>
                     </v-col>
                     <v-col class="flex" cols="12" md="2" v-if="parseInt(user.category) <= 2">
-                        <v-btn prepend-icon="mdi-plus" @click="showForm = true; getZones()" color="success" class="mx-2"
+                        <v-btn prepend-icon="mdi-plus" @click="showForm = true; getZones();getLocation()" :disabled="showForm" color="success" class="mx-2"
                             variant="tonal">
                             Add New
                         </v-btn>
@@ -331,7 +347,7 @@ onMounted(() => {
                         <template #item-actions="item">
                             <div class="flex justify-between space-x-3">
                                 <v-btn variant="outlined" size="small" color="error" v-if="item.status === '1'"
-                                    @click="changeShopStatus(0, item.id)"> <v-icon>mdi-close</v-icon> Close</v-btn>
+                                    @click="closeShop(item)"> <v-icon>mdi-close</v-icon> Close</v-btn>
                                 <v-btn variant="outlined" size="small" color="success" v-else
                                     @click="changeShopStatus(1, item.id)">
                                     <v-icon>mdi-check</v-icon> Open</v-btn>
@@ -347,6 +363,29 @@ onMounted(() => {
                     </EasyDataTable>
                 </ClientOnly>
             </UiParentCard>
+            <v-dialog v-model="showDialog" persistent width="auto">
+                <v-card>
+                    <v-card-title class="text-h5"> Close Shop </v-card-title>
+                    <v-card-text>
+                        <div class="text-lg text-center justify-center">
+                            Are you want to Close this shop:
+                            <span class="font-bold"> {{ editingItem.title }} </span>
+                            ?
+                        </div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+                            @click="showDialog = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn :loading="loading" elevation="10" variant="outlined" color="error" class="mx-1"
+                            prepend-icon="mdi-delete" @click="changeShopStatus(0, `${editingItem.id}`)">
+                            Close
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-col>
     </v-row>
 </template>

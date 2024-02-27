@@ -80,6 +80,8 @@
         <!-- ADD NEW RECORD -->
         <v-col cols="12" v-show="state == 4" md="4">
             <UiParentCard :title="'Add Sub Category'" class="text-success">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="text" elevation="0" @click="reset()">
+                </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
                         <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="125"
