@@ -38,7 +38,7 @@ onMounted(() => {
                         color="success" :icon="BuildingWarehouseIcon" />
                 </v-col>
                 <v-col cols="12" lg="3">
-                    <MonthlyEarning title="On Delivery" :amount="records?.inDerively" rate="+15.8" subtitle="last week"
+                    <MonthlyEarning title="On Delivery" :amount="records?.inDelivery" rate="+15.8" subtitle="last week"
                         :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[5, 45, 12, 62, 56, 20, 65]"
                         color="warning" :icon="TruckDeliveryIcon" />
                 </v-col>
@@ -64,7 +64,7 @@ onMounted(() => {
 
                 <!-- Product Cards -->
                 <v-col cols="12">
-                    <ProductCards />
+                    <!-- <ProductCards /> -->
                 </v-col>
             </v-row>
         </v-col>

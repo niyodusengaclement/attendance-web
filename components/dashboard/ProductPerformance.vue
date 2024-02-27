@@ -1,5 +1,29 @@
 <script setup lang="ts">
-import { productPerformance } from '@/data/dashboard/dashboardData';
+import { ref } from 'vue';
+
+const http = useHttpRequest()
+const productPerformance = ref([])
+const instance = getCurrentInstance();
+
+function loadOrders() {
+  http.fetch("fetch_orders", {
+    method: "post",
+    body: { status: '0' }
+  })
+    .then((data: any) => {
+      if (data.status == 200) {
+        productPerformance.value = data.records;
+
+        instance?.proxy?.$forceUpdate();
+      }
+    })
+    .catch(() => { })
+    .finally(() => {});
+}
+
+onMounted(() => {
+    loadOrders()
+})
 </script>
 <template>
     <v-card elevation="10" class="">
@@ -8,34 +32,40 @@ import { productPerformance } from '@/data/dashboard/dashboardData';
             <v-table class="month-table">
                 <thead>
                     <tr>
-                        <th class="text-subtitle-1 font-weight-bold">Id</th>
-                        <th class="text-subtitle-1 font-weight-bold">Assigned</th>
-                        <th class="text-subtitle-1 font-weight-bold">Name</th>
-                        <th class="text-subtitle-1 font-weight-bold">Priority</th>
-                        <th class="text-subtitle-1 font-weight-bold text-right">Budget</th>
+                        <th class="text-subtitle-1 font-weight-bold">Order Id</th>
+                        <th class="text-subtitle-1 font-weight-bold">Customer</th>
+                        <th class="text-subtitle-1 font-weight-bold">Price</th>
+                        <th class="text-subtitle-1 font-weight-bold">Date & Time</th>
+                        <th class="text-subtitle-1 font-weight-bold text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in productPerformance" :key="item.name" class="month-item">
                         <td>
-                            <p class="text-15 font-weight-medium">{{ item.id }}</p>
+                            <p class="text-15 font-weight-medium">{{ item.reference_code }}</p>
                         </td>
                         <td>
                             <div class="">
-                                <h6 class="text-subtitle-1 font-weight-bold">{{ item.name }}</h6>
-                                <div class="text-13 mt-1 text-muted">{{ item.post }}</div>
+                                <h6 class="text-subtitle-1 font-weight-bold">{{ item.customer_name }}</h6>
+                                <div class="text-13 mt-1 text-muted">{{ item.customer_name }}</div>
                             </div>
                         </td>
                         <td>
-                            <h6 class="text-body-1 text-muted">{{ item.pname }}</h6>
+                            <h6 class="text-body-1 text-muted">{{ item.amount_paid }}</h6>
                         </td>
                         <td>
-                            <v-chip :class="'text-body-1 bg-' + item.statuscolor" color="white" size="small">{{
+                            <!-- <v-chip :class="'text-body-1 bg-' + item.statuscolor" color="white" size="small">{{
                                 item.status
-                            }}</v-chip>
+                            }}</v-chip> -->
+                            <h6 class="text-body-1 text-muted">{{ item.created_at }}</h6>
                         </td>
                         <td>
-                            <h6 class="text-h6 text-right">{{ item.budget }}</h6>
+                            <NuxtLink :to="'/orders/' + item.id">
+                                <v-btn size="small" flat variant="outlined" color="info" class="mx-1">View
+                                    <v-icon class="ml-2">mdi-chevron-right</v-icon>
+
+                                </v-btn>
+                            </NuxtLink>
                         </td>
                     </tr>
                 </tbody>

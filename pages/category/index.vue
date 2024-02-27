@@ -2,6 +2,8 @@
     <v-row>
         <v-col cols="12" v-show="state == 2" md="4">
             <UiParentCard parentTitle="Category" title="Add Category">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="text" elevation="0" @click="reset()">
+                </v-btn>
                 <form role="form" @submit.prevent="handleSubmit">
 
                     <v-img class="rounded-lg " height="100" :src="selectedFiles.length >= 1
@@ -60,6 +62,8 @@
         <!-- EDITTING EXISTING RECORD -->
         <v-col cols="12" v-show="state == 3" md="4">
             <UiParentCard :title="'Editing Record '" class="text-success">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="text" elevation="0" @click="reset()">
+                </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
                         <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="125"
@@ -76,6 +80,8 @@
         <!-- ADD NEW RECORD -->
         <v-col cols="12" v-show="state == 4" md="4">
             <UiParentCard :title="'Add Sub Category'" class="text-success">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="text" elevation="0" @click="reset()">
+                </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
                         <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="125"
@@ -105,7 +111,7 @@
                             <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
                                 Filters
                             </v-btn>
-                            <v-btn prepend-icon="mdi-plus" @click="state = 2" color="success" class="mx-2" variant="tonal">
+                            <v-btn prepend-icon="mdi-plus" @click="state = 2" :disabled="state != 1" color="success" class="mx-2" variant="tonal">
                                 Add New
                             </v-btn>
                         </v-col>
@@ -285,7 +291,12 @@ function removeFile() {
     file.value = "";
     selectedFiles.value = [];
 }
-
+function reset() {
+    resetFields()
+    file.value = ''
+    state.value = 1
+    selectedFiles.value = []
+}
 onMounted(() => {
     getCategories();
 });

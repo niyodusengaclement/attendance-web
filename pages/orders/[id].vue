@@ -20,10 +20,22 @@
             </v-chip>
           </div>
           <div class="flex">
-            <v-chip class="ma-2" color="teal" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
+            <v-chip v-if="order.status == '1'" class="ma-2" color="success" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
               :model-value="true">
               Confirmed
             </v-chip>
+            <v-chip v-else-if="order.status == '4'" class="ma-2" color="error" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
+              :model-value="true">
+              Canceled
+            </v-chip>
+            <div v-else>
+              <v-btn size="small" v-if="order.status != '2'" flat variant="flat" color="success" class=" ma-2" @click="approveItem(order)">
+                <v-icon class="mr-2">mdi-check</v-icon> Approve
+              </v-btn>
+              <v-btn size="small" flat variant="flat" color="error" class=" ma-2" @click="approveOrderClient(order.id,'4')">
+                <v-icon class="mr-2">mdi-close</v-icon> Cancel
+              </v-btn>
+            </div>
           </div>
         </div>
       </v-col>
@@ -130,12 +142,12 @@
               <div class="w-100 my-4 space-y-4">
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Ship By</div>
-                  <div class="text-dark font-medium text-small">DHL</div>
+                  <div class="text-dark font-medium text-small">{{ order.driver }}</div>
                 </div>
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Tracking No.</div>
                   <div class="text-dark font-medium text-small">
-                    SPX037739199373
+                    {{ order.reference_code }}
                   </div>
                 </div>
               </div>
@@ -149,31 +161,31 @@
               <div class="w-100 my-4 space-y-4">
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Phone number</div>
-                  <div class="text-dark font-medium text-small">365-374-4961</div>
+                  <div class="text-dark font-medium text-small">{{ order.phone_number}}</div>
                 </div>
                 <div class="flex justify-between">
                   <div class="text-muted text-small">House No.</div>
-                  <div class="text-dark font-medium text-small">KN 12 Ave</div>
+                  <div class="text-dark font-medium text-small">{{ order.house_number}}</div>
                 </div>
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Address</div>
                   <div class="text-dark font-medium text-small">
-                    Kigali,Rwanda
+                    {{ order.address}}
                   </div>
                 </div>
               </div>
             </div>
             <div class="pa-1 border-b-0 mb-4 py-2 border-gray-200">
               <div class="d-flex justify-between pb-2">
-                <div class="h4 font-bold">Delivery</div>
+                <div class="h4 font-bold">Payment Mode</div>
                 <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
               </div>
   
               <div class="w-100 my-4 space-y-4">
                 <div class="flex justify-between">
-                  <div class="text-muted text-small">Phone number</div>
+                  <div class="text-muted text-small"> </div>
                   <div class="text-dark font-medium text-small">
-                    (078******48 ) MoMo
+                    {{ order.payment_mode }}
                   </div>
                 </div>
               </div>
@@ -193,11 +205,11 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close" @click="isApprove = false">
+            <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close" @click="isApprove = false; selectedDeliveryId = ''">
               Close
             </v-btn>
             <v-btn color="success" :loading="btnApproveLoading" flat variant="tonal" class="mx-1" prepend-icon="mdi-check"
-              @click="approveOrderClient(editingItem.id)">
+              @click="approveOrderClient(editingItem.id,'2')">
               Approve Order
             </v-btn>
           </v-card-actions>
@@ -212,7 +224,7 @@ import { onMounted } from "vue";
 const route = useRoute();
 const http = useHttpRequest();
 const tab = ref(null);
-const orderId = ref();
+const orderId = ref(route.params.id);
 const order = ref([]);
 // const orderProducts = ref([]);
 const deliveryLocations = ref([]);
@@ -233,15 +245,15 @@ definePageMeta({
 
 onMounted(() => {
    console.log(orderId);
-  loadOrderById(route.params.id);
+  loadOrderById(orderId.value);
 
 });
 
 const orderProducts = ref([]);
 
-function loadOrderById(id: any) {
+async function loadOrderById(id: any) {
   loading.value = true;
-  http
+  await http
     .fetch("order_details/" + id)
     .then((data) => {
       if (data.status == 200) {
@@ -260,7 +272,7 @@ function loadOrderById(id: any) {
 function loadAllDrivers() {
   loading.value = true;
   http
-    .fetch("get_all_drivers")
+    .fetch("get_all_drivers/0")
     .then((data: any) => {
       if (data.status == 200) {
         drivers.value = data.drivers;
@@ -278,12 +290,12 @@ const approveItem = (val: any) => {
   editingItem.customer_name = customer_name;
   editingItem.id = id;
 };
-function approveOrderClient(id: any) {
+function approveOrderClient(id: any,status = '2') {
   btnApproveLoading.value = true;
   var formData = new FormData();
   formData.append("orderId", id.toString());
   formData.append("driverId", selectedDeliveryId.value.toString());
-  formData.append("status", "2");
+  formData.append("status", status);
   http
     .fetch("approve_client_order", {
       method: "POST",
@@ -292,6 +304,7 @@ function approveOrderClient(id: any) {
     .then((data: any) => {
       if (data.status == 200) {
         useToast().success(data.message);
+        loadOrderById(orderId.value);
       }
     })
     .catch((error) => {

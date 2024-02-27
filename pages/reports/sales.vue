@@ -7,6 +7,8 @@ definePageMeta({
     layout: "admin",
 });
 const http = useHttpRequest()
+const config = useRuntimeConfig()
+const token = localStorage.getItem("token")
 const search = ref("");
 const lists = ref([]);
 const showForm = ref(false)
@@ -54,7 +56,7 @@ const statusClr = (status: string) => {
 
 function getSalesReport() {
     loading.value = true
-    http.fetch("getSalesReport")
+    http.fetch("getSalesReport/0")
         .then(res => {
             lists.value = res
         })
@@ -67,11 +69,13 @@ function getSalesReport() {
         })
 }
 
-
 onMounted(() => {
     getSalesReport()
 })
 
+const download = computed(() => {
+  return config.public.apiUrl + "getSalesReport/1/" + token
+})
 </script>
 <template>
     <v-row>
@@ -84,10 +88,12 @@ onMounted(() => {
                         </v-text-field>
                     </v-col>
                     <v-col class="flex" cols="12" md="2">
-                        <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
-                            variant="tonal">
-                            Export
-                        </v-btn>
+                        <form :action="download" method="post" target="_blank">
+                            <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
+                                variant="tonal" type="submit">
+                                Export
+                            </v-btn>
+                        </form>
                     </v-col>
                 </v-row>
                 <ClientOnly>

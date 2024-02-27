@@ -1,7 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { CircleIcon } from 'vue-tabler-icons';
-import { recentTransaction } from '@/data/dashboard/dashboardData';
+
+const recentTransaction = ref([]);
+const http = useHttpRequest()
+const instance = getCurrentInstance();
+function getRecentTransaction()
+{
+    http.fetch("getRecentTransaction")
+    .then(res => {
+        recentTransaction.value = res
+        instance?.proxy?.$forceUpdate();
+    })
+}
+
+onMounted(() => {
+    getRecentTransaction()
+})
 </script>
 <template>
     <v-card elevation="10" class="withbg">

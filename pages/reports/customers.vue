@@ -7,55 +7,44 @@ definePageMeta({
     layout: "admin",
 });
 const http = useHttpRequest()
+const config = useRuntimeConfig()
+const token = localStorage.getItem("token")
 const search = ref("");
 const lists = ref([]);
 const showForm = ref(false)
+const image_URL = useRuntimeConfig().public.imageURL;
 const loading = ref(false)
 const headers: Header[] = [
-    { text: "Date", value: "created_at", sortable: true },
+    { text: "image", value: "profile", sortable: true },
     { text: "Client name", value: "customer_name", sortable: true },
     { text: "Client Phone", value: "phone_number", sortable: true },
-    { text: "Order ID", value: "reference_code", sortable: true },
-    { text: "Driver", value: "driver", sortable: true },
-    { text: "Driver Phone", value: "driver_phone", sortable: true },
-    { text: "Vehicle Id", value: "plate_number", sortable: true },
-    { text: "Source Location", value: "source", sortable: true },
-    { text: "Destination Location", value: "address", sortable: true },
+    { text: "Email", value: "email", sortable: true },
+    { text: "completed Orders", value: "completedOrders", sortable: true },
+    { text: "All Oders", value: "allOders", sortable: true },
+    { text: "Status", value: "status", width: 120 },
     // { text: "Actions", value: "actions", width: 120 },
 ]
 const user = JSON.parse(localStorage.getItem("logger"))
 
 const statusStr = (status: string) => {
     if (status == "1") {
-        return "Open";
-    } else if (status == "2") {
-        return "On Delivery";
-    } else if (status == "3") {
-        return "Arrived";
-    } else if (status == "4") {
-        return "Cancelled";
-    } else {
-        return "Closed";
+        return "Active";
+    }  else {
+        return "Locked";
     }
 }
 
 const statusClr = (status: string) => {
     if (status == "1") {
         return "success";
-    } else if (status == "2") {
-        return "secondary";
-    } else if (status == "3") {
-        return "success";
-    } else if (status == "4") {
-        return "error";
     } else {
         return "error";
     }
 }
 
-function getDeliveryReport() {
+function allClients() {
     loading.value = true
-    http.fetch("getDeliveryReport")
+    http.fetch("allClients/0")
         .then(res => {
             lists.value = res
         })
@@ -70,14 +59,17 @@ function getDeliveryReport() {
 
 
 onMounted(() => {
-    getDeliveryReport()
+    allClients()
+})
+const download = computed(() => {
+  return config.public.apiUrl + "allClients/1/" + token
 })
 
 </script>
 <template>
     <v-row>
         <v-col>
-            <UiParentCard parent-title="Dashboard" title="Delivery Report">
+            <UiParentCard parent-title="Dashboard" title="Our Customers">
                 <v-row class="mb-4">
                     <v-col cols="12" md="6">
                         <v-text-field v-model="search" variant="outlined" density="compact" label="Search for Title"
@@ -85,28 +77,25 @@ onMounted(() => {
                         </v-text-field>
                     </v-col>
                     <v-col class="flex" cols="12" md="2">
-                        <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
-                            variant="tonal">
-                            Export
-                        </v-btn>
+                        <form :action="download" method="post" target="_blank">
+                            <v-btn prepend-icon="mdi-microsoft-excel" color="success" class="mx-2"
+                                variant="tonal" type="submit">
+                                Export
+                            </v-btn>
+                        </form>
                     </v-col>
                 </v-row>
                 <ClientOnly>
                     <EasyDataTable empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
                         table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" :items="lists">
+                        <template #item-profile="item">
+                            <v-avatar size="36px">
+                                <v-img :src="image_URL + item.profile" class="rounded-lg"></v-img>
+                            </v-avatar>
+                            </template>
                         <template #item-status="item">
                             <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
                         </template>
-                        <template #item-actions="item">
-                            <div class="flex justify-between space-x-3">
-                                <v-btn variant="outlined" size="small" color="error" v-if="item.status === '1'"
-                                    @click="changeShopStatus(0, item.id)"> <v-icon>mdi-close</v-icon> Close</v-btn>
-                                <v-btn variant="outlined" size="small" color="success" v-else
-                                    @click="changeShopStatus(1, item.id)">
-                                    <v-icon>mdi-check</v-icon> Open</v-btn>
-                            </div>
-                        </template>
-
                         <template #empty-message>
                             <div class="d-flex justify-center align-center py-3">
                                 <v-img src="/images/products/not_found.png" height="150"></v-img>
