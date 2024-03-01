@@ -4,37 +4,38 @@ const props = defineProps({ item: Object, level: Number });
 </script>
 
 <template>
-    <!---Single Item-->
-    <v-list-item
-        :to="item.to"
-        rounded
-        class="mb-1"
-        active-color="primary"
-        :disabled="item.disabled"
-        :target="item.type === 'external' ? '_blank' : ''"
-    >
-        <!---If icon-->
-        <template v-slot:prepend>
-            <Icon :item="item.icon" :level="level" />
-        </template>
-        <v-list-item-title>{{item.title }}</v-list-item-title>
-        <!---If Caption-->
-        <v-list-item-subtitle v-if="item.subCaption" class="text-caption mt-n1 hide-menu">
-            {{ item.subCaption }}
-        </v-list-item-subtitle>
-        <!---If any chip or label-->
-        <template v-slot:append v-if="item.chip">
-            <v-chip
-                :color="item.chipColor"
-                class="sidebarchip hide-menu"
-                :size="'small'"
-                :variant="item.chipVariant"
-                :prepend-icon="item.chipIcon"
-            >
-                {{ item.chip }}
-            </v-chip>
-        </template>
-    </v-list-item>
+     <ul v-auto-animate class="pt-2 m-1">
+        <li v-for="(item, i) in sidebarMenu" :key="i" @click="activeLink(item.title)"
+          v-bind:class="item.title == selectedMenu && !item.expanded ? 'bg-green-400/10 hover:bg-green-400/20  ' : 'hover:bg-gray-400/20'"
+          class="flex-col items-center text-sm cursor-pointer py-3  
+                 rounded-md mt-2  px-3 duration-300 ">
+
+          <nuxt-link :to="!item.isHeader && item.children == null ? `${item.to}` : '#'" :class="sDrawer ? ' ' : 'justify-center'" class="flex items-center  gap-x-4 ">
+            <UIcon :name="item.icon"
+              class="h-6 w-6 text-gray-700 dark:text-gray-300 duration-200 block float-left cursor-pointer"
+              :class="item.title == selectedMenu ? 'text-green-600' : ''" />
+            <div class="flex-1 truncate duration-300 " :class="!sDrawer ? hidden : ``"
+              v-bind:class="item.title == selectedMenu ? 'text-green-500 font-medium' : 'font-medium'">{{ item.title
+              }}
+            </div>
+            <div class="flex" :class="!sDrawer ? hidden : ``">
+              <UIcon name="i-heroicons-chevron-right-solid" @click="openSubmenu = !openSubmenu" v-if="item.expanded"
+                class="duration-400 h-5 w-5" v-bind:class="item.title == selectedMenu ? 'text-green-600' : ''"
+                :class="openSubmenu ? 'rotate-90' : ''" />
+              <div v-if="item.title == selectedMenu && sDrawer && !item.expanded"
+                class="flex bg-green-500 duration-300  h-5 rounded-xl w-1"></div>
+            </div>
+
+          </nuxt-link>
+
+          <ul v-if="item.expanded && openSubmenu && sDrawer" class="dropdown">
+            <li v-for="(sub, i) in item.children" :key="i" class="flex group justify-between duration-300    items-center text-sm gap-x-4 cursor-pointer py-3  
+                 hover:bg-gray-400/10 rounded-md mt-3"> <span class="pl-4 duration-200">&#x2022; {{ sub.title }}</span>
+              <div class="group-hover:bg-green-500 p-1 rounded-full duration-300 mx-4 "></div>
+            </li>
+
+          </ul>
+        </li>
 </template>
 <style scoped>
 .scrollnavbar .v-list > .v-list-item.v-list-item--active, .scrollnavbar .v-list .v-list-item--active > .v-list-item__overlay {

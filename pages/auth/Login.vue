@@ -202,8 +202,8 @@ async function handleSubmit() {
                 </div>
 
                 <div class="flex items-center">
-                  <input type="checkbox" name="remember_me" id="remember_me" class="mr-2 focus:ring-0 rounded">
-                  <label for="remember_me" class="text-gray-700">Remember me </label>
+                  <!-- <input type="checkbox" name="remember_me" id="remember_me" class="mr-2 focus:ring-0 rounded"> -->
+                  <!-- <label for="remember_me" class="text-gray-700">Remember me </label> -->
                 </div>
 
                 <div class="my-4 flex items-center justify-end space-x-4">

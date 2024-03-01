@@ -349,7 +349,7 @@ onMounted(() => {
             </UiParentCard>
         </v-col>
     </v-row>
-    <v-row class="mt-5">
+    <!-- <v-row class="mt-5">
       <v-col cols="12">
         <GoogleMap api-key="AIzaSyDHq7ERLIFZX2Mi79e0P_SIi5SL4ujwsw8" :scrollwheel="controls" :zoomControl="true"
           :fullscreenControl="controls" :mapTypeControl="controls" :streetViewControl="controls" :styles="options"
@@ -359,7 +359,6 @@ onMounted(() => {
             :options="{ position: location, anchorPoint: 'BOTTOM_CENTER' }">
     
             <NuxtLink :to="'addresses/' + location.id" href="#">
-              <!-- Text/Icon goes here -->
               <img src="/images/destination.png" style="height: 50px; width: 50;" class="rounded-full " />
             </NuxtLink>
           </CustomMarker>
@@ -367,6 +366,6 @@ onMounted(() => {
     
         </GoogleMap>
       </v-col>
-  </v-row>
+  </v-row> -->
   </div>
 </template> 

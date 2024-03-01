@@ -1,16 +1,74 @@
 <template>
   <v-row>
     <v-col cols="12" md="12">
+      <v-row justify="end" class="mx-1 mb-1">
+        <v-col cols="6">
+          <v-card class="my-4 p-0">
+            <v-row>
+              <v-col cols="12" lg="5" class="p-0 m-0">
+                <div class="text-center">
+                  <v-menu v-model="menu" :close-on-content-click="false" location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <v-btn color="indigo" block flat v-bind="props">
+                        {{ `Start Date: ${formattedStartDate}` }}
+                      </v-btn>
+                    </template>
+
+                    <v-card min-width="300">
+                      <v-date-picker v-model="startDate" :max="maxDate" hide-header show-adjacent-months
+                        @update:model-value="endDate = new Date()"></v-date-picker>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" variant="text" @click="menu = false">
+                          Close
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-menu>
+                </div>
+              </v-col>
+              <span class="divider">-</span>
+              <v-col cols="12" lg="4" class="p-0 m-0">
+                <div class="text-center">
+                  <v-menu v-model="endDateMenu" :close-on-content-click="false" location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <v-btn color="indigo" block v-bind="props" flat>
+                        {{ `Start Date: ${formattedEndDate}` }}
+                      </v-btn>
+                    </template>
+
+                    <v-card min-width="300">
+                      <v-date-picker v-model="endDate" :max="maxDate" :min="formattedStartDate" show-adjacent-months
+                        hide-header></v-date-picker>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" variant="text" @click="endDateMenu = false">
+                          Close
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-menu>
+                </div>
+              </v-col>
+              <v-col cols="12" lg="2" class="p-0 m-0">
+                <v-btn color="success" block @click="loadAllOrders(selectedStatus)" :loading="loading">
+                  Filter
+                </v-btn>
+              </v-col>
+
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
       <UiParentCard title="List Products">
         <v-chip class="ma-2 close-btn" color="info" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
           :model-value="true">
           Total Amount: <strong>{{ totalAmount + ' Rwf' }}</strong>
         </v-chip>
         <v-card-text>
-
           <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
-            <v-tab @click="loadAllOrders()" :value="1">All Orders
-              <v-chip size="small" class="ma-1"> {{ completed + shipping + pending + cancelled }} </v-chip>
+            <v-tab @click="loadAllOrders('')" :value="1">All Orders
+              <v-chip size="small" class="ma-1"> {{ parseInt(completed) + parseInt(shipping) + parseInt(pending) + parseInt(cancelled) }} </v-chip>
             </v-tab>
             <v-tab @click="loadAllOrders('1')" :value="2">Completed
               <v-chip size="small" class="ma-1"> {{ completed }} </v-chip>
@@ -23,7 +81,6 @@
               <v-chip size="small" class="ma-1"> {{ cancelled }} </v-chip></v-tab>
           </v-tabs>
           <v-container>
-
           </v-container>
           <v-window v-model="tab">
             <v-window-item v-for="n in 5" :key="n" :value="n">
@@ -160,6 +217,7 @@ definePageMeta({
 });
 const http = useHttpRequest()
 const instance = getCurrentInstance();
+const route = useRoute();
 const loading = ref(false);
 const isViewing = ref(false);
 const isApprove = ref(false);
@@ -174,6 +232,23 @@ const completed = ref(0);
 const shipping = ref(0);
 const cancelled = ref(0);
 const selectedDeliveryId = ref('')
+const selectedStatus: any = ref('')
+
+const menu = ref(false)
+const endDateMenu = ref(false)
+const startDate = ref(new Date())
+startDate.value.setDate(startDate.value.getDate() - 30);
+const endDate = ref(new Date())
+const formattedStartDate = ref(startDate.value.toISOString().split('T')[0]);
+const formattedEndDate = ref(endDate.value.toISOString().split('T')[0]);
+watch(startDate, () => {
+  formattedStartDate.value = startDate.value.toISOString().split('T')[0];
+});
+watch(endDate, () => {
+  formattedEndDate.value = endDate.value.toISOString().split('T')[0];
+});
+const maxDate = ref(new Date().toISOString().split('T')[0])
+
 onMounted(() => {
   loadAllOrders();
 })
@@ -202,7 +277,11 @@ function loadAllOrders(status = '') {
   loading.value = true
   http.fetch("fetch_orders", {
     method: "post",
-    body: { status }
+    body: { 
+      status: status ? status : route.query.status,
+      startDate: formattedStartDate.value,
+      endDate: formattedEndDate.value
+     }
   })
     .then((data: any) => {
       if (data.status == 200) {
@@ -212,17 +291,17 @@ function loadAllOrders(status = '') {
         shipping.value = data.shipping;
         completed.value = data.completed;
 
-        totalAmount.value = data.records.filter(obj => obj.status === '1').reduce((sum, obj) => sum + parseInt(obj.amount_paid), 0);
-        console.log(totalAmount.value);
-        
-
+        totalAmount.value = data.records.reduce((sum, obj) => sum + parseInt(obj.amount_paid), 0);
         instance?.proxy?.$forceUpdate();
       }
     })
     .catch(() => { })
-    .finally(() => (loading.value = false));
+    .finally(() => {
+      selectedStatus.value = status
+      loading.value = false
+      }
+      );
 }
-
 
 function loadAllDrivers() {
   loading.value = true
@@ -268,7 +347,7 @@ function approveOrderClient(id: any, status = '2') {
     .then((data: any) => {
       if (data.status == 200) {
         useToast().success(data.message);
-        loadAllOrders();
+        loadAllOrders(selectedStatus.value);
       }
     })
     .catch((error) => {

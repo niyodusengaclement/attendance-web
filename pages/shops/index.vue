@@ -14,6 +14,7 @@ const search = ref("");
 const lists = ref([]);
 const showForm = ref(false)
 const title = ref("")
+const pendindRequest = ref(0)
 const loading = ref(false)
 const headers: Header[] = [
     { text: "ID", value: "id", sortable: true },
@@ -230,8 +231,17 @@ function getZones() {
             zones.value = res
         })
 }
+
+function getTotalPendingRequests()
+{
+    http.fetch("getTotalPendingRequests")
+    .then(res => {
+        pendindRequest.value = parseInt(res.number)
+    })
+}
 onMounted(() => {
     getAllShops()
+    getTotalPendingRequests()
 })
 
 </script>
@@ -331,8 +341,8 @@ onMounted(() => {
                         </v-btn>
                     </v-col>
                     <v-col class="flex" cols="12" md="2" v-if="user.category === '1'">
-                        <v-badge color="error" content="0" inline>
-                            <v-btn prepend-icon="mdi-plus" color="primary" class="mx-2" to="/shops/request">
+                        <v-badge color="error" :content="pendindRequest" inline>
+                            <v-btn :disabled="pendindRequest === 0" color="primary" class="mx-2" to="/shops/request">
                                 Requests
                             </v-btn>
                         </v-badge>

@@ -194,11 +194,11 @@ const download = computed(() => {
                         </v-text-field>
                     </v-col>
                     <v-col class="flex justify-end" cols="12" md="4">
-                        <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
+                        <!-- <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
                             Filters
-                        </v-btn>
+                        </v-btn> -->
                         <v-btn v-if="logger.category === '1'" prepend-icon="mdi-plus" @click="state = 2" color="success"
-                            class="mx-2" variant="tonal">
+                            class="mx-2" variant="tonal" :disabled="state == 2">
                             Add New Driver
                         </v-btn>
                     </v-col>

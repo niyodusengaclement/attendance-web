@@ -29,7 +29,6 @@ export interface menu {
 }
 
 const sidebarItem: menu[] = [
-  { header: "Home" },
   {
     title: "Dashboard",
     icon: LayoutDashboardIcon,
@@ -51,41 +50,67 @@ const sidebarItem: menu[] = [
     to: "/stock",
   },
   {
-    title: "Shops",
-    icon: MoodHappyIcon,
-    to: "/shops",
-  },
-  {
-    title: "Zones",
-    icon: Map2Icon,
-    to: "/zones",
-  },
-  {
     title: "Orders",
     icon: ShoppingCartIcon,
     to: "/orders",
   },
-  {
-    title: "Drivers",
-    icon: SteeringWheelIcon,
-    to: "/drivers",
-  },
-  {
-    title: "Shipments",
-    icon: TruckDeliveryIcon,
-    to: "/ui/shadow",
-  },
+  
+  
   {
     title: "Reports",
     icon: TruckDeliveryIcon,
-    to: "/ui/shadow",
     expanded: true,
-    children: [ 
-      { title: "Shipments", to: "/ui/shadow" },
-      { title: "Shipments", to: "/ui/shadow" },
-      { title: "Shipments", to: "/ui/shadow" },
-    ]
+    children: [
+      { title: "Sales Report", to: "/reports/sales" },
+      { title: "Customer Report", to: "/reports/customers" },
+      {
+        title: "Shipments",
+        icon: TruckDeliveryIcon,
+        to: "/ui/shadow",
+      },
+    ],
   },
 ];
+
+// Retrieve data from local storage
+const loggerData = localStorage.getItem("logger");
+
+// Parse the logger data into JSON
+const logger = loggerData ? JSON.parse(loggerData) : null;
+
+// Additional menu items based on logger.category
+if (logger && logger.category === "1") {
+  sidebarItem
+    .push
+    // Additional menu items for the "admin" category...
+    (
+      {
+        title: "Zones",
+        icon: Map2Icon,
+        to: "/zones",
+      },
+      {
+        title: "Drivers",
+        icon: SteeringWheelIcon,
+        to: "/drivers",
+      },
+      {
+        title: "Shops",
+        icon: MoodHappyIcon,
+        to: "/shops",
+      },
+    );
+} else if (logger && logger.category === "2") {
+  sidebarItem
+    .push
+    // Additional menu items for the "user" category...
+    (
+      {
+        title: "Shops",
+        icon: MoodHappyIcon,
+        to: "/shops",
+      },
+    );
+}
 
 export default sidebarItem;

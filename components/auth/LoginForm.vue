@@ -71,8 +71,8 @@ async function handleSubmit() {
        </v-col>
        <v-col cols="12" class="pt-0">
            <div class="d-flex flex-wrap align-center ml-n2">
-               <v-checkbox v-model="checkbox"  color="primary" hide-details>
-                   <template v-slot:label class="text-body-1">Remeber this Device</template>
+               <!-- <v-checkbox v-model="checkbox"  color="primary" hide-details> -->
+                   <!-- <template v-slot:label class="text-body-1">Remeber this Device</template> -->
                </v-checkbox>
                <div class="ml-sm-auto">
                    <NuxtLink to="/"
