@@ -389,8 +389,7 @@
                                                 </div>
         
                                                 <div class="pt-1 font-weight-light text-[10px] text-muted">
-                                                    Write your product title that buyers would likely to
-                                                    search
+                                                    Write what your product worth
                                                 </div>
                                             </div>
                                         </v-col>
@@ -409,8 +408,7 @@
                                                 </div>
         
                                                 <div class="pt-1 font-weight-light text-[10px] text-muted">
-                                                    Write your product title that buyers would likely to
-                                                    search
+                                                    Write refilling price for your product
                                                 </div>
                                             </div>
                                         </v-col>
@@ -428,7 +426,7 @@
                                     variant="outlined" prepend-icon="mdi-arrow-left" flat>
                                     Previous
                                 </v-btn>
-                                <v-btn @click="step == 3 ? createProduct() : nextPage()" :disabled="loading"
+                                <v-btn @click="step == 3 ? createProduct() : nextPage()" :disabled="loading || ((form.productPrice.$value =='' || form.productName.$value == '' || selectedCategory == '' ) && step == 3)"
                                     :loading="loading" class="my-4 mx-2" color="primary" append-icon="mdi-arrow-right" flat>
                                     {{ step == 3 ? 'Create Product' : 'Continue' }}
                                 </v-btn>

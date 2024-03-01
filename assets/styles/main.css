@@ -36,6 +36,12 @@
   --easy-table-buttons-pagination-border: 1px solid #e0e0e0;
 }
 
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dropZone {
   width: 100%;
   height: 125px;

@@ -153,7 +153,7 @@ onMounted(() => {
                         </v-text-field>
                     </v-col>
                     <v-col class="flex" cols="12" md="4">
-                        <v-btn prepend-icon="mdi-plus" @click="showForm = true" color="success" class="mx-2"
+                        <v-btn prepend-icon="mdi-plus" @click="showForm = true" :disabled="showForm" color="success" class="mx-2"
                             variant="tonal">
                             Add New
                         </v-btn>
