@@ -6,8 +6,8 @@
                     <v-card-text>
                         <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
                             <div class="d-flex justify-between pb-2">
-                                <div class="h4 font-bold">Customer Info</div>
-                                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
+                                <div class="h4 font-bold">Profile Info</div>
+                                <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
                             </div>
 
                             <v-list-item class="w-100 my-4">
@@ -17,21 +17,21 @@
                                 </template>
 
                                 <v-list-item-title>{{
-                                    info.customer_name ?? "Shop Name"
+                                    info.shop !== "" ? info.shop : info.user_name
                                 }}</v-list-item-title>
 
                                 <v-list-item-subtitle class="text-13">Email:
                                     {{
-                                        info.email ?? "dallyjones4@yahoo.com"
+                                        info.user_name
                                     }}</v-list-item-subtitle>
                                 <v-list-item-subtitle class="text-13">Phone:
                                     {{
-                                        info.phone_number ?? "+250785100000"
+                                        info.phone
                                     }}</v-list-item-subtitle>
                             </v-list-item>
                         </div>
 
-                        <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
+                        <!-- <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
                             <div class="d-flex justify-between pb-2">
                                 <div class="h4 font-bold">More Informations</div>
                                 <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
@@ -45,11 +45,11 @@
                                 <div class="flex justify-between">
                                     <div class="text-muted text-small">Total Income</div>
                                     <div class="text-dark font-medium text-small">
-                                        {{ info.reference_code ??  '10000000 rwf' }}
+                                        {{ info.reference_code ?? '10000000 rwf' }}
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -58,70 +58,70 @@
                         <div class="bg-borderColor rounded-lg pa-2">
                             <div class="d-flex justify-between pb-2">
                                 <div class="h4 px-4 font-bold">Change password</div>
-                                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
+                                <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
                             </div>
                         </div>
 
                         <v-col cols="12" md="12">
-                                <div class="flex flex-col my-4">
-                                    <label for="password" class="text-gray-700 text-sm">Current Password</label>
-                                    <div x-data="{ show: true }" class="relative flex items-center mt-2">
-                                        <input :type="show ? 'text' : 'password'" name="password" id="password"
-                                            v-model="oldPassword"
-                                            class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
-                                            placeholder="Enter your password">
-                                        <div
-                                            class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
-                                            <EyeIcon @click="toggle(true)" size="18" class="text-gray-400"
-                                                :class="show ? 'hidden' : ''" />
-                                            <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
-                                                :class="!show ? 'hidden' : ''" />
-                                        </div>
-
+                            <div class="flex flex-col my-4">
+                                <label for="password" class="text-gray-700 text-sm">Current Password</label>
+                                <div x-data="{ show: true }" class="relative flex items-center mt-2">
+                                    <input :type="show ? 'text' : 'password'" name="password" id="password"
+                                        v-model="oldPassword"
+                                        class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                        placeholder="Enter your password">
+                                    <div
+                                        class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
+                                        <EyeIcon @click="toggle(true)" size="18" class="text-gray-400"
+                                            :class="show ? 'hidden' : ''" />
+                                        <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
+                                            :class="!show ? 'hidden' : ''" />
                                     </div>
 
                                 </div>
-                                <div class="flex flex-col my-4">
-                                    <label for="password" class="text-gray-700 text-sm">New Password</label>
-                                    <div x-data="{ show: true }" class="relative flex items-center mt-2">
-                                        <input :type="show ? 'text' : 'password'" name="password" id="password"
-                                            v-model="password"
-                                            class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
-                                            placeholder="Enter your password">
-                                        <div
-                                            class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
-                                            <EyeIcon @click="toggle(true)" size="18" class="text-gray-400"
-                                                :class="show ? 'hidden' : ''" />
-                                            <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
-                                                :class="!show ? 'hidden' : ''" />
-                                        </div>
 
+                            </div>
+                            <div class="flex flex-col my-4">
+                                <label for="password" class="text-gray-700 text-sm">New Password</label>
+                                <div x-data="{ show: true }" class="relative flex items-center mt-2">
+                                    <input :type="show ? 'text' : 'password'" name="password" id="password"
+                                        v-model="password"
+                                        class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                        placeholder="Enter your password">
+                                    <div
+                                        class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
+                                        <EyeIcon @click="toggle(true)" size="18" class="text-gray-400"
+                                            :class="show ? 'hidden' : ''" />
+                                        <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
+                                            :class="!show ? 'hidden' : ''" />
                                     </div>
 
                                 </div>
-                                <div class="flex flex-col my-4">
-                                    <label for="password" class="text-gray-700 text-sm">Confirm Password</label>
-                                    <div x-data="{ show: true }" class="relative flex items-center mt-2">
-                                        <input :type="show ? 'text' : 'password'" name="password" id="password"
-                                            v-model="confirmPassword"
-                                            class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
-                                            placeholder="Enter your password">
-                                        <div
-                                            class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
-                                            <EyeIcon @click="toggle(true)" size="18" class="text-gray-400"
-                                                :class="show ? 'hidden' : ''" />
-                                            <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
-                                                :class="!show ? 'hidden' : ''" />
-                                        </div>
 
+                            </div>
+                            <div class="flex flex-col my-4">
+                                <label for="password" class="text-gray-700 text-sm">Confirm Password</label>
+                                <div x-data="{ show: true }" class="relative flex items-center mt-2">
+                                    <input :type="show ? 'text' : 'password'" name="password" id="password"
+                                        v-model="confirmPassword"
+                                        class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                        placeholder="Enter your password">
+                                    <div
+                                        class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
+                                        <EyeIcon @click="toggle(true)" size="18" class="text-gray-400"
+                                            :class="show ? 'hidden' : ''" />
+                                        <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
+                                            :class="!show ? 'hidden' : ''" />
                                     </div>
-                                </div>
 
-                                <div class="my-4 flex items-center justify-end space-x-4">
-                                    <v-btn @click="changePassword" :disabled="dataLoading" :loading="dataLoading"
-                                        rounded="xl" color="primary" size="large" block flat>
-                                        Save New Password</v-btn>
                                 </div>
+                            </div>
+
+                            <div class="my-4 flex items-center justify-end space-x-4">
+                                <v-btn @click="changePassword" :disabled="dataLoading" :loading="dataLoading" rounded="xl"
+                                    color="primary" size="large" block flat>
+                                    Save New Password</v-btn>
+                            </div>
                         </v-col>
                     </v-card-text>
                 </v-card>
@@ -146,7 +146,11 @@ definePageMeta({
 });
 
 onMounted(() => {
-    // getMyInfo();
+    // Retrieve data from local storage
+    const loggerData = localStorage.getItem("logger");
+
+    // Parse the logger data into JSON
+    info.value = loggerData ? JSON.parse(loggerData) : null;
 
 });
 
@@ -154,19 +158,8 @@ function toggle(value: boolean) {
     show.value = value
 }
 
-async function getMyInfo() {
-    await http
-        .fetch("order_details")
-        .then((data) => {
-            if (data.status == 200) {
-                info.value = data.products;
-            }
-        })
-        .catch(() => { })
-}
 
-function changePassword()
-{
+function changePassword() {
     dataLoading.value = true
     http.fetch("changePassword", {
         method: "post",
@@ -176,15 +169,18 @@ function changePassword()
             confirm: confirmPassword.value
         }
     })
-    .then(res => {
-        useToast().success(res.message)
-    })
-    .catch(err => {
-        useToast().error(err.data.message)
-    })
-    .finally(() => {
-        dataLoading.value = false
-    })
+        .then(res => {
+            oldPassword.value = ''
+            password.value = ''
+            confirmPassword.value = ''
+            useToast().success(res.message)
+        })
+        .catch(err => {
+            useToast().error(err.data.message)
+        })
+        .finally(() => {
+            dataLoading.value = false
+        })
 }
 
 </script>

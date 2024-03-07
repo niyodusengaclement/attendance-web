@@ -108,9 +108,9 @@
                             </v-text-field>
                         </v-col>
                         <v-col class="flex" cols="12" md="4">
-                            <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
+                            <!-- <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
                                 Filters
-                            </v-btn>
+                            </v-btn> -->
                             <v-btn prepend-icon="mdi-plus" @click="state = 2" :disabled="state != 1" color="success" class="mx-2" variant="tonal">
                                 Add New
                             </v-btn>
