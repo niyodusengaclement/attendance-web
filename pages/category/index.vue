@@ -79,7 +79,7 @@
         </v-col>
         <!-- ADD NEW RECORD -->
         <v-col cols="12" v-show="state == 4" md="4">
-            <UiParentCard :title="'Add Sub Category'" class="text-success">
+            <UiParentCard :title="'Add Brand'" class="text-success">
                 <v-btn icon="mdi-close" color="error" class="close-btn" variant="text" elevation="0" @click="reset()">
                 </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
@@ -88,7 +88,7 @@
                             class="bg-grey-lighten-2 border rounded-lg my-5"></v-img>
                         <v-text-field variant="outlined" density="compact" label="Category" disabled="true"
                             v-model="editingItem.title" color="primary"></v-text-field>
-                        <v-text-field variant="outlined" density="compact" label="Sub category"
+                        <v-text-field variant="outlined" density="compact" label="Brand"
                             v-model="editingItem.sub_category" color="primary"></v-text-field>
 
                         <v-btn :disabled="loading" :loading="loading" @click="createSubCategory()" class="my-2"
@@ -108,9 +108,9 @@
                             </v-text-field>
                         </v-col>
                         <v-col class="flex" cols="12" md="4">
-                            <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
+                            <!-- <v-btn prepend-icon="mdi-vuetify" color="primary" class="mx-2" variant="outlined">
                                 Filters
-                            </v-btn>
+                            </v-btn> -->
                             <v-btn prepend-icon="mdi-plus" @click="state = 2" :disabled="state != 1" color="success" class="mx-2" variant="tonal">
                                 Add New
                             </v-btn>
@@ -133,7 +133,7 @@
                                     <div
                                         class="font-bold text priamry hover:underline underline-offset-4 hover:cursor-pointer transition duration-200">
                                         {{ item.count_subcategory }}
-                                        Subcategories
+                                        Brands
                                     </div>
                                 </div>
                             </template>
@@ -319,7 +319,7 @@ async function handleSubmit() {
 const headers: Header[] = [
     { text: "Photo", value: "image_url", sortable: true },
     { text: "Category", value: "title", sortable: true },
-    { text: "Sub Category", value: "count_subcategory", sortable: true },
+    { text: "Brands", value: "count_subcategory", sortable: true },
     { text: "Actions", value: "actions", width: 300 },
 ];
 
@@ -418,13 +418,13 @@ async function updateCategory() {
 
 async function createSubCategory() {
     loading.value = true;
-    var formData = new FormData();
-    formData.append("category", editingItem.id.toString());
-    formData.append("title", editingItem.sub_category);
     http
         .fetch("create_sub_category", {
             method: "post",
-            body: formData,
+            body: {
+                category: editingItem.id.toString(),
+                title: editingItem.sub_category
+            },
         })
         .then((data: any) => {
             useToast().success(data.message);
@@ -475,13 +475,13 @@ function getSubCategories(id: any) {
 function deleteCategory(id: any) {
     btnDeleteLoading.value = true;
 
-    var formData = new FormData();
-    formData.append("title", editingItem.title);
-    formData.append("id", id.toString());
     http
         .fetch("delete_category", {
             method: "post",
-            body: formData,
+            body: {
+                title: editingItem.title,
+                id: id.toString()
+            },
         })
         .then((data: any) => {
             useToast().success(data.message);
@@ -499,13 +499,13 @@ function deleteCategory(id: any) {
 function deleteSubCategory(id: any, title: any) {
     btnDeleteLoading.value = true;
 
-    var formData = new FormData();
-    formData.append("title", title.toString());
-    formData.append("id", id.toString());
     http
         .fetch("delete_sub_category", {
             method: "post",
-            body: formData,
+            body: {
+                title: title.toString(),
+                id: id.toString()
+            },
         })
         .then((data: any) => {
             useToast().success(data.message);

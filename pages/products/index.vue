@@ -25,8 +25,8 @@
                     <v-row class="mb-4">
                         <v-col cols="12" md="9">
                             <v-text-field v-model="search" :loading="loading" variant="tonal" density="compact"
-                                label="Search for product name"
-                                prepend-inner-icon="mdi-magnify" single-line hide-details>
+                                label="Search for product name" prepend-inner-icon="mdi-magnify" single-line
+                                hide-details>
                             </v-text-field>
                         </v-col>
                         <v-col cols="12" md="3">
@@ -42,7 +42,8 @@
                         <EasyDataTable empty-message="No Product found" :search-value="search" theme-color="#f97316"
                             table-class-name="eztable" :headers="headers" :items="products" :loading="loading">
                             <template #item-image_url="item">
-                                <v-img :src="image_URL + item.image_url" height="50" width="50" class="rounded-lg"></v-img> 
+                                <v-img :src="image_URL + item.image_url" height="50" width="50"
+                                    class="rounded-lg"></v-img>
                             </template>
                             <template #item-is_gas="item">
                                 <div>{{ gasStr(item.is_gas) }}</div>
@@ -86,30 +87,32 @@
                                 <v-text-field variant="outlined" density="compact" label="Product"
                                     v-model="editingItem.product_name" color="primary"></v-text-field>
 
-                                <v-select :label="editingItem.category + ' (Category)'" variant="outlined" density="compact"
-                                    v-model="selectedCategory" color="primary" :items="categories" item-title="title"
-                                    item-value="id" return-object
-                                    @update:model-value="getSubCategories(selectedCategory.id)"></v-select>
+                                <v-select :label="editingItem.category + ' (Category)'" variant="outlined"
+                                    density="compact" v-model="editingItem.category_id" color="primary" :items="categories"
+                                    item-title="title" item-value="id"
+                                    @update:model-value="getSubCategories(editingItem.category_id)"></v-select>
 
                                 <v-select :label="editingItem.sub_category + ' (SubCategory)'" variant="outlined"
-                                    density="compact" v-model="selectedSubCategory" color="primary" :items="sub_categories"
-                                    item-title="title" item-value="id" return-object></v-select>
+                                    density="compact" v-model="editingItem.sub_category_id" color="primary"
+                                    :items="sub_categories" item-title="title" item-value="id"></v-select>
 
                                 <v-select label="Is Gas" v-model="editingItem.is_gas" :items="productType"
                                     variant="outlined" density="compact" color="primary" item-title="label"
                                     item-value="value"></v-select>
 
                                 <v-text-field variant="outlined" v-show="editingItem.is_gas == '1'" density="compact"
-                                    label="Product In KG" v-model="editingItem.quantity_kg" color="primary"></v-text-field>
-
-                                <v-text-field variant="outlined" density="compact" label="Price" v-model="editingItem.price"
+                                    label="Product In KG" v-model="editingItem.quantity_kg"
                                     color="primary"></v-text-field>
+
+                                <!-- <v-text-field variant="outlined" density="compact" label="Price" v-model="editingItem.price"
+                                    color="primary"></v-text-field> -->
 
                                 <v-textarea variant="outlined" density="compact" label="Description"
                                     v-model="editingItem.description" color="primary"></v-textarea>
                                 <div class="flex justify-start space-x-4">
                                     <v-btn @click="state = 1" class="my-4" color="error" variant="outlined" size="large"
-                                        flat> <v-icon class="mr-2 ">mdi-close</v-icon> Close Update</v-btn>
+                                        flat>
+                                        <v-icon class="mr-2 ">mdi-close</v-icon> Close Update</v-btn>
                                     <v-btn @click="updateProduct(editingItem.id)" :disabled="loading" :loading="loading"
                                         class="my-4" color="primary" size="large" flat>Update Product</v-btn>
 
@@ -225,9 +228,9 @@
                                                 <div v-if="!file" class="mt-5">
                                                     <toast />
                                                     <div :class="[
-                                                        'dropZone',
-                                                        dragging ? 'dropZone-over' : '',
-                                                    ]">
+            'dropZone',
+            dragging ? 'dropZone-over' : '',
+        ]">
                                                         <div class="dropZone-info" @drag="onChange">
                                                             <div class="d-flex flex-col items-center justify-center">
                                                                 <svg class="w-10 h-10 mb-3 text-gray-400" fill="none"
@@ -238,7 +241,8 @@
                                                                         d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
                                                                     </path>
                                                                 </svg>
-                                                                <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                                                                <p
+                                                                    class="mb-2 text-xs text-gray-500 dark:text-gray-400">
                                                                     <span class="font-semibold text-xs">Click to upload
                                                                         image
                                                                     </span>
@@ -262,8 +266,8 @@
                                                             class="text-xs py-2 text-gray-500 dark:text-gray-400">
                                                             {{ file["name"] }}
                                                         </p>
-                                                        <v-btn color="error" v-if="file" unelevated @click="removeFile()"
-                                                            variant="tonal" size="small">
+                                                        <v-btn color="error" v-if="file" unelevated
+                                                            @click="removeFile()" variant="tonal" size="small">
                                                             Remove File</v-btn>
                                                     </div>
                                                 </div>
@@ -309,9 +313,9 @@
                                             @update:modelValue="getSubCategories(selectedCategory.id)"
                                             return-object></v-select>
 
-                                        <v-select v-model="selectedSubCategory" :items="sub_categories" variant="outlined"
-                                            density="compact" label="Sub Category" color="primary" item-title="title"
-                                            item-value="id" @update:model-value="isProductGas = true"
+                                        <v-select v-model="selectedSubCategory" :items="sub_categories"
+                                            variant="outlined" density="compact" label="Brand" color="primary"
+                                            item-title="title" item-value="id" @update:model-value="isProductGas = true"
                                             return-object></v-select>
 
                                         <v-select v-show="isProductGas" v-model="IsGas" :items="productType"
@@ -324,7 +328,7 @@
                                     <v-col cols="12" md="4">
                                         <div class="px-3">
                                             <div class="pt-0 text-xs font-weight-bold">
-                                                Kilogram Variant
+                                                Product Size
                                             </div>
 
                                             <div class="pt-1 font-weight-light text-[10px] text-muted">
@@ -339,9 +343,9 @@
                                             <div v-for="item in productKgs">
                                                 <v-card elevation="0" @click="selecteProductKg(item.kg)">
                                                     <div :class="selectedkg == item.kg
-                                                        ? `bg-lightprimary border-blue-300`
-                                                        : `bg-white `
-                                                        " class="border-2 pa-2 rounded-lg">
+            ? `bg-lightprimary border-blue-300`
+            : `bg-white `
+            " class="border-2 pa-2 rounded-lg">
                                                         <div class="font-bold mx-2">{{ item.kg }}</div>
                                                     </div>
                                                 </v-card>
@@ -351,7 +355,8 @@
                                                 <v-card elevation="0" @click="">
                                                     <div class="bg-white border-2 pa-2 rounded-lg">
                                                         <PlusIcon class="mx-1 my-1"
-                                                            :class="step >= 4 ? 'text-white' : 'text-muted'" size="18" />
+                                                            :class="step >= 4 ? 'text-white' : 'text-muted'"
+                                                            size="18" />
                                                     </div>
                                                 </v-card>
                                             </div>
@@ -367,8 +372,9 @@
                                         </div>
 
                                         <div class="pt-1 font-weight-light text-[10px] text-muted">
-                                            Write your product title that buyers would likely to
-                                            search
+                                            Write product description and details and let buyers know more on what they
+                                            are
+                                            going to buy
                                         </div>
                                     </div>
                                 </v-col>
@@ -379,7 +385,7 @@
                                         :error-messages="form.productDesc.$errors"></v-textarea>
                                 </v-col>
                             </v-row>
-                            <v-row v-if="step == 3">
+                            <v-row v-if="false">
                                 <v-col>
                                     <v-row>
                                         <v-col cols="12" md="4">
@@ -387,17 +393,17 @@
                                                 <div class="pt-0 text-xs font-weight-bold">
                                                     Product Price
                                                 </div>
-        
+
                                                 <div class="pt-1 font-weight-light text-[10px] text-muted">
                                                     Write what your product worth
                                                 </div>
                                             </div>
                                         </v-col>
-        
+
                                         <v-col cols="12" md="8">
-                                            <v-text-field variant="outlined" density="compact" v-model="form.productPrice.$value"
+                                            <!-- <v-text-field variant="outlined" density="compact" v-model="form.productPrice.$value"
                                                 @blur="form.productPrice.$validate()" color="primary"
-                                                :error-messages="form.productPrice.$errors"></v-text-field>
+                                                :error-messages="form.productPrice.$errors"></v-text-field> -->
                                         </v-col>
                                     </v-row>
                                     <v-row v-show="IsGas == '1'">
@@ -406,17 +412,17 @@
                                                 <div class="pt-0 text-xs font-weight-bold">
                                                     Product Refilling Price
                                                 </div>
-        
+
                                                 <div class="pt-1 font-weight-light text-[10px] text-muted">
                                                     Write refilling price for your product
                                                 </div>
                                             </div>
                                         </v-col>
-        
-                                        <v-col cols="12" md="8">
+
+                                        <!-- <v-col cols="12" md="8">
                                             <v-text-field variant="outlined" density="compact" v-model="editingItem.price"
                                                 color="primary"></v-text-field>
-                                        </v-col>
+                                        </v-col> -->
                                     </v-row>
                                 </v-col>
 
@@ -426,9 +432,11 @@
                                     variant="outlined" prepend-icon="mdi-arrow-left" flat>
                                     Previous
                                 </v-btn>
-                                <v-btn @click="step == 3 ? createProduct() : nextPage()" :disabled="loading || ((form.productPrice.$value =='' || form.productName.$value == '' || selectedCategory == '' ) && step == 3)"
-                                    :loading="loading" class="my-4 mx-2" color="primary" append-icon="mdi-arrow-right" flat>
-                                    {{ step == 3 ? 'Create Product' : 'Continue' }}
+                                <v-btn @click="step == 2 ? createProduct() : nextPage()"
+                                    :disabled="loading || ((file.length === 0 || form.productName.$value == '' || selectedCategory == '') && step == 2)"
+                                    :loading="loading" class="my-4 mx-2" color="primary" append-icon="mdi-arrow-right"
+                                    flat>
+                                    {{ step == 2 ? 'Create Product' : 'Continue' }}
                                 </v-btn>
                             </v-col>
                         </form>
@@ -443,18 +451,18 @@
                                 </template>
 
                                 <v-img class="rounded-lg" contain height="250" :src="selectedFiles.length >= 1
-                                    ? selectedFiles[0].url
-                                    : '/images/placeholder.jpg'
-                                    "></v-img>
+            ? selectedFiles[0].url
+            : '/images/placeholder.jpg'
+            "></v-img>
 
                                 <v-card-item>
                                     <v-card-title class="text-info">{{
-                                        form.productName.$value
-                                    }}</v-card-title>
+            form.productName.$value
+        }}</v-card-title>
 
                                     <v-card-subtitle>
                                         <span class="me-1">{{ selectedCategory.title }} </span><span class="me-1">{{
-                                            selectedSubCategory.title }}, </span>
+            selectedSubCategory.title }}, </span>
                                     </v-card-subtitle>
 
                                     <div v-show="IsGas == '1'" class="py-2 flex space-x-2 items-center">
@@ -466,10 +474,10 @@
 
                                 <v-card-text>
                                     <v-row align="center" class="mx-0">
-                                        <v-rating :model-value="4.5" color="amber" density="compact" half-increments
+                                        <v-rating :model-value="0" color="amber" density="compact" half-increments
                                             readonly size="small"></v-rating>
 
-                                        <div class="text-grey ms-4">4.5</div>
+                                        <!-- <div class="text-grey ms-4">0</div> -->
                                     </v-row>
 
                                     <div class="py-4 text-justify text-xs">
@@ -479,11 +487,11 @@
 
                                 <v-divider class="mx-4 mb-1"></v-divider>
 
-                                <v-card-actions>
+                                <!-- <v-card-actions>
                                     <v-btn color="deep-purple-lighten-2" variant="text" @click="reserve">
                                         Reserve
                                     </v-btn>
-                                </v-card-actions>
+                                </v-card-actions> -->
                             </v-card>
                         </div>
                     </v-col>
@@ -521,7 +529,6 @@ const instance = getCurrentInstance();
 const image_URL = config.public.imageURL;
 interface FormData {
     productName: Field<string>;
-    productPrice: Field<string>;
     productDesc: Field<string>;
 
 }
@@ -551,10 +558,6 @@ const {
     productName: {
         $value: "",
         $rules: [rules.required("Please name must be provided")],
-    },
-    productPrice: {
-        $value: "",
-        $rules: [rules.min(2)("product price has to be longer than 2 characters")],
     },
     productDesc: {
         $value: "",
@@ -648,8 +651,7 @@ const headers: Header[] = [
     { text: "Photo", value: "image_url", sortable: true },
     { text: "Product", value: "product_name", sortable: true },
     { text: "Category", value: "category", sortable: true },
-    { text: "Sub Category", value: "sub_category", sortable: true },
-    { text: "Price", value: "product_price", sortable: true },
+    { text: "Bands", value: "sub_category", sortable: true },
     { text: "Gas", value: "is_gas", sortable: true },
     { text: "Actions", value: "actions", width: 200 },
 ];
@@ -660,10 +662,9 @@ async function createProduct() {
     formData.append("image", file.value);
     formData.append("name", form.productName.$value);
     formData.append("category", selectedCategory.value.id);
-    formData.append("sub_category", selectedSubCategory.value.id);
+    formData.append("brand", selectedSubCategory.value.id);
     formData.append("description", form.productDesc.$value);
     formData.append("kg", selectedkg.value);
-    formData.append("price", form.productPrice.$value);
     formData.append("product_rate", "0.0");
     formData.append("is_gas", IsGas.value);
     http
@@ -689,19 +690,18 @@ async function createProduct() {
 
 async function updateProduct(id: any) {
     loading.value = true;
-    var formData = new FormData();
-    formData.append("id", id.toString());
-    formData.append("name", editingItem.product_name);
-    formData.append("category", selectedCategory.value.id);
-    formData.append("sub_category", selectedSubCategory.value.id);
-    formData.append("description", editingItem.description);
-    formData.append("kg", editingItem.quantity_kg);
-    formData.append("price", editingItem.price);
-    formData.append("is_gas", IsGas.value);
     http
         .fetch("update_product", {
             method: "POST",
-            body: formData,
+            body: {
+                id: id.toString(),
+                name: editingItem.product_name,
+                category: editingItem.category_id,
+                sub_category: editingItem.sub_category_id,
+                description: editingItem.description,
+                kg: editingItem.quantity_kg,
+                is_gas: editingItem.is_gas,
+            },
         })
         .then((res: any) => {
             if (res.status == 200) {
@@ -762,10 +762,11 @@ const editingItem = reactive({
     image_url: "",
     product_name: "",
     category: "",
+    category_id: "",
     sub_category: "",
+    sub_category_id: "",
     description: "",
     quantity_kg: "",
-    price: "",
     is_gas: "",
     id: 0,
 });
@@ -778,15 +779,18 @@ const deleteItem = (val: Item) => {
 };
 
 const editItem = (val: Item) => {
+    console.log(val);
+    
     isEditing.value = true;
     state.value = 3;
     const {
         image_url,
         product_name,
         category,
+        category_id,
+        brand,
         sub_category,
         product_description,
-        product_price,
         quantity_kg,
         is_gas,
         id,
@@ -794,9 +798,10 @@ const editItem = (val: Item) => {
     editingItem.image_url = image_url;
     editingItem.product_name = product_name;
     editingItem.category = category;
+    editingItem.category_id = category_id;
     editingItem.sub_category = sub_category;
+    editingItem.sub_category_id = brand;
     editingItem.description = product_description;
-    editingItem.price = product_price;
     editingItem.is_gas = is_gas;
     editingItem.quantity_kg = quantity_kg;
     editingItem.id = id;

@@ -13,9 +13,9 @@ const http = useHttpRequest()
 const search = ref("");
 const lists = ref([]);
 const showForm = ref(false)
-const title = ref("")
 const pendindRequest = ref(0)
 const loading = ref(false)
+const middleName = ref("")
 const headers: Header[] = [
     { text: "ID", value: "id", sortable: true },
     { text: "Shop name", value: "shop_name", sortable: true },
@@ -41,11 +41,13 @@ const closeShop = (val: Item) => {
 };
 interface FormData {
     email: Field<string>;
-    password: Field<string>;
     phone: Field<string>;
     name: Field<string>;
-    tin: Field<string>;
+    description: Field<string>;
     zone: Field<string>;
+    firstName: Field<string>;
+    lastName: Field<string>;
+    location: Field<string>;
 }
 const {
     form,
@@ -56,10 +58,6 @@ const {
         $value: "",
         $rules: [rules.email("Please enter a valid email address")],
     },
-    password: {
-        $value: "",
-        $rules: [rules.min(6)("Password has to be longer than 6 characters")],
-    },
     phone: {
         $value: "",
         $rules: [rules.min(10)("Phone number has to be longer than 10 characters")],
@@ -68,13 +66,25 @@ const {
         $value: "",
         $rules: [rules.min(3)("Shop name has to be longer than 2 characters")],
     },
-    tin: {
+    description: {
         $value: "",
-        $rules: [rules.min(5)("TIN Number has to be longer than 5 characters")],
+        $rules: [rules.min(5)("description has to be longer than 30 characters")],
     },
     zone: {
         $value: "",
         $rules: [rules.min(1)("Zone is required")],
+    },
+    firstName: {
+        $value: "",
+        $rules: [rules.min(1)("First name is required")],
+    },
+    location: {
+        $value: "",
+        $rules: [rules.min(1)("location is required")],
+    },
+    lastName: {
+        $value: "",
+        $rules: [rules.min(1)("last name is required")],
     },
 });
 const zones = ref([])
@@ -163,21 +173,21 @@ async function handleSubmit() {
             useToast().error("Your location is not captured, check if you enabled location or refresh the page")
             return
         }
-
-        const formData = new FormData()
-
-        formData.append("email", data.email)
-        formData.append("password", data.password)
-        formData.append("phone", data.phone)
-        formData.append("name", data.name)
-        formData.append("tin", data.tin)
-        formData.append("zone", data.zone)
-        formData.append("latitude", latitude.value)
-        formData.append("longitude", longitude.value)
-
         http.fetch("createShopAdmin", {
             method: "post",
-            body: formData
+            body: {
+                email: data.email,
+                description: data.description,
+                phone: data.phone,
+                name: data.name,
+                location: data.location,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                middleName: middleName.value,
+                zone: data.zone,
+                latitude: latitude.value,
+                longitude: longitude.value,
+            }
         })
             .then(res => {
                 useToast().success(res.message)
@@ -232,12 +242,11 @@ function getZones() {
         })
 }
 
-function getTotalPendingRequests()
-{
+function getTotalPendingRequests() {
     http.fetch("getTotalPendingRequests")
-    .then(res => {
-        pendindRequest.value = parseInt(res.number)
-    })
+        .then(res => {
+            pendindRequest.value = parseInt(res.number)
+        })
 }
 onMounted(() => {
     getAllShops()
@@ -251,71 +260,72 @@ onMounted(() => {
             <UiParentCard :title="'Add New Shop'" class="text-success">
                 <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
                 </v-btn>
-                <v-card-subtitle>Fill this form to register shop</v-card-subtitle>
+                <v-card-subtitle>Enter Shop Information</v-card-subtitle>
                 <form @submit.prevent="handleSubmit">
-                    <div class="flex flex-col my-7 group">
+                    <div class="flex flex-col my-2 group">
                         <!-- <label for="name" class="text-gray-700 text-sm  group-focus:text-orange-400">Shop name
                         </label> -->
-                        <input type="name" name="name" id="name" v-model="form.name.$value" @blur="form.name.$validate()"
+                        <input type="name" name="name" id="name" v-model="form.name.$value"
+                            @blur="form.name.$validate()"
                             class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
                             placeholder="Enter your Shop name">
                         <FormErrors :errors="form.name.$errors" class="p-error" />
                     </div>
-                    <div class="flex flex-col my-7 group">
-                        <!-- <label for="phone" class="text-gray-700 text-sm  group-focus:text-orange-400">Shop
-                            default phone numbmer
-                        </label> -->
-                        <input type="phone" name="phone" id="phone" v-model="form.phone.$value"
-                            @blur="form.phone.$validate()"
-                            class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
-                            placeholder="Enter your Shop default phone numbmer">
-                        <FormErrors :errors="form.phone.$errors" class="p-error" />
+                    <div class="flex flex-col my-1 group">
+                        <v-select :items="zones" v-model="form.zone.$value" hide-details variant="outlined"
+                            density="compact" @blur="form.zone.$validate()" :error-messages="form.zone.$errors"
+                            label="Choose Zone" color="primary" item-title="text" item-value="value"></v-select>
                     </div>
-                    <div class="flex flex-col my-7 group">
-                        <!-- <label for="email" class="text-gray-700 text-sm  group-focus:text-orange-400">Shop
-                            default Email Address
-                        </label> -->
-                        <input type="email" name="email" id="email" v-model="form.email.$value"
-                            @blur="form.email.$validate()"
+                    <div class="flex flex-col my-1 group">
+                        <input type="name" name="location" id="location" v-model="form.location.$value"
+                            @blur="form.location.$validate()"
                             class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
-                            placeholder="Enter your Shop default Email Address">
-                        <FormErrors :errors="form.email.$errors" class="p-error" />
+                            placeholder="Enter your Shop location">
+                        <FormErrors :errors="form.location.$errors" class="p-error" />
                     </div>
-                    <div class="flex flex-col my-7 group">
-                        <!-- <label for="tin" class="text-gray-700 text-sm  group-focus:text-orange-400">Tin Number
-                        </label> -->
-                        <input type="tin" name="tin" id="tin" v-model="form.tin.$value" @blur="form.tin.$validate()"
+                    <div class="flex flex-col my-1 group">
+                        <v-textarea type="name" name="location" id="location" v-model="form.description.$value"
+                            @blur="form.description.$validate()"
                             class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
-                            placeholder="Enter your Tin Number">
-                        <FormErrors :errors="form.tin.$errors" class="p-error" />
-                    </div>
-                    <div class="flex flex-col my-7 group">
-                        <v-select :items="zones" v-model="form.zone.$value" variant="outlined" density="compact"
-                            @blur="form.zone.$validate()" :error-messages="form.zone.$errors" label="Choose Zone"
-                            color="primary" item-title="text" item-value="value"></v-select>
+                            placeholder="Enter your Shop description"></v-textarea>
+                        <FormErrors :errors="form.description.$errors" class="p-error" />
                     </div>
 
                     <div class="flex flex-col my-7">
-                        <!-- <label for="password" class="text-gray-700 text-sm">Password</label> -->
-                        <div x-data="{ show: true }" class="relative flex items-center mt-2">
-                            <input :type="show ? 'text' : 'password'" name="password" id="password"
-                                v-model="form.password.$value" @blur="form.password.$validate()"
-                                class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
-                                placeholder="Enter your password">
-                            <div
-                                class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
-                                <EyeIcon @click="toggle(true)" size="18" class="text-gray-400"
-                                    :class="show ? 'hidden' : ''" />
-                                <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
-                                    :class="!show ? 'hidden' : ''" />
-                            </div>
-
+                        <v-card-subtitle>Default User Info</v-card-subtitle>
+                        <div class="flex flex-col my-1 group">
+                            <input type="firstName" v-model="form.firstName.$value" @blur="form.firstName.$validate()"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your First Name">
+                            <FormErrors :errors="form.firstName.$errors" class="p-error" />
                         </div>
-                        <FormErrors :errors="form.password.$errors" class="p-error" />
+                        <div class="flex flex-col my-1 group">
+                            <input type="tin" v-model="middleName"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your Middle Name (Optional)">
+                        </div>
+                        <div class="flex flex-col my-1 group">
+                            <input type="lastName" v-model="form.lastName.$value"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your Last Name">
+                                <FormErrors :errors="form.lastName.$errors" class="p-error" />
+                        </div>
+                        <div class="flex flex-col my-1 group">
+                            <input type="phone" name="phone" id="phone" v-model="form.phone.$value"
+                                @blur="form.phone.$validate()"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your phone number">
+                            <FormErrors :errors="form.phone.$errors" class="p-error" />
+                        </div>
+                        <div class="flex flex-col my-1 group">
+                            <input type="email" name="email" id="email" v-model="form.email.$value"
+                                @blur="form.email.$validate()"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your Email Address">
+                            <FormErrors :errors="form.email.$errors" class="p-error" />
+                        </div>
 
                     </div>
-
-
 
                     <div class="my-4 flex items-center justify-end space-x-4">
                         <v-btn @click.prevent="handleSubmit" :disabled="loading" :loading="loading" rounded="xl"
@@ -335,8 +345,8 @@ onMounted(() => {
                         </v-text-field>
                     </v-col>
                     <v-col class="flex" cols="12" md="2" v-if="parseInt(user.category) <= 2">
-                        <v-btn prepend-icon="mdi-plus" @click="showForm = true; getZones();getLocation()" :disabled="showForm" color="success" class="mx-2"
-                            variant="tonal">
+                        <v-btn prepend-icon="mdi-plus" @click="showForm = true; getZones(); getLocation()"
+                            :disabled="showForm" color="success" class="mx-2" variant="tonal">
                             Add New
                         </v-btn>
                     </v-col>
@@ -350,7 +360,8 @@ onMounted(() => {
                 </v-row>
                 <ClientOnly>
                     <EasyDataTable empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
-                        table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" :items="lists">
+                        table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading"
+                        :items="lists">
                         <template #item-status="item">
                             <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
                         </template>

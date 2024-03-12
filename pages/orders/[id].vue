@@ -29,10 +29,10 @@
               Canceled
             </v-chip>
             <div v-else>
-              <v-btn size="small" v-if="order.status != '2'" flat variant="flat" color="success" class=" ma-2" @click="approveItem(order)">
+              <v-btn size="small" v-if="order.length !== 0 && order.status != '2'" flat variant="flat" color="success" class=" ma-2" @click="approveItem(order)">
                 <v-icon class="mr-2">mdi-check</v-icon> Approve
               </v-btn>
-              <v-btn size="small" flat variant="flat" color="error" class=" ma-2" @click="approveOrderClient(order.id,'4')">
+              <v-btn size="small" v-if="order.length !== 0" flat variant="flat" color="error" class=" ma-2" @click="approveOrderClient(order.id,'4')">
                 <v-icon class="mr-2">mdi-close</v-icon> Cancel
               </v-btn>
             </div>
@@ -46,7 +46,7 @@
             <div class="bg-borderColor rounded-lg pa-2">
               <div class="d-flex justify-between pb-2">
                 <div class="h4 px-4 font-bold">Details</div>
-                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
+                <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
               <div class="flex justify-between">
                 <v-row>
@@ -109,7 +109,7 @@
             <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
               <div class="d-flex justify-between pb-2">
                 <div class="h4 font-bold">Customer Info</div>
-                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
+                <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
   
               <v-list-item class="w-100 my-4">
@@ -136,7 +136,7 @@
             <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
               <div class="d-flex justify-between pb-2">
                 <div class="h4 font-bold">Delivery</div>
-                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
+                <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
   
               <div class="w-100 my-4 space-y-4">
@@ -155,7 +155,7 @@
             <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
               <div class="d-flex justify-between pb-2">
                 <div class="h4 font-bold">Shipping location</div>
-                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
+                <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
   
               <div class="w-100 my-4 space-y-4">
@@ -178,7 +178,7 @@
             <div class="pa-1 border-b-0 mb-4 py-2 border-gray-200">
               <div class="d-flex justify-between pb-2">
                 <div class="h4 font-bold">Payment Mode</div>
-                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
+                <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
   
               <div class="w-100 my-4 space-y-4">
@@ -221,14 +221,10 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
-const route = useRoute();
 const http = useHttpRequest();
-const tab = ref(null);
+const route = useRoute();
 const orderId = ref(route.params.id);
 const order = ref([]);
-// const orderProducts = ref([]);
-const deliveryLocations = ref([]);
-const driver = ref([]);
 const loading = ref(false);
 const isApprove = ref(false);
 const btnApproveLoading = ref(false);
@@ -244,9 +240,7 @@ definePageMeta({
 });
 
 onMounted(() => {
-   console.log(orderId);
   loadOrderById(orderId.value);
-
 });
 
 const orderProducts = ref([]);

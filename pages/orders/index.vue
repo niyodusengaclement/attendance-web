@@ -60,7 +60,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <UiParentCard title="List Products">
+      <UiParentCard title="List All Orders">
         <v-chip class="ma-2 close-btn" color="info" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
           :model-value="true">
           Total Amount: <strong>{{ totalAmount + ' Rwf' }}</strong>
@@ -68,7 +68,8 @@
         <v-card-text>
           <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
             <v-tab @click="loadAllOrders('')" :value="1">All Orders
-              <v-chip size="small" class="ma-1"> {{ parseInt(completed) + parseInt(shipping) + parseInt(pending) + parseInt(cancelled) }} </v-chip>
+              <v-chip size="small" class="ma-1"> {{ parseInt(completed) + parseInt(shipping) + parseInt(pending) +
+                parseInt(cancelled) }} </v-chip>
             </v-tab>
             <v-tab @click="loadAllOrders('1')" :value="2">Completed
               <v-chip size="small" class="ma-1"> {{ completed }} </v-chip>
@@ -95,7 +96,7 @@
 
                     </template>
                     <template #item-reference_code="item">
-                      <NuxtLink :to="'/orders/' + item.id">
+                      <NuxtLink :to="'/orders/' + item.order_id">
                         <div class="text-primary font-bold">#{{ item.reference_code }}</div>
                       </NuxtLink>
                     </template>
@@ -115,7 +116,7 @@
                       <v-row justify="end">
                         <template v-if="item.status !== '1' && item.status !== '4'">
                           <v-btn size="small" flat variant="tonal" color="error" class="mx-1"
-                            @click="approveOrderClient(item.id, '4')">
+                            @click="approveOrderClient(item.order_id, '4')">
                             <v-icon class="mr-2">mdi-close</v-icon> Cancel
                           </v-btn>
                           <v-btn size="small" v-if="item.status == '0'" flat variant="tonal" color="success" class="mx-1"
@@ -123,7 +124,7 @@
                             <v-icon class="mr-2">mdi-check</v-icon> Approve
                           </v-btn>
                         </template>
-                        <NuxtLink :to="'/orders/' + item.id">
+                        <NuxtLink :to="'/orders/' + item.order_id">
                           <v-btn size="small" flat variant="outlined" color="info" class="mx-1">View
                             <v-icon class="ml-2">mdi-chevron-right</v-icon>
 
@@ -236,6 +237,7 @@ const selectedStatus: any = ref('')
 
 const menu = ref(false)
 const endDateMenu = ref(false)
+const productPerformance = ref([])
 const startDate = ref(new Date())
 startDate.value.setDate(startDate.value.getDate() - 30);
 const endDate = ref(new Date())
@@ -250,8 +252,9 @@ watch(endDate, () => {
 const maxDate = ref(new Date().toISOString().split('T')[0])
 
 onMounted(() => {
-  loadAllOrders();
-})
+  selectedStatus.value =  route.query.status || '';
+  loadAllOrders(selectedStatus.value);
+});
 
 const editingItem = reactive({
   reference_code: "",
@@ -273,15 +276,15 @@ const headers: Header[] = [
 const lists = ref([])
 const orderSelected = ref([])
 
-function loadAllOrders(status = '') {
+function loadAllOrders(status: any) {
   loading.value = true
   http.fetch("fetch_orders", {
     method: "post",
-    body: { 
-      status: status ? status : route.query.status,
+    body: {
+      status,
       startDate: formattedStartDate.value,
       endDate: formattedEndDate.value
-     }
+    }
   })
     .then((data: any) => {
       if (data.status == 200) {
@@ -299,8 +302,8 @@ function loadAllOrders(status = '') {
     .finally(() => {
       selectedStatus.value = status
       loading.value = false
-      }
-      );
+    }
+    );
 }
 
 function loadAllDrivers() {
