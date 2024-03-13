@@ -18,22 +18,21 @@ const isEditing = ref(false);
 const showDialog = ref(false);
 const lists = ref([]);
 const plateNumber = ref("")
+const middleName = ref("")
+const email = ref("")
 const editingItem = reactive({
     title: "",
     id: 0,
 });
 
 interface FormData {
-    names: Field<string>;
     phone: Field<string>;
     type: Field<string>;
+    firstName: Field<string>;
+    lastName: Field<string>;
 }
 
 const { form, validateFields, resetFields } = useValidation<FormData>({
-    names: {
-        $value: "",
-        $rules: [rules.required("Please name must be provided")],
-    },
     phone: {
         $value: "",
         $rules: [rules.required("Please name must be provided")],
@@ -41,6 +40,14 @@ const { form, validateFields, resetFields } = useValidation<FormData>({
     type: {
         $value: "",
         $rules: [rules.required("Please type must be choosed")],
+    },
+    firstName: {
+        $value: "",
+        $rules: [rules.min(1)("First name is required")],
+    },
+    lastName: {
+        $value: "",
+        $rules: [rules.min(1)("last name is required")],
     },
 });
 
@@ -62,15 +69,18 @@ const vehicleType = [
 
 async function createDriver() {
     loading.value = true;
-    var formData = await validateFields()
+    var data = await validateFields()
     http
         .fetch("create_driver", {
             method: "post",
             body: {
-                names: formData.names,
-                phone: formData.phone,
-                type: formData.type,
+                phone: data.phone,
+                type: data.type,
                 vehicleId: plateNumber.value,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                middleName: middleName.value,
+                email: email.value
             },
         })
         .then((data: any) => {
@@ -166,12 +176,31 @@ const download = computed(() => {
                 </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="createDriver">
                     <v-col cols="12">
-                        <v-text-field variant="outlined" density="compact" label="Name" v-model="form.names.$value"
-                            @blur="form.names.$validate()" color="primary"
-                            :error-messages="form.names.$errors"></v-text-field>
+                        <div class="flex flex-col my-1 group">
+                            <input type="firstName" v-model="form.firstName.$value" @blur="form.firstName.$validate()"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your First Name">
+                            <FormErrors :errors="form.firstName.$errors" class="p-error" />
+                        </div>
+                        <div class="flex flex-col my-1 group">
+                            <input type="tin" v-model="middleName"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your Middle Name (Optional)">
+                        </div>
+                        <div class="flex flex-col my-1 group">
+                            <input type="lastName" v-model="form.lastName.$value"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your Last Name">
+                            <FormErrors :errors="form.lastName.$errors" class="p-error" />
+                        </div>
                         <v-text-field variant="outlined" density="compact" label="Phone" v-model="form.phone.$value"
                             @blur="form.phone.$validate()" color="primary"
                             :error-messages="form.phone.$errors"></v-text-field>
+                        <div class="flex flex-col my-1 group">
+                            <input type="email" name="email" id="email" v-model="email"
+                                class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                placeholder="Enter your Email Address">
+                        </div>
                         <v-select label="Select Vehicle Type" v-model="form.type.$value" :items="vehicleType"
                             variant="outlined" @blur="form.type.$validate()" density="compact" color="primary"
                             item-title="text" :error-messages="form.type.$errors" item-value="value"></v-select>
@@ -179,8 +208,8 @@ const download = computed(() => {
                         <v-text-field variant="outlined" density="compact" label="Plate Number"
                             v-if="form.type.$value !== '1'" v-model="plateNumber" color="primary"></v-text-field>
 
-                        <v-btn :disabled="loading" :loading="loading" @click="createDriver()" class="my-2" color="primary"
-                            size="large" block flat>Save Driver</v-btn>
+                        <v-btn :disabled="loading" :loading="loading" @click="createDriver()" class="my-2"
+                            color="primary" size="large" block flat>Save Driver</v-btn>
                     </v-col>
                 </form>
             </UiParentCard>
@@ -190,7 +219,8 @@ const download = computed(() => {
                 <v-row class=" flex mb-4 justify-between">
                     <v-col cols="12" md="6">
                         <v-text-field v-model="search" :loading="loading" variant="outlined" density="compact"
-                            label="Search for Title or Something" prepend-inner-icon="mdi-magnify" single-line hide-details>
+                            label="Search for Title or Something" prepend-inner-icon="mdi-magnify" single-line
+                            hide-details>
                         </v-text-field>
                     </v-col>
                     <v-col class="flex justify-end" cols="12" md="4">
@@ -213,7 +243,11 @@ const download = computed(() => {
                 </v-row>
                 <ClientOnly>
                     <EasyDataTable empty-message="No Order found" :search-value="search" theme-color="#5d87ff"
-                        table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading" :items="lists">
+                        table-class-name="eztable" :headers="headers" buttons-pagination :loading="loading"
+                        :items="lists">
+                        <template #item-names="item">
+                            <p>{{ item.first_name + (item.middle_name ? ' ' + item.middle_name : '') + ' ' + item.last_name }}</p>
+                        </template>
                         <template #item-type="item">
                             <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
                         </template>

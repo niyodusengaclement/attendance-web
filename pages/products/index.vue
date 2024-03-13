@@ -170,7 +170,7 @@
                                 </div>
                             </div>
                         </v-col>
-                        <v-col cols="12" md="3">
+                        <v-col v-if="false" cols="12" md="3">
                             <div class="d-flex align-center mx-2 my-3">
                                 <div class="pa-2 rounded-lg" :class="step >= 3 ? 'bg-secondary' : 'bg-borderColor'">
                                     <CoinIcon class="mx-1 my-1" :class="step >= 3 ? 'text-white' : 'text-muted'"
@@ -343,9 +343,9 @@
                                             <div v-for="item in productKgs">
                                                 <v-card elevation="0" @click="selecteProductKg(item.kg)">
                                                     <div :class="selectedkg == item.kg
-            ? `bg-lightprimary border-blue-300`
-            : `bg-white `
-            " class="border-2 pa-2 rounded-lg">
+                                                        ? `bg-lightprimary border-blue-300`
+                                                        : `bg-white `
+                                                        " class="border-2 pa-2 rounded-lg">
                                                         <div class="font-bold mx-2">{{ item.kg }}</div>
                                                     </div>
                                                 </v-card>

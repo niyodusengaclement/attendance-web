@@ -40,11 +40,11 @@ const closeShop = (val: Item) => {
     editingItem.id = val.id;
 };
 interface FormData {
-    email: Field<string>;
     phone: Field<string>;
     name: Field<string>;
     description: Field<string>;
     zone: Field<string>;
+    email: Field<string>;
     firstName: Field<string>;
     lastName: Field<string>;
     location: Field<string>;
@@ -54,10 +54,6 @@ const {
     validateFields,
     resetFields
 } = useValidation<FormData>({
-    email: {
-        $value: "",
-        $rules: [rules.email("Please enter a valid email address")],
-    },
     phone: {
         $value: "",
         $rules: [rules.min(10)("Phone number has to be longer than 10 characters")],
@@ -73,6 +69,10 @@ const {
     zone: {
         $value: "",
         $rules: [rules.min(1)("Zone is required")],
+    },
+    email: {
+        $value: "",
+        $rules: [rules.email("Please enter a valid email address")],
     },
     firstName: {
         $value: "",
@@ -308,7 +308,7 @@ onMounted(() => {
                             <input type="lastName" v-model="form.lastName.$value"
                                 class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
                                 placeholder="Enter your Last Name">
-                                <FormErrors :errors="form.lastName.$errors" class="p-error" />
+                            <FormErrors :errors="form.lastName.$errors" class="p-error" />
                         </div>
                         <div class="flex flex-col my-1 group">
                             <input type="phone" name="phone" id="phone" v-model="form.phone.$value"
