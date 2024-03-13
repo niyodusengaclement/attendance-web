@@ -6,12 +6,12 @@
                 </v-btn>
                 <form role="form" @submit.prevent="handleSubmit">
 
-                    <v-img class="rounded-lg " height="100" :src="selectedFiles.length >= 1
+                    <!-- <v-img class="rounded-lg " height="100" :src="selectedFiles.length >= 1
                         ? selectedFiles[0].url
                         : '/images/placeholder.jpg'
-                        "></v-img>
+                        "></v-img> -->
                     <v-col cols="12">
-                        <div v-if="!file" class="mt-5">
+                        <!-- <div v-if="!file" class="mt-5">
                             <toast />
                             <div :class="['dropZone', dragging ? 'dropZone-over' : '']" @dragenter="dragging = true"
                                 @dragleave="dragging = false">
@@ -47,7 +47,7 @@
                                     size="small">
                                     Remove File</v-btn>
                             </div>
-                        </div>
+                        </div> -->
 
                         <v-text-field variant="outlined" density="compact" label="Title" v-model="form.productName.$value"
                             @blur="form.productName.$validate()" color="primary"
@@ -84,8 +84,8 @@
                 </v-btn>
                 <form ref="myForm" role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
-                        <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="125"
-                            class="bg-grey-lighten-2 border rounded-lg my-5"></v-img>
+                        <!-- <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="125"
+                            class="bg-grey-lighten-2 border rounded-lg my-5"></v-img> -->
                         <v-text-field variant="outlined" density="compact" label="Category" disabled="true"
                             v-model="editingItem.title" color="primary"></v-text-field>
                         <v-text-field variant="outlined" density="compact" label="Brand"
@@ -119,9 +119,9 @@
                     <ClientOnly>
                         <EasyDataTable empty-message="No Product found" :search-value="search" theme-color="#f97316"
                             table-class-name="eztable" :headers="headers" :items="categories" :loading="loading">
-                            <template #item-image_url="item">
+                            <!-- <template #item-image_url="item">
                                 <v-img :src="image_URL + item.image_url" height="40" class="rounded-lg"></v-img>
-                            </template>
+                            </template> -->
                             <template #empty-message>
                                 <div class="d-flex justify-center align-center py-3">
                                     <v-img src="/images/products/not_found.png" height="150"></v-img>
@@ -317,7 +317,7 @@ async function handleSubmit() {
 
 
 const headers: Header[] = [
-    { text: "Photo", value: "image_url", sortable: true },
+    // { text: "Photo", value: "image_url", sortable: true },
     { text: "Category", value: "title", sortable: true },
     { text: "Brands", value: "count_subcategory", sortable: true },
     { text: "Actions", value: "actions", width: 300 },
@@ -367,7 +367,7 @@ async function createCategory() {
     loading.value = true;
     var formData = new FormData();
     formData.append("category", form.productName.$value);
-    formData.append("image", file.value);
+    // formData.append("image", file.value);
     formData.append("id", "");
     http
         .fetch("create_category", {
