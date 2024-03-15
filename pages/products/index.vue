@@ -1,7 +1,7 @@
 <template>
     <v-row>
         <!-- LIST OF RECORTDS -->
-        <v-col cols="12" v-show="state == 1" md="12">
+        <v-col cols="12" :md="state == 1 ? '12' : '8'" v-show="state == 1 || state === 4">
             <UiParentCard parent-title="Dashboard" title="List Products">
                 <v-card-text v-show="isDeleting">
                     <v-alert prominent type="error" icon="mdi-delete" title="Delete" variant="outlined">
@@ -56,14 +56,17 @@
                             </template>
                             <template #item-actions="item">
                                 <div>
-
                                     <v-btn size="small" variant="outlined" color="success" class="mx-1"
-                                        @click="editItem(item)">
+                                        @click="editItem(item); enableProductEdit()">
                                         Update</v-btn>
 
                                     <v-btn size="small" variant="outlined" color="error" class="mx-1"
                                         @click="deleteItem(item)">
                                         Delete
+                                    </v-btn>
+                                    <v-btn size="small" variant="outlined" color="info" class="mx-1"
+                                        @click="editItem(item); enablePriceEdit()">
+                                        Update Price
                                     </v-btn>
                                 </div>
                             </template>
@@ -88,8 +91,8 @@
                                     v-model="editingItem.product_name" color="primary"></v-text-field>
 
                                 <v-select :label="editingItem.category + ' (Category)'" variant="outlined"
-                                    density="compact" v-model="editingItem.category_id" color="primary" :items="categories"
-                                    item-title="title" item-value="id"
+                                    density="compact" v-model="editingItem.category_id" color="primary"
+                                    :items="categories" item-title="title" item-value="id"
                                     @update:model-value="getSubCategories(editingItem.category_id)"></v-select>
 
                                 <v-select :label="editingItem.sub_category + ' (SubCategory)'" variant="outlined"
@@ -170,7 +173,7 @@
                                 </div>
                             </div>
                         </v-col>
-                        <v-col v-if="false" cols="12" md="3">
+                        <v-col cols="12" md="3">
                             <div class="d-flex align-center mx-2 my-3">
                                 <div class="pa-2 rounded-lg" :class="step >= 3 ? 'bg-secondary' : 'bg-borderColor'">
                                     <CoinIcon class="mx-1 my-1" :class="step >= 3 ? 'text-white' : 'text-muted'"
@@ -343,9 +346,9 @@
                                             <div v-for="item in productKgs">
                                                 <v-card elevation="0" @click="selecteProductKg(item.kg)">
                                                     <div :class="selectedkg == item.kg
-                                                        ? `bg-lightprimary border-blue-300`
-                                                        : `bg-white `
-                                                        " class="border-2 pa-2 rounded-lg">
+            ? `bg-lightprimary border-blue-300`
+            : `bg-white `
+            " class="border-2 pa-2 rounded-lg">
                                                         <div class="font-bold mx-2">{{ item.kg }}</div>
                                                     </div>
                                                 </v-card>
@@ -363,6 +366,29 @@
                                         </div>
                                     </v-col>
                                 </v-row>
+
+                                <v-col cols="12" md="4">
+                                    <div class="px-3">
+                                        <div class="pt-0 text-xs font-weight-bold">Measuring Type</div>
+
+                                        <div class="pt-1 font-weight-light text-[10px] text-muted">
+                                            Define a way to measure unit and quantity of this product
+                                        </div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="8">
+                                    <div class="flex space-x-4">
+                                        <v-select variant="outlined" density="compact" label="Selected Measuring Type"
+                                            v-model="selectedQuantityType" color="primary" :items="quantityTypes"
+                                            @update:model-value="measuringUnit = ''" item-title="label"
+                                            item-value="value" return-object></v-select>
+
+                                        <v-text-field v-model="measuringUnit" v-if="selectedQuantityType.value === '2'"
+                                            variant="outlined" density="compact" label="Measuring Unit" color="primary"
+                                            return-object></v-text-field>
+                                    </div>
+                                </v-col>
                             </v-row>
                             <v-row v-if="step == 2">
                                 <v-col cols="12" md="4">
@@ -385,13 +411,31 @@
                                         :error-messages="form.productDesc.$errors"></v-textarea>
                                 </v-col>
                             </v-row>
-                            <v-row v-if="false">
+                            <v-row v-if="step == 3">
                                 <v-col>
                                     <v-row>
                                         <v-col cols="12" md="4">
                                             <div class="px-3">
                                                 <div class="pt-0 text-xs font-weight-bold">
-                                                    Product Price
+                                                    Product purchase unit Price
+                                                </div>
+
+                                                <div class="pt-1 font-weight-light text-[10px] text-muted">
+                                                    Write what it cost you on one unit of product
+                                                </div>
+                                            </div>
+                                        </v-col>
+
+                                        <v-col cols="12" md="8">
+                                            <v-text-field variant="outlined" density="compact" v-model="purchasePrice"
+                                                color="primary"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="12" md="4">
+                                            <div class="px-3">
+                                                <div class="pt-0 text-xs font-weight-bold">
+                                                    Product unit Price
                                                 </div>
 
                                                 <div class="pt-1 font-weight-light text-[10px] text-muted">
@@ -401,9 +445,26 @@
                                         </v-col>
 
                                         <v-col cols="12" md="8">
-                                            <!-- <v-text-field variant="outlined" density="compact" v-model="form.productPrice.$value"
-                                                @blur="form.productPrice.$validate()" color="primary"
-                                                :error-messages="form.productPrice.$errors"></v-text-field> -->
+                                            <v-text-field variant="outlined" density="compact" v-model="productPrice"
+                                                color="primary"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row v-show="IsGas == '1'" class="mt-4">
+                                        <v-col cols="12" md="4">
+                                            <div class="px-3">
+                                                <div class="pt-0 text-xs font-weight-bold">
+                                                    Product purchase refilling Price
+                                                </div>
+
+                                                <div class="pt-1 font-weight-light text-[10px] text-muted">
+                                                    Write what it cost you to refill one unit of product
+                                                </div>
+                                            </div>
+                                        </v-col>
+
+                                        <v-col cols="12" md="8">
+                                            <v-text-field variant="outlined" density="compact"
+                                                v-model="refillpurchasePrice" color="primary"></v-text-field>
                                         </v-col>
                                     </v-row>
                                     <v-row v-show="IsGas == '1'">
@@ -418,11 +479,10 @@
                                                 </div>
                                             </div>
                                         </v-col>
-
-                                        <!-- <v-col cols="12" md="8">
-                                            <v-text-field variant="outlined" density="compact" v-model="editingItem.price"
-                                                color="primary"></v-text-field>
-                                        </v-col> -->
+                                        <v-col cols="12" md="8">
+                                            <v-text-field variant="outlined" density="compact"
+                                                v-model="editingItem.price" color="primary"></v-text-field>
+                                        </v-col>
                                     </v-row>
                                 </v-col>
 
@@ -432,11 +492,11 @@
                                     variant="outlined" prepend-icon="mdi-arrow-left" flat>
                                     Previous
                                 </v-btn>
-                                <v-btn @click="step == 2 ? createProduct() : nextPage()"
-                                    :disabled="loading || ((file.length === 0 || form.productName.$value == '' || selectedCategory == '') && step == 2)"
+                                <v-btn @click="step == 3 ? createProduct() : nextPage()"
+                                    :disabled="loading || ((file.length === 0 || form.productName.$value == '' || selectedCategory == '') && step == 3)"
                                     :loading="loading" class="my-4 mx-2" color="primary" append-icon="mdi-arrow-right"
                                     flat>
-                                    {{ step == 2 ? 'Create Product' : 'Continue' }}
+                                    {{ step == 3 ? 'Create Product' : 'Continue' }}
                                 </v-btn>
                             </v-col>
                         </form>
@@ -450,19 +510,15 @@
                                         indeterminate></v-progress-linear>
                                 </template>
 
-                                <v-img class="rounded-lg" contain height="250" :src="selectedFiles.length >= 1
-            ? selectedFiles[0].url
-            : '/images/placeholder.jpg'
-            "></v-img>
+                                <v-img class="rounded-lg" contain height="250"
+                                    :src="selectedFiles.length >= 1 ? selectedFiles[0].url : '/images/placeholder.jpg'"></v-img>
 
                                 <v-card-item>
-                                    <v-card-title class="text-info">{{
-            form.productName.$value
-        }}</v-card-title>
+                                    <v-card-title class="text-info">{{ form.productName.$value }}</v-card-title>
 
                                     <v-card-subtitle>
-                                        <span class="me-1">{{ selectedCategory.title }} </span><span class="me-1">{{
-            selectedSubCategory.title }}, </span>
+                                        <span class="me-1">{{ selectedCategory.title }} \
+                                        </span><span class="me-1">{{ selectedSubCategory.title }}, </span>
                                     </v-card-subtitle>
 
                                     <div v-show="IsGas == '1'" class="py-2 flex space-x-2 items-center">
@@ -498,6 +554,46 @@
                 </v-row>
             </UiParentCard>
         </v-col>
+
+        <!-- EDITING PRICE RECORDS -->
+        <v-col cols="12" v-show="state == 4" md="4">
+            <UiParentCard :title="'Updating ' + editingItem.product_name + ' price'" class="text-success">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
+                </v-btn>
+                <v-row>
+                    <v-col>
+                        <v-img aspect-ratio="1/1" :src="image_URL + editingItem.image_url" max-height="300"
+                            class="bg-grey-lighten-2 border rounded-lg my-5"></v-img>
+                        <form ref="myForm" role="form" @submit.prevent="handleSubmit">
+                            <v-col cols="12">
+                                <v-text-field variant="outlined" label="Product purchase unit Price" density="compact"
+                                    v-model="editingItem.purchasePrice" color="primary"></v-text-field>
+                                <v-text-field variant="outlined" label="Product unit Price" density="compact"
+                                    v-model="editingItem.productPrice" color="primary"></v-text-field>
+                                <div v-if="editingItem.is_gas == '1'">
+                                    <v-text-field variant="outlined" label="Product purchase refilling Price"
+                                        density="compact" v-model="editingItem.refillpurchasePrice"
+                                        color="primary"></v-text-field>
+                                    <v-text-field variant="outlined" label="Product Refilling Price" density="compact"
+                                        v-model="editingItem.price" color="primary"></v-text-field>
+                                </div>
+                                <div class="flex justify-start space-x-4">
+                                    <v-btn @click="state = 1; reset()" class="my-4" color="error" variant="outlined"
+                                        flat>
+                                        <v-icon class="mr-2 ">mdi-close</v-icon> Close Update</v-btn>
+                                    <v-btn @click="updatePrice()" :disabled="loading" :loading="loading" class="my-4"
+                                        color="primary" flat>Update Price</v-btn>
+
+                                </div>
+
+                            </v-col>
+                        </form>
+                    </v-col>
+
+                </v-row>
+
+            </UiParentCard>
+        </v-col>
     </v-row>
 </template>
 <script setup lang="ts">
@@ -519,12 +615,18 @@ const selectedCategory = ref("");
 const selectedSubCategory = ref("");
 const isProductGas = ref(false);
 const btnDeletingLoading = ref(false);
+let formData = new FormData();
+const http = useHttpRequest();
 const productType = [
     { label: "Yes", value: "1" },
     { label: "No", value: "0" },
 ];
-let formData = new FormData();
-const http = useHttpRequest();
+const selectedQuantityType = ref('')
+const quantityTypes = [
+    { label: "Unit", value: "1" },
+    { label: "Fraction", value: "2" },
+];
+const measuringUnit = ref('')
 const instance = getCurrentInstance();
 const image_URL = config.public.imageURL;
 interface FormData {
@@ -544,7 +646,11 @@ const step = ref(1);
 const IsGas = ref("");
 const isEditing = ref(false);
 const isDeleting = ref(false);
+const idPriceEditing = ref(false);
 const selectedkg = ref("");
+const productPrice = ref("");
+const purchasePrice = ref("");
+const refillpurchasePrice = ref("");
 
 const {
     form,
@@ -591,6 +697,21 @@ function reset() {
     isEditing.value = false
     isDeleting.value = false
     selectedkg.value = ''
+    measuringUnit.value = ''
+    selectedCategory.value = ''
+    selectedSubCategory.value = ''
+    isProductGas.value = false
+    btnDeletingLoading.value = false
+    selectedQuantityType.value = ''
+    file.value = ''
+    productPrice.value = ''
+    purchasePrice.value = ''
+    refillpurchasePrice.value = ''
+    editingItem.price = ''
+    editingItem.productPrice = ''
+    editingItem.purchasePrice = ''
+    editingItem.refillpurchasePrice = ''
+    resetFields()
 }
 onMounted(() => {
     getProducts();
@@ -653,7 +774,9 @@ const headers: Header[] = [
     { text: "Category", value: "category", sortable: true },
     { text: "Bands", value: "sub_category", sortable: true },
     { text: "Gas", value: "is_gas", sortable: true },
-    { text: "Actions", value: "actions", width: 200 },
+    { text: "Selling price", value: "selling_price", sortable: true },
+    { text: "Refilling price", value: "refilling_price", sortable: true },
+    { text: "Actions", value: "actions", width: 300 },
 ];
 
 async function createProduct() {
@@ -666,7 +789,12 @@ async function createProduct() {
     formData.append("description", form.productDesc.$value);
     formData.append("kg", selectedkg.value);
     formData.append("product_rate", "0.0");
+    formData.append("measuringUnit", measuringUnit.value === '' ? selectedQuantityType.value.label : measuringUnit.value);
     formData.append("is_gas", IsGas.value);
+    formData.append("productPrice", productPrice.value);
+    formData.append("purchasePrice", purchasePrice.value);
+    formData.append("refillpurchasePrice", refillpurchasePrice.value);
+    formData.append("refillingPrice", editingItem.price);
     http
         .fetch("create_new_product", {
             method: "POST",
@@ -676,6 +804,7 @@ async function createProduct() {
             if (res.status == 200) {
                 useToast().success(res.message);
                 getProducts();
+                reset()
             }
         })
         .catch((error) => {
@@ -718,8 +847,6 @@ async function updateProduct(id: any) {
 
         });
 }
-
-
 function getCategories() {
     http
         .fetch("all_categories")
@@ -769,6 +896,10 @@ const editingItem = reactive({
     quantity_kg: "",
     is_gas: "",
     id: 0,
+    price: '',
+    productPrice: '',
+    purchasePrice: '',
+    refillpurchasePrice: '',
 });
 
 const deleteItem = (val: Item) => {
@@ -777,12 +908,17 @@ const deleteItem = (val: Item) => {
     editingItem.product_name = product_name;
     editingItem.id = id;
 };
-
-const editItem = (val: Item) => {
-    console.log(val);
-    
+const enableProductEdit = () => {
     isEditing.value = true;
     state.value = 3;
+}
+const enablePriceEdit = () => {
+    idPriceEditing.value = true
+    state.value = 4;
+
+
+}
+const editItem = (val: Item) => {
     const {
         image_url,
         product_name,
@@ -794,6 +930,10 @@ const editItem = (val: Item) => {
         quantity_kg,
         is_gas,
         id,
+        selling_price,
+        refilling_price,
+        purchase_price,
+        refilling_purchase_price
     } = val;
     editingItem.image_url = image_url;
     editingItem.product_name = product_name;
@@ -805,6 +945,10 @@ const editItem = (val: Item) => {
     editingItem.is_gas = is_gas;
     editingItem.quantity_kg = quantity_kg;
     editingItem.id = id;
+    editingItem.price = refilling_price
+    editingItem.productPrice = selling_price
+    editingItem.purchasePrice = purchase_price
+    editingItem.refillpurchasePrice = refilling_purchase_price
 };
 
 const nextPage = () => {
@@ -876,5 +1020,23 @@ function onFileSelect(e: any) {
 
     file.value = files[0];
     console.log(selectedFiles);
+}
+
+function updatePrice() {
+    http.fetch("updateProductPrice", {
+        method: "post",
+        body: {
+            productId: editingItem.id,
+            buyingPrice: editingItem.purchasePrice,
+            sellingPrice: editingItem.productPrice,
+            refillpurchasePrice: editingItem.refillpurchasePrice,
+            refillingPrice: editingItem.price
+        }
+    })
+        .then(res => {
+            useToast().success(res.message);
+            reset()
+            getProducts();
+        })
 }
 </script>

@@ -129,20 +129,19 @@
                                 <p class="text-muted font-weight-light"> No Found</p>
                             </template>
                             <template #item-count_subcategory="item">
-                                <div @click="viewSubCategory(item)">
+                                <div @click="viewSubCategory(item)" class="flex items-center">
                                     <div
                                         class="font-bold text priamry hover:underline underline-offset-4 hover:cursor-pointer transition duration-200">
                                         {{ item.count_subcategory }}
                                         Brands
                                     </div>
+                                    <v-btn size="x-small" variant="tonal" icon="mdi-plus" color="success" class="mx-1"
+                                        @click="addNewItem(item)">
+                                        </v-btn>
                                 </div>
                             </template>
                             <template #item-actions="item">
                                 <div>
-                                    <v-btn size="small" variant="outlined" color="primary" class="mx-1"
-                                        @click="addNewItem(item)">
-                                        Add new</v-btn>
-
                                     <v-btn size="small" variant="outlined" color="success" class="mx-1"
                                         @click="editItem(item)">
                                         Update</v-btn>
@@ -380,7 +379,7 @@ async function createCategory() {
             removeFile();
         })
         .catch((data: any) => {
-            useToast().error(data.data.message);
+            useToast().error(data.message);
             console.log(data);
         })
         .finally(() => {

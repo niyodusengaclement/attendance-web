@@ -45,9 +45,9 @@
                             @update:modelValue="loadProductByCategory(selectedCategory.id)" return-object></v-select>
 
                         <v-select label="Select product" v-model="selectedProduct" :items="products" variant="outlined"
-                            density="compact" color="primary" item-title="text" item-value="value"></v-select>
+                            density="compact" color="primary" item-title="text" item-value="value" return-object @update:model-value="form.type.$value = '2'"></v-select>
 
-                        <v-select label="Select Stock type" v-model="form.type.$value" :items="stockType" variant="outlined"
+                        <v-select label="Select Stock type" v-if="selectedProduct.is_gas == '1'" v-model="form.type.$value" :items="stockType" variant="outlined"
                             @blur="form.type.$validate()" density="compact" color="primary" item-title="text"
                             :error-messages="form.type.$errors" item-value="value"></v-select>
 
@@ -124,7 +124,7 @@
                                     </v-row>
                                 </v-col>
                                 <v-col cols="12" md="4" class="flex justify-end">
-                                    <v-btn v-if="state != 2 && logger.category != '1'" prepend-icon="mdi-plus"
+                                    <v-btn v-if="state != 2 && logger.category == '1'" prepend-icon="mdi-plus"
                                         color="primary" class="mx-2" variant="tonal" @click="onAddStockData">
                                         Add Stock
                                     </v-btn>
@@ -135,7 +135,7 @@
                                             Export
                                         </v-btn>
                                     </form>
-                                    <v-btn v-if="state != 4 && logger.category == '2'" prepend-icon="mdi-export"
+                                    <v-btn v-if="state != 4 && logger.category == '1'" prepend-icon="mdi-export"
                                         color="info" class="mx-2" variant="tonal" @click="onMoveastock()">
                                         Move Stock
                                     </v-btn>
@@ -238,9 +238,8 @@ const stockItemType = [
     { label: "Gas", value: "2" },
 ];
 const stockType = [
-    { text: "Stock in", value: "1" },
+    { text: "Refilling", value: "1" },
     { text: "New stock", value: "2" },
-    { text: "stock return", value: "3" },
 ];
 const MoveType = [
     { text: "Filled Gas", value: "1" },
@@ -251,13 +250,13 @@ const headers: Header[] = [
     { text: "Photo", value: "image_url", sortable: true },
     { text: "Product", value: "product", sortable: true },
     { text: "Stock In", value: "in_stock", sortable: true },
-    { text: "Stock Out", value: "emptyCylinder", sortable: true },
-    { text: "Stock Return", value: "stock_return", sortable: true },
+    { text: "Empty Cylinders", value: "emptyCylinder", sortable: true },
+    // { text: "Stock Return", value: "stock_return", sortable: true },
     { text: "Status", value: "status", sortable: true },
     { text: "Actions", value: "actions", width: 120 },
 ];
 
-function loadStockProducts(type: string) {
+function loadStockProducts(type = '') {
     loading.value = true;
     slctdType.value = type
     let formData = new FormData();
@@ -281,13 +280,13 @@ function loadStockProducts(type: string) {
 }
 
 const statusStr = (status: any) => {
-    if (status >= 5000) {
+    if (status >= 500) {
         return "Full STOCK";
-    } else if (status < 5000 && status > 1000) {
+    } else if (status < 500 && status > 100) {
         return "Medium";
-    } else if (status < 1000 && status > 100) {
+    } else if (status < 100 && status > 10) {
         return "Lower Stock";
-    } else if (status < 100 && status > 1) {
+    } else if (status < 10 && status > 1) {
         return "Critical low";
     } else {
         return "Empty Stock";
@@ -295,13 +294,13 @@ const statusStr = (status: any) => {
 };
 
 const statusClr = (status: any) => {
-    if (status >= 5000) {
+    if (status >= 500) {
         return "success";
-    } else if (status < 5000 && status > 1000) {
+    } else if (status < 500 && status > 100) {
         return "primary";
-    } else if (status < 1000 && status > 200) {
+    } else if (status < 100 && status > 10) {
         return "secondary";
-    } else if (status < 2000 && status > 1) {
+    } else if (status < 10 && status > 1) {
         return "warning";
     } else {
         return "error";
@@ -397,10 +396,10 @@ async function saveData() {
         .fetch("adding_stock_item", {
             method: "POST",
             body: {
-                product_id: selectedProduct.value
+                product_id: selectedProduct.value.value
                 , type: formData.type
                 , quantity: formData.quantity
-                , category: selectedCategory.value.title
+                , category: selectedProduct.value.is_gas
             },
         })
         .then((res: any) => {
