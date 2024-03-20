@@ -345,10 +345,8 @@
                                         <div class="flex space-x-4">
                                             <div v-for="item in productKgs">
                                                 <v-card elevation="0" @click="selecteProductKg(item.kg)">
-                                                    <div :class="selectedkg == item.kg
-            ? `bg-lightprimary border-blue-300`
-            : `bg-white `
-            " class="border-2 pa-2 rounded-lg">
+                                                    <div :class="selectedkg == item.kg ? `bg-lightprimary border-blue-300` : `bg-white `"
+                                                        class="border-2 pa-2 rounded-lg">
                                                         <div class="font-bold mx-2">{{ item.kg }}</div>
                                                     </div>
                                                 </v-card>
@@ -379,14 +377,15 @@
 
                                 <v-col cols="12" md="8">
                                     <div class="flex space-x-4">
-                                        <v-select variant="outlined" density="compact" label="Selected Measuring Type"
+                                        <v-select variant="outlined" density="compact" label="Select Measuring Type"
                                             v-model="selectedQuantityType" color="primary" :items="quantityTypes"
                                             @update:model-value="measuringUnit = ''" item-title="label"
                                             item-value="value" return-object></v-select>
 
-                                        <v-text-field v-model="measuringUnit" v-if="selectedQuantityType.value === '2'"
-                                            variant="outlined" density="compact" label="Measuring Unit" color="primary"
-                                            return-object></v-text-field>
+                                        <v-select variant="outlined" density="compact" label="Select Measuring unit"
+                                            v-model="measuringUnit" color="primary" :items="commonUnits"
+                                            item-title="label" item-value="value"
+                                            v-if="selectedQuantityType.value === '2'"></v-select>
                                     </div>
                                 </v-col>
                             </v-row>
@@ -626,6 +625,14 @@ const quantityTypes = [
     { label: "Unit", value: "1" },
     { label: "Fraction", value: "2" },
 ];
+const commonUnits = [
+    { label: "meter", value: "m" },
+    { label: "liter", value: "l" },
+    { label: "Kirogram", value: "kg" },
+    { label: "Gram", value: "g" },
+    { label: "Ton", value: "t" },
+    { label: "meter square", value: "m2" },
+];
 const measuringUnit = ref('')
 const instance = getCurrentInstance();
 const image_URL = config.public.imageURL;
@@ -716,6 +723,7 @@ function reset() {
 onMounted(() => {
     getProducts();
     getCategories();
+    getSubCategories()
 });
 
 async function handleSubmit() {
@@ -860,13 +868,10 @@ function getCategories() {
         .finally(() => (loading.value = false));
 }
 
-function getSubCategories(id: any) {
-    var formData = new FormData();
-    formData.append("category_id", id.toString());
+function getSubCategories() {
     http
         .fetch("all_sub_categories", {
-            method: "post",
-            body: formData,
+            method: "post"
         })
         .then((data: any) => {
             if (data.status == 200) {

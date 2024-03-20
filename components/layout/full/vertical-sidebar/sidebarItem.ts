@@ -40,6 +40,11 @@ const sidebarItem: menu[] = [
     to: "/category",
   },
   {
+    title: "Brands",
+    icon: PackageIcon,
+    to: "/brands",
+  },
+  {
     title: "Products",
     icon: PackageIcon,
     to: "/products",

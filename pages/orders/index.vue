@@ -183,7 +183,7 @@
                     <v-card-text>
 
                       <v-select v-model="selectedDeliveryId" :items="drivers" variant="outlined" density="compact"
-                        label="Assign Driver" color="primary" item-title="names" item-value="id" return-object></v-select>
+                        label="Assign Driver" color="primary" item-title="first_name" item-value="id" return-object></v-select>
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
@@ -266,7 +266,7 @@ const headers: Header[] = [
   { text: "Order ID", value: "reference_code", sortable: true },
   { text: "Customer", value: "customer_name", sortable: true },
   { text: "Package", value: "packages", sortable: true },
-  { text: "Price", value: "amount_paid", sortable: true },
+  { text: "Price", value: "total_amount", sortable: true },
   { text: "Payment Mode", value: "payment_mode", sortable: true },
   { text: "Delivery Status", value: "status", sortable: true },
   { text: "Delivery Date", value: "updated_at", sortable: true },
@@ -294,7 +294,7 @@ function loadAllOrders(status: any) {
         shipping.value = data.shipping;
         completed.value = data.completed;
 
-        totalAmount.value = data.records.reduce((sum, obj) => sum + parseInt(obj.amount_paid), 0);
+        totalAmount.value = data.records.reduce((sum, obj) => sum + parseInt(obj.total_amount), 0);
         instance?.proxy?.$forceUpdate();
       }
     })
@@ -399,25 +399,27 @@ const onSearchData = () => {
 
 const editItem = (val: Item) => {
   isViewing.value = true;
+  console.log(val);
+  
 
-  const { reference_code, customer_name, id } =
+  const { reference_code, first_name, id } =
     val;
 
   loadPackagesList(id);
 
   editingItem.reference_code = reference_code;
-  editingItem.customer_name = customer_name;
+  editingItem.customer_name = first_name;
   editingItem.id = id;
 
 };
 
 const approveItem = (val: Item) => {
   isApprove.value = true;
-  const { reference_code, customer_name, id } =
+  const { reference_code, first_name, id } =
     val;
   loadAllDrivers();
   editingItem.reference_code = reference_code;
-  editingItem.customer_name = customer_name;
+  editingItem.customer_name = first_name;
   editingItem.id = id;
 
 };

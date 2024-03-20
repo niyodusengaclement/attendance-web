@@ -1,30 +1,28 @@
 <template>
     <v-row>
+        <!--UPDATE STOCK -->
         <v-col cols="12" v-show="state == 3" :md="state == 1 ? 12 : 4">
             <UiParentCard title="Update Product Stock ">
                 <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
                 </v-btn>
                 <form role="form">
                     <v-col cols="12">
-                        <v-select label="Choose Item Type" variant="outlined" density="compact" v-model="selectedType"
-                            color="primary" :items="stockItemType" item-title="label" item-value="value"></v-select>
-                        <v-select label="Choose Action" variant="outlined" density="compact" v-model="selectedAction"
-                            color="primary" :items="stockOptionType" item-title="label" item-value="value"></v-select>
 
                         <v-text-field disabled="true" variant="outlined" density="compact" label="Product"
                             v-model="editingItem.product" color="primary"></v-text-field>
 
-                        <v-text-field v-show="selectedAction == '1'" variant="outlined" density="compact"
-                            label="Item Stock In" v-model="editingItem.new_stock_in" color="primary"></v-text-field>
+                        <v-select label="Select Stock type" v-if="selectedProduct.is_gas == '1'"
+                            v-model="form.type.$value" :items="stockType" variant="outlined"
+                            @blur="form.type.$validate()" density="compact" color="primary" item-title="text"
+                            :error-messages="form.type.$errors" item-value="value"></v-select>
 
-                        <v-text-field v-show="selectedAction == '2'" variant="outlined" density="compact"
-                            label="Item Stock Out" v-model="editingItem.new_stock_out" color="primary"></v-text-field>
-
-                        <v-text-field v-show="selectedAction == '3'" variant="outlined" density="compact"
-                            label="Item Stock Return" v-model="editingItem.new_stock_return" color="primary"></v-text-field>
+                        <v-text-field variant="outlined" density="compact" label="Number of Items"
+                            v-model="form.quantity.$value" @blur="form.quantity.$validate()" color="primary"
+                            :error-messages="form.quantity.$errors"></v-text-field>
 
                         <div class="flex justify-between space-x-4">
-                            <v-btn @click="state = 1" class="my-4" color="error" variant="outlined" size="large" flat> Close
+                            <v-btn @click="state = 1" class="my-4" color="error" variant="outlined" size="large" flat>
+                                Close
                             </v-btn>
                             <v-btn @click.prevent="saveData" :disabled="loading" :loading="loading" class="my-4"
                                 color="success" size="large" flat> Update Product Stock</v-btn>
@@ -40,14 +38,17 @@
                 </v-btn>
                 <form role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
-                        <v-select label="Select Category" variant="outlined" density="compact" v-model="selectedCategory"
-                            color="primary" :items="categories" item-title="title" item-value="id"
-                            @update:modelValue="loadProductByCategory(selectedCategory.id)" return-object></v-select>
+                        <v-select label="Select Category" variant="outlined" density="compact"
+                            v-model="selectedCategory" color="primary" :items="categories" item-title="title"
+                            item-value="id" @update:modelValue="loadProductByCategory(selectedCategory.id)"
+                            return-object></v-select>
 
                         <v-select label="Select product" v-model="selectedProduct" :items="products" variant="outlined"
-                            density="compact" color="primary" item-title="text" item-value="value" return-object @update:model-value="form.type.$value = '2'"></v-select>
+                            density="compact" color="primary" item-title="text" item-value="value" return-object
+                            @update:model-value="form.type.$value = '2'"></v-select>
 
-                        <v-select label="Select Stock type" v-if="selectedProduct.is_gas == '1'" v-model="form.type.$value" :items="stockType" variant="outlined"
+                        <v-select label="Select Stock type" v-if="selectedProduct.is_gas == '1'"
+                            v-model="form.type.$value" :items="stockType" variant="outlined"
                             @blur="form.type.$validate()" density="compact" color="primary" item-title="text"
                             :error-messages="form.type.$errors" item-value="value"></v-select>
 
@@ -55,21 +56,23 @@
                             v-model="form.quantity.$value" @blur="form.quantity.$validate()" color="primary"
                             :error-messages="form.quantity.$errors"></v-text-field>
 
-                        <v-btn @click.prevent="saveData" :disabled="loading" class="my-4" color="primary" size="large" block
-                            flat>{{ loading ? "Creating Item..." : "Create New Item" }}</v-btn>
+                        <v-btn @click.prevent="saveData" :disabled="loading" class="my-4" color="primary" size="large"
+                            block flat>{{ loading ? "updating Item..." : "Update Stock" }}</v-btn>
                     </v-col>
                 </form>
             </UiParentCard>
         </v-col>
+        <!--MOVE STOCH TO ANOTHER SHOP-->
         <v-col cols="12" v-show="state == 4" :md="state == 1 ? 12 : 4">
             <UiParentCard title="Moving Product to branch">
                 <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
                 </v-btn>
                 <form role="form" @submit.prevent="handleSubmit">
                     <v-col cols="12">
-                        <v-select label="Select Category" variant="outlined" density="compact" v-model="selectedCategory"
-                            color="primary" :items="categories" item-title="title" item-value="id"
-                            @update:modelValue="loadProductByCategory(selectedCategory.id)" return-object></v-select>
+                        <v-select label="Select Category" variant="outlined" density="compact"
+                            v-model="selectedCategory" color="primary" :items="categories" item-title="title"
+                            item-value="id" @update:modelValue="loadProductByCategory(selectedCategory.id)"
+                            return-object></v-select>
 
                         <v-select label="Select product" v-model="selectedProduct" :items="products" variant="outlined"
                             density="compact" color="primary" item-title="text" item-value="value"></v-select>
@@ -90,6 +93,55 @@
                 </form>
             </UiParentCard>
         </v-col>
+        <!-- REQUEST STOCK FROM MAIN-->
+        <v-col cols="12" v-show="state == 5" :md="state == 1 ? 12 : 4">
+            <UiParentCard title="Moving Product to branch">
+                <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
+                </v-btn>
+
+                <v-list lines="two">
+                    <v-list-subheader>Selected Products</v-list-subheader>
+
+                    <v-list-item v-for="item in productToRequest" :key="item.id" :subtitle="(item.type == '1' ? 'Refilling' : 'New Stock') + ' / ' + item.quantity" :title="item.text">
+
+                        <template v-slot:append>
+                            <v-btn color="grey-lighten-1" icon="mdi-information" variant="text"></v-btn>
+                        </template>
+                    </v-list-item>
+                </v-list>
+
+                <form role="form" @submit.prevent="handleSubmit">
+                    <v-col cols="12">
+                        <v-card class="px-3 py-3">
+                            <v-select label="Select Category" variant="outlined" density="compact"
+                                v-model="selectedCategory" color="primary" :items="categories" item-title="title"
+                                item-value="id" @update:modelValue="loadProductByCategory(selectedCategory.id)"
+                                return-object></v-select>
+                            <v-autocomplete
+                                :custom-filter="customFilter"
+                                label="Select product" v-model="selectedProduct" :items="products" variant="outlined"
+                                density="compact" color="primary" @update:model-value="selectedProduct.type = '2'" item-title="text" item-value="value" return-object
+                            ></v-autocomplete>
+    
+                            <v-select label="Select Stock type" v-if="selectedProduct.is_gas == '1'"
+                                v-model="selectedProduct.type" :items="stockType" variant="outlined"
+                                 density="compact" color="primary" item-title="text"
+                                item-value="value"></v-select>
+    
+                            <v-text-field variant="outlined" density="compact" label="Number of Items"
+                                v-model="selectedProduct.quantity" color="primary"></v-text-field>
+                            <v-card-actions class="justify-content-end">
+                                <v-btn @click.prevent="addProduct" :disabled="loading" class="my-4" color="warning" size="small"
+                                    flat>Add Product</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                        <v-btn @click.prevent="requestProducts" :disabled="loading" class="my-4" color="primary" size="large"
+                                block flat>{{ loading ? "updating Item..." : "Add Product" }}</v-btn>
+                    </v-col>
+                </form>
+            </UiParentCard>
+        </v-col>
+        <!-- STOCK BALANCE -->
         <v-col cols="12" :md="state != 1 ? 8 : 12">
             <UiParentCard title="Inventory Products">
                 <v-card-text>
@@ -104,20 +156,20 @@
                             <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab> -->
                         <v-tab @click="loadStockProducts('OUTOFSTOCK')" :value="2">Out of Stock
                             <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab>
-                        <v-tab @click="loadStockProducts('RETURNSTOCK')" :value="3">Return in Stock
-                            <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab>
+                        <!-- <v-tab @click="loadStockProducts('RETURNSTOCK')" :value="3">Return in Stock
+                            <v-chip size="small" class="ma-1"> 0 </v-chip></v-tab> -->
                     </v-tabs>
                     <v-container>
                         <v-card class="mx-auto bg-gray" flat color="grey-lighten-4">
                             <v-row>
                                 <v-col cols="12" md="8">
                                     <v-row>
-                                        <v-col cols="12" md="3">
+                                        <!-- <v-col cols="12" md="3">
                                             <FilterDataTable :label="'Filter By'" :filters="[{ title: 'Low Stock' }]" />
-                                        </v-col>
+                                        </v-col> -->
                                         <v-col cols="12" md="7">
-                                            <v-text-field variant="outlined" v-model="search" :loading="loading" outlined
-                                                density="compact" label="Search by product name"
+                                            <v-text-field variant="outlined" v-model="search" :loading="loading"
+                                                outlined density="compact" label="Search by product name"
                                                 prepend-inner-icon="mdi-magnify" single-line hide-details
                                                 @click:prepend-inner="onSearchData">
                                             </v-text-field></v-col>
@@ -138,6 +190,14 @@
                                     <v-btn v-if="state != 4 && logger.category == '1'" prepend-icon="mdi-export"
                                         color="info" class="mx-2" variant="tonal" @click="onMoveastock()">
                                         Move Stock
+                                    </v-btn>
+                                    <v-btn v-if="state != 5 && logger.category == '2'" prepend-icon="mdi-export"
+                                        color="error" class="mx-2" variant="tonal" @click="state = 5;getCategories()">
+                                        Stock Request
+                                    </v-btn>
+                                    <v-btn prepend-icon="mdi-export"
+                                        color="Warning" class="mx-2" variant="tonal" to="/stock/requests">
+                                        Stock Request
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -165,11 +225,10 @@
 
                                         <template #item-actions="item">
                                             <div class="row">
-                                                <v-btn size="small" v-if="logger.category != '1'" flat variant="outlined"
-                                                    color="info" class="mx-1" @click="editItem(item)">
+                                                <v-btn size="small" flat variant="outlined" color="info" class="mx-1"
+                                                    @click="editItem(item)">
                                                     <v-icon>mdi-plus</v-icon> Update Stock
                                                 </v-btn>
-                                                <span v-else>-</span>
                                             </div>
                                         </template>
                                     </EasyDataTable>
@@ -224,8 +283,9 @@ const selectedBranch = ref("");
 const type = ref("");
 const slctdType = ref("")
 const branches = ref([]);
+const productToRequest = ref([])
 onMounted(() => {
-    loadStockProducts('');
+    loadStockProducts();
 });
 const stockOptionType = [
     { label: "Stock IN", value: "1" },
@@ -246,7 +306,7 @@ const MoveType = [
     { text: "Empty cylinder", value: "2" },
 ];
 const headers: Header[] = [
-    { text: "ID", value: "ReferenceNo", sortable: true },
+    { text: "ID", value: "id", sortable: true },
     { text: "Photo", value: "image_url", sortable: true },
     { text: "Product", value: "product", sortable: true },
     { text: "Stock In", value: "in_stock", sortable: true },
@@ -328,9 +388,29 @@ function getCategories() {
 const onAddStockData = () => {
     state.value = 2;
     getCategories();
-    console.log("State = " + state.value);
 };
+const addProduct = () => {
+    productToRequest.value.push(selectedProduct.value)
 
+    selectedProduct.value = ""
+}
+function requestProducts() {
+    console.log(productToRequest.value);
+    http.fetch("request_product", {
+        method: "post",
+        body: {
+            products: productToRequest.value
+        }
+    })
+    .then(res => {
+        useToast().success(res.message)
+        selectedProduct.value = ''
+        state.value = 1
+        productToRequest.value = []
+    }).catch(err => {
+        useToast().error(err.data.message)
+    })
+}
 const onMoveastock = () => {
     state.value = 4;
     getCategories();
@@ -360,6 +440,14 @@ const moveStock = () => {
             loading.value = false
         })
 }
+const customFilter = (itemTitle, queryText, item) => {
+    const textOne = item.raw.name.toLowerCase()
+    const textTwo = item.raw.abbr.toLowerCase()
+    const searchText = queryText.toLowerCase()
+
+    return textOne.indexOf(searchText) > -1 ||
+        textTwo.indexOf(searchText) > -1
+}
 
 interface FormData {
     quantity: Field<string>;
@@ -372,7 +460,7 @@ const { form, validating, validateFields, resetFields } =
             $rules: [rules.required("Please quantity must be provided")],
         },
         type: {
-            $value: "",
+            $value: "2",
             $rules: [rules.required("Please type must be choosed")],
         },
     });
@@ -407,6 +495,7 @@ async function saveData() {
                 useToast().success(res.message);
                 loadStockProducts();
                 state.value = 1;
+                reset()
             } else {
                 useToast().error(res.message);
             }
@@ -448,8 +537,6 @@ function getAllShops() {
 
         })
 }
-
-
 //EDITTING
 
 const editingItem = reactive({
@@ -468,6 +555,9 @@ const editingItem = reactive({
 const editItem = (val: Item) => {
     isEditing.value = true;
     getCategories();
+    selectedProduct.value = val
+
+    console.log(selectedProduct.value);
 
     state.value = 3;
     const { product_id, product, photo, in_stock, emptyCylinder, stock_return, id } =
@@ -479,5 +569,6 @@ const editItem = (val: Item) => {
     editingItem.emptyCylinder = emptyCylinder;
     editingItem.stock_return = stock_return;
     editingItem.id = id;
+    selectedProduct.value.value = product_id
 };
 </script>
