@@ -33,7 +33,7 @@
                 <v-icon class="mr-2">mdi-check</v-icon> Approve
               </v-btn>
               <v-btn size="small" v-if="order.length !== 0" flat variant="flat" color="error" class=" ma-2" @click="approveOrderClient(order.id,'4')">
-                <v-icon class="mr-2">mdi-close</v-icon> Cancel
+                <v-icon class="mr-2">mdi-close</v-icon> Reject
               </v-btn>
             </div>
           </div>
@@ -201,7 +201,7 @@
           </v-card-title>
           <v-card-text>
             <v-select v-model="selectedDeliveryId" :items="drivers" variant="outlined" density="compact"
-              label="Assign Driver" color="primary" item-title="names" item-value="id" return-object></v-select>
+              label="Assign Driver" color="primary" item-title="first_name" item-value="id"></v-select>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -278,10 +278,10 @@ function loadAllDrivers() {
 }
 const approveItem = (val: any) => {
   isApprove.value = true;
-  const { reference_code, customer_name, id } = val;
+  const { reference_code, first_name, id } = val;
   loadAllDrivers();
   editingItem.reference_code = reference_code;
-  editingItem.customer_name = customer_name;
+  editingItem.customer_name = first_name;
   editingItem.id = id;
 };
 function approveOrderClient(id: any,status = '2') {
