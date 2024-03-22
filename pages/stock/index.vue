@@ -130,13 +130,13 @@
     
                             <v-text-field variant="outlined" density="compact" label="Number of Items"
                                 v-model="selectedProduct.quantity" color="primary"></v-text-field>
-                            <v-card-actions class="justify-content-end">
-                                <v-btn @click.prevent="addProduct" :disabled="loading" variant="tonal" color="warning" size="small"
+                                <v-row justify="end">
+                                    <v-btn class="m-13" @click.prevent="addProduct" :disabled="loading" variant="tonal" color="info" size="small"
                                     flat>Add Product</v-btn>
-                            </v-card-actions>
+                                </v-row>
                         </v-card>
                         <v-btn @click.prevent="requestProducts" :disabled="loading" class="my-4" color="primary" size="large"
-                                block flat>{{ loading ? "updating Item..." : "Add Product" }}</v-btn>
+                                block flat>{{ loading ? "updating Item..." : "Send Order" }}</v-btn>
                     </v-col>
                 </form>
             </UiParentCard>
@@ -400,7 +400,7 @@ const addProduct = () => {
 }
 function requestProducts() {
     console.log(productToRequest.value);
-    http.fetch("request_product", {
+    http.fetch("request-product", {
         method: "post",
         body: {
             products: productToRequest.value
@@ -576,3 +576,8 @@ const editItem = (val: Item) => {
     selectedProduct.value.value = product_id
 };
 </script>
+<style>
+.m-13{
+    margin: 13px !important
+}
+</style>
