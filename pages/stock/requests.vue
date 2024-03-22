@@ -159,7 +159,6 @@
                             <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
                                 <div class="d-flex justify-between pb-2">
                                     <div class="h4 font-bold">Request details</div>
-                                    <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
                                 </div>
 
                                 <v-list-item class="w-100 my-4">
@@ -185,18 +184,19 @@
                                     <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
                                 </div>
 
-                                <div class="w-2/3 my-4 space-y-4" v-for="(item, i) in products" :key="i">
-                                    <div class="flex justify-around">
+                                <div class="w-100 my-4 space-y-4" v-for="(item, i) in products" :key="i">
+                                    <div class="flex justify-between">
                                         <div class="text-muted text-small">{{ item.product }}</div>
                                         <div class="text-dark font-medium text-small">{{ item.quantity }} {{
                                         (item.stock_quantity ?
-                                            ' / ' + item.stock_quantity : '') }}</div>
-                                        <v-btn color="error" variant="tonal" size="small" icon="mdi-delete" flat
-                                            @click="removeItem(item)"></v-btn>
+                                            ' / ' + item.stock_quantity : '') }}
+                                            <v-btn color="error" v-if="logger.category == '2'" class="mx-3" variant="tonal" size="small" icon="mdi-delete" flat
+                                            @click="removeItem(item)"></v-btn></div>
+                                        
                                     </div>
                                 </div>
                             </div>
-                            <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
+                            <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200" v-if="logger.category == '2'">
                                 <div class="d-flex justify-between pb-2">
                                     <div class="h4 font-bold">Delivered Products</div>
                                 </div>
