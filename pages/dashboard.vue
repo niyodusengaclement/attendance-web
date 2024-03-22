@@ -213,18 +213,18 @@ onMounted(() => {
                                         </td>
                                         <td>
                                             <div class="">
-                                                <h6 class="text-subtitle-1 font-weight-bold">{{ item.customer_name }}</h6>
-                                                <div class="text-13 mt-1 text-muted">{{ item.customer_name }}</div>
+                                                <h6 class="text-subtitle-1 font-weight-bold">{{ item.first_name }}</h6>
+                                                <div class="text-13 mt-1 text-muted">{{ item.last_name }}</div>
                                             </div>
                                         </td>
                                         <td>
-                                            <h6 class="text-body-1 text-muted">{{ item.amount_paid }}</h6>
+                                            <h6 class="text-body-1 text-muted">{{ item.total_amount }}</h6>
                                         </td>
                                         <td>
                                             <!-- <v-chip :class="'text-body-1 bg-' + item.statuscolor" color="white" size="small">{{
                                 item.status
                             }}</v-chip> -->
-                                            <h6 class="text-body-1 text-muted">{{ item.created_at }}</h6>
+                                            <h6 class="text-body-1 text-muted">{{ item.date }}</h6>
                                         </td>
                                         <td>
                                             <NuxtLink :to="'/orders/' + item.id">
