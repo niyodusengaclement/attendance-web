@@ -286,6 +286,8 @@ async function handleSubmit() {
 const headers: Header[] = [
     // { text: "Photo", value: "image_url", sortable: true },
     { text: "Category", value: "title", sortable: true },
+    { text: "Products Used In", value: "products", sortable: true },
+    { text: "Date created", value: "date", width: 300 },
     { text: "Actions", value: "actions", width: 300 },
 ];
 

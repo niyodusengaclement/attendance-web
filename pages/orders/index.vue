@@ -183,7 +183,7 @@
                     <v-card-text>
 
                       <v-select v-model="selectedDeliveryId" :items="drivers" variant="outlined" density="compact"
-                        label="Assign Driver" color="primary" item-title="first_name" item-value="id" return-object></v-select>
+                        label="Assign Driver" color="primary" item-title="first_name" item-value="id"></v-select>
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
@@ -227,17 +227,18 @@ const totalAmount = ref(0);
 const tab = ref(null);
 const search = ref("");
 const drivers = ref([]);
-const pending = ref(0);
 const packages = ref([]);
+const pending = ref(0);
 const completed = ref(0);
 const shipping = ref(0);
 const cancelled = ref(0);
 const selectedDeliveryId = ref('')
 const selectedStatus: any = ref('')
 
+const productPerformance = ref([])
+
 const menu = ref(false)
 const endDateMenu = ref(false)
-const productPerformance = ref([])
 const startDate = ref(new Date())
 startDate.value.setDate(startDate.value.getDate() - 30);
 const endDate = ref(new Date())
@@ -415,12 +416,14 @@ const editItem = (val: Item) => {
 
 const approveItem = (val: Item) => {
   isApprove.value = true;
-  const { reference_code, first_name, id } =
+  console.log(val);
+  
+  const { reference_code, first_name, order_id } =
     val;
   loadAllDrivers();
   editingItem.reference_code = reference_code;
   editingItem.customer_name = first_name;
-  editingItem.id = id;
+  editingItem.id = order_id;
 
 };
 

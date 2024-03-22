@@ -102,10 +102,10 @@
                 <v-list lines="two">
                     <v-list-subheader>Selected Products</v-list-subheader>
 
-                    <v-list-item v-for="item in productToRequest" :key="item.id" :subtitle="(item.type == '1' ? 'Refilling' : 'New Stock') + ' / ' + item.quantity" :title="item.text">
+                    <v-list-item v-for="(item,i) in productToRequest" :key="item.id" :subtitle="(item.type == '1' ? 'Refilling' : 'New Stock') + ' / ' + item.quantity" :title="item.text">
 
                         <template v-slot:append>
-                            <v-btn color="grey-lighten-1" icon="mdi-information" variant="text"></v-btn>
+                            <v-btn color="error" variant="tonal" size="small" icon="mdi-delete" flat @click="removeItem(i)"></v-btn>
                         </template>
                     </v-list-item>
                 </v-list>
@@ -131,7 +131,7 @@
                             <v-text-field variant="outlined" density="compact" label="Number of Items"
                                 v-model="selectedProduct.quantity" color="primary"></v-text-field>
                             <v-card-actions class="justify-content-end">
-                                <v-btn @click.prevent="addProduct" :disabled="loading" class="my-4" color="warning" size="small"
+                                <v-btn @click.prevent="addProduct" :disabled="loading" variant="tonal" color="warning" size="small"
                                     flat>Add Product</v-btn>
                             </v-card-actions>
                         </v-card>
@@ -337,6 +337,10 @@ function loadStockProducts(type = '') {
         })
         .catch(() => { })
         .finally(() => (loading.value = false));
+}
+
+function removeItem(id: any) {
+    productToRequest.value.splice(id,1)
 }
 
 const statusStr = (status: any) => {
