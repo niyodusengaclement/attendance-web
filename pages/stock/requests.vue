@@ -137,12 +137,6 @@
                                                             @click="selectedRequest = item; state = 2; requestProducts()">
                                                             View
                                                         </v-btn>
-                                                        <v-btn size="small"
-                                                            v-if="item.status == '2' && logger.category == '2'" flat
-                                                            variant="outlined" color="success" class="mx-1"
-                                                            @click="approveReceive(item.id)">
-                                                            Approve Receive
-                                                        </v-btn>
                                                     </div>
                                                 </template>
                                             </EasyDataTable>
@@ -190,39 +184,35 @@
                                         <div class="text-dark font-medium text-small">{{ item.quantity }} {{
                                         (item.stock_quantity ?
                                             ' / ' + item.stock_quantity : '') }}
-                                            <v-btn color="error" v-if="logger.category == '2'" class="mx-3" variant="tonal" size="small" icon="mdi-delete" flat
-                                            @click="removeItem(item)"></v-btn></div>
-                                        
+                                            <v-btn color="error"
+                                                v-if="logger.category == '2' && selectedRequest.status == '0'"
+                                                class="mx-3" variant="tonal" size="small" icon="mdi-delete" flat
+                                                :loading="removeLoading"
+                                                @click="itemToDelete = item; isDeleteViewing = true"></v-btn>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
-                            <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200" v-if="logger.category == '2'">
+                            <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200"
+                                v-if="logger.category == '2' && selectedRequest.status == '2'">
                                 <div class="d-flex justify-between pb-2">
                                     <div class="h4 font-bold">Delivered Products</div>
                                 </div>
-
-                                <div class="w-100 my-4 space-y-4">
-                                    <EasyDataTable empty-message="No Order found" :search-value="search"
-                                        theme-color="#5d87ff" table-class-name="eztable" :headers="deliveredHeaders"
-                                        buttons-pagination :loading="loading" :items="products">
-                                        <template #empty-message>
-                                            <div class="d-flex justify-center align-center py-3">
-                                                <v-img src="/images/products/not_found.png" height="150"></v-img>
-                                            </div>
-                                            <p class="text-muted font-weight-light"> No Found</p>
-                                        </template>
-                                        <template #item-delivered="item">
+                                <div class="w-100 my-4 space-y-4" v-for="(item, i) in products" :key="i">
+                                    <div class="flex justify-between">
+                                        <div class="text-muted text-small">{{ item.product }}</div>
+                                        <div class="w-1/2 text-dark font-medium text-small">
                                             <v-text-field variant="outlined" density="compact" label="Delivered items"
                                                 v-model="item.delivered" color="primary"></v-text-field>
-                                        </template>
-                                    </EasyDataTable>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
                                 <div class="d-flex justify-between pb-2">
                                     <div class="h4 font-bold">{{ selectedRequest.status == '0' ? 'Actions' : 'Status' }}
                                     </div>
-                                    <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
                                 </div>
 
                                 <div v-if="selectedRequest.status == '0' && logger.category == '1'"
@@ -238,7 +228,16 @@
                                     </div>
                                 </div>
                                 <div v-else class="w-100 my-4 space-y-4">
-                                    <v-alert :title="statusStr(selectedRequest.status)"
+                                    <div v-if="selectedRequest.status == '2' && logger.category == '2'">
+                                        <v-btn size="small" flat variant="outlined" color="error" class="mx-1"
+                                            @click="state = 1, products = []">
+                                            cancel
+                                        </v-btn>
+                                        <v-btn size="small" flat variant="outlined" color="success" class="mx-1"
+                                            @click="approveReceive(selectedRequest.id)"> Approve
+                                        </v-btn>
+                                    </div>
+                                    <v-alert v-else :title="statusStr(selectedRequest.status)"
                                         :type="statusClr(selectedRequest.status)"></v-alert>
                                 </div>
 
@@ -268,13 +267,37 @@
                                         </v-card-text>
                                         <v-card-actions>
                                             <v-spacer></v-spacer>
-                                            <v-btn color="primary" variant="text" :loading="btnDeleteLoading"
+                                            <v-btn color="primary" variant="text" :loading="loading"
                                                 class="mx-1" prepend-icon="mdi-close" @click="isViewing = false">
                                                 Close
                                             </v-btn>
                                             <v-btn size="small" variant="text" @click="changeRequestStatus(status)"
                                                 :color="status == '3' ? 'error' : 'success'">
                                                 {{ status == '3' ? 'Reject' : 'Approve' }}</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-dialog>
+                                <v-dialog v-model="isDeleteViewing" persistent width="auto">
+                                    <v-card>
+                                        <v-card-title class="text-h5"> Delete </v-card-title>
+                                        <v-card-text>
+                                            <div class="text-lg text-center justify-center">
+                                                Are you want to delete
+                                                <span class="font-bold"> {{ itemToDelete.product }} </span>
+                                                from this request?
+                                            </div>
+                                        </v-card-text>
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+                                                @click="isDeleting = false">
+                                                Cancel
+                                            </v-btn>
+                                            <v-btn :loading="loading" elevation="10" variant="outlined"
+                                                color="error" class="mx-1" prepend-icon="mdi-delete"
+                                                @click="removeItem(itemToDelete.id)">
+                                                Delete
+                                            </v-btn>
                                         </v-card-actions>
                                     </v-card>
                                 </v-dialog>
@@ -309,7 +332,6 @@ if (process.client) {
 const image_URL = config.public.imageURL;
 const state = ref(1);
 const lists = ref([]);
-const loading = ref(false);
 const tab = ref(null);
 const selectedRequest = ref("");
 const search = ref("");
@@ -317,7 +339,10 @@ const products = ref([])
 const selectedStatus = ref("")
 const status = ref('')
 const isViewing = ref(false)
+const isDeleteViewing = ref(false)
 const password = ref("")
+const itemToDelete = ref("")
+const loading = ref(false);
 
 //Tabs chip values
 const pending = ref(0);
@@ -421,6 +446,7 @@ const onSearchData = () => {
 
 
 function requestProducts() {
+    loading.value = true
     http.fetch("get_stock_request_details", {
         method: "post",
         body: {
@@ -433,9 +459,13 @@ function requestProducts() {
         }).catch(err => {
             useToast().error(err.data.message)
         })
+        .finally(() => {
+            loading.value = false
+        })
 }
 
 function changeRequestStatus(status: any) {
+    loading.value = true
     http.fetch("admin_change_stock_request_status", {
         method: "post",
         body: {
@@ -454,9 +484,13 @@ function changeRequestStatus(status: any) {
         }).catch(err => {
             useToast().error(err.data.message)
         })
+        .finally(() => {
+            loading.value = false
+        })
 }
 
 function approveReceive(id: any) {
+    loading.value = true
     http.fetch("confirm_stock_received", {
         method: "post",
         body: {
@@ -473,6 +507,31 @@ function approveReceive(id: any) {
             instance?.proxy?.$forceUpdate();
         }).catch(err => {
             useToast().error(err.data.message)
+        })
+        .finally(() => {
+            loading.value = false
+        })
+}
+
+function removeItem(id: any) {
+    loading.value = true
+    http.fetch("remove-request-item", {
+        method: "post",
+        body: {
+            id,
+            request: selectedRequest.value.id
+        }
+    })
+        .then(res => {
+            requestProducts()
+            isDeleteViewing.value = false
+            useToast().success(res.message)
+        })
+        .catch(err => {
+            useToast().error(err.data.message)
+        })
+        .finally(() => {
+            loading.value = false
         })
 }
 </script>
