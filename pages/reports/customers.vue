@@ -12,7 +12,7 @@ const token = localStorage.getItem("token")
 const search = ref("");
 const lists = ref([]);
 const showForm = ref(false)
-const image_URL = useRuntimeConfig().public.imageURL;
+const image_URL = config.public.profileURL;
 const loading = ref(false)
 const headers: Header[] = [
     { text: "image", value: "profile", sortable: true },
@@ -22,7 +22,6 @@ const headers: Header[] = [
     { text: "completed Orders", value: "completedOrders", sortable: true },
     { text: "All Oders", value: "allOders", sortable: true },
     { text: "Status", value: "status", width: 120 },
-    // { text: "Actions", value: "actions", width: 120 },
 ]
 const user = JSON.parse(localStorage.getItem("logger"))
 

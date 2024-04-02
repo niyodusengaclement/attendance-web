@@ -639,7 +639,6 @@ const image_URL = config.public.imageURL;
 interface FormData {
     productName: Field<string>;
     productDesc: Field<string>;
-
 }
 const fileRecords = ref([]);
 const uploadUrl = ref("https://example.com");

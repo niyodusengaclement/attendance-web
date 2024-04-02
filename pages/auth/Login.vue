@@ -56,16 +56,16 @@ function getOtp() {
       type: model.value
     }
   })
-  .then(res => {
-    useToast().success(res.message)
-    state.value = 3
-  })
-  .catch(err => {
-    useToast().error(err.data.message)
-  })
-  .finally(() => {
-    dataLoading.value = false
-  })
+    .then(res => {
+      useToast().success(res.message)
+      state.value = 3
+    })
+    .catch(err => {
+      useToast().error(err.data.message)
+    })
+    .finally(() => {
+      dataLoading.value = false
+    })
 }
 function verifyOtp() {
   dataLoading.value = true
@@ -77,16 +77,16 @@ function verifyOtp() {
       type: model.value
     }
   })
-  .then(res => {
-    // useToast().success(res.message)
-    state.value = 4
-  })
-  .catch(err => {
-    useToast().error(err.data.message)
-  })
-  .finally(() => {
-    dataLoading.value = false
-  })
+    .then(res => {
+      // useToast().success(res.message)
+      state.value = 4
+    })
+    .catch(err => {
+      useToast().error(err.data.message)
+    })
+    .finally(() => {
+      dataLoading.value = false
+    })
 }
 function saveNewPassword() {
   dataLoading.value = true
@@ -100,16 +100,16 @@ function saveNewPassword() {
       otp: otp.value
     }
   })
-  .then(res => {
-    useToast().success(res.message)
-    state.value = 1
-  })
-  .catch(err => {
-    useToast().error(err.data.message)
-  })
-  .finally(() => {
-    dataLoading.value = false
-  })
+    .then(res => {
+      useToast().success(res.message)
+      state.value = 1
+    })
+    .catch(err => {
+      useToast().error(err.data.message)
+    })
+    .finally(() => {
+      dataLoading.value = false
+    })
 }
 
 import { Field, useValidation } from "vue3-form-validation";
@@ -140,7 +140,7 @@ const {
     $rules: [rules.email("Please enter a valid email address")],
   },
   password: {
-    $value:"",
+    $value: "",
     $rules: [rules.min(6)("Password has to be longer than 6 characters")],
   },
   remember: {
@@ -186,14 +186,15 @@ async function handleSubmit() {
                 <div class="flex flex-col my-4">
                   <label for="password" class="text-gray-700 text-sm">Password</label>
                   <div x-data="{ show: true }" class="relative flex items-center mt-2">
-                    <input :type="show ? 'text' : 'password'" name="password" id="password" v-model="form.password.$value"
-                      @blur="form.password.$validate()"
+                    <input :type="show ? 'text' : 'password'" name="password" id="password"
+                      v-model="form.password.$value" @blur="form.password.$validate()"
                       class="flex-1 p-2 pr-10 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
                       placeholder="Enter your password">
                     <div
                       class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
                       <EyeIcon @click="toggle(true)" size="18" class="text-gray-400" :class="show ? 'hidden' : ''" />
-                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400" :class="!show ? 'hidden' : ''" />
+                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
+                        :class="!show ? 'hidden' : ''" />
                     </div>
 
                   </div>
@@ -208,13 +209,13 @@ async function handleSubmit() {
 
                 <div class="my-4 flex items-center justify-end space-x-4">
 
-                  <v-btn @click.prevent="handleSubmit" :disabled="loading" :loading="loading" rounded="xl" color="primary" size="large"
-                    block flat>
+                  <v-btn @click.prevent="handleSubmit" :disabled="loading" :loading="loading" rounded="xl"
+                    color="primary" size="large" block flat>
                     Login</v-btn>
 
                 </div>
                 <v-row justify="end">
-                  <v-btn  color="primary" @click="state = 2" size="large" flat variant="text">Forgot Password?</v-btn>
+                  <v-btn color="primary" @click="state = 2" size="large" flat variant="text">Forgot Password?</v-btn>
                 </v-row>
 
                 <!-- <div class="flex items-center justify-between mb-8">
@@ -232,28 +233,24 @@ async function handleSubmit() {
               <p class="text-left md:text-xl text-gray-600 md:mb-12 mt-2">Enter Your {{ model }} to reset your password
               </p>
               <form @submit.prevent="getOtp" class="  md:text-sm md:pr-48">
-                <v-switch
-                  v-model="model"
-                  hide-details
-                  inset
-                  color="#1F394A"
-                  readonly
-                  true-value="Phone"
-                  false-value="Email"
-                  :label="`Using ${model}`"
-                ></v-switch>
+                <v-switch v-model="model" hide-details inset color="#1F394A" true-value="Phone" false-value="Email"
+                  :label="`Using ${model}`"></v-switch>
                 <div class="flex flex-col my-4 group">
                   <label for="email" class="text-gray-700 text-sm  group-focus:text-orange-400">{{ model }}</label>
                   <input type="email" name="email" id="email" v-model="email"
                     class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
                     :placeholder="`Enter your user ${model}`">
                 </div>
-
                 <div class="my-4 flex items-center justify-end space-x-4">
-                  <v-btn @click.prevent="getOtp" :disabled="dataLoading" :loading="dataLoading" rounded="xl" color="primary" size="large"
-                    block flat>
+                  <v-btn @click.prevent="getOtp" :disabled="dataLoading" :loading="dataLoading" rounded="xl"
+                    color="primary" size="large" block flat>
                     Reset Password</v-btn>
+
                 </div>
+                <v-row justify="center">
+                  <v-btn @click.prevent="state = 1" color="primary" size="large" variant="text">
+                    Back to Login</v-btn>
+                </v-row>
               </form>
             </div>
             <div v-if="state == 3" class="md:w-1/2  md:text-left md:pt-28">
@@ -265,17 +262,12 @@ async function handleSubmit() {
               <form @submit.prevent="handleSubmit" class="  md:text-sm md:pr-48">
                 <div class="flex flex-col my-4 group">
                   <label for="email" class="text-gray-700 text-sm  group-focus:text-orange-400">OTP</label>
-                  <v-otp-input
-                    v-model="otp"
-                    :loading="dataLoading"
-                    variant="solo"
-                    length="6"
-                  ></v-otp-input>
+                  <v-otp-input v-model="otp" :loading="dataLoading" variant="solo" length="6"></v-otp-input>
                 </div>
 
                 <div class="my-4 flex items-center justify-end space-x-4">
-                  <v-btn @click.prevent="verifyOtp" :disabled="dataLoading" :loading="dataLoading" rounded="xl" color="primary" size="large"
-                    block flat>
+                  <v-btn @click.prevent="verifyOtp" :disabled="dataLoading" :loading="dataLoading" rounded="xl"
+                    color="primary" size="large" block flat>
                     Verify OTP</v-btn>
                 </div>
               </form>
@@ -296,7 +288,8 @@ async function handleSubmit() {
                     <div
                       class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
                       <EyeIcon @click="toggle(true)" size="18" class="text-gray-400" :class="show ? 'hidden' : ''" />
-                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400" :class="!show ? 'hidden' : ''" />
+                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
+                        :class="!show ? 'hidden' : ''" />
                     </div>
 
                   </div>
@@ -311,15 +304,16 @@ async function handleSubmit() {
                     <div
                       class="absolute right-2 bg-transparent cursor-pointer flex items-center justify-center text-gray-700">
                       <EyeIcon @click="toggle(true)" size="18" class="text-gray-400" :class="show ? 'hidden' : ''" />
-                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400" :class="!show ? 'hidden' : ''" />
+                      <EyeOffIcon @click="toggle(false)" size="18" class="text-gray-400"
+                        :class="!show ? 'hidden' : ''" />
                     </div>
 
                   </div>
                 </div>
 
                 <div class="my-4 flex items-center justify-end space-x-4">
-                  <v-btn @click.prevent="saveNewPassword" :disabled="dataLoading" :loading="dataLoading" rounded="xl" color="primary" size="large"
-                    block flat>
+                  <v-btn @click.prevent="saveNewPassword" :disabled="dataLoading" :loading="dataLoading" rounded="xl"
+                    color="primary" size="large" block flat>
                     Save New Password</v-btn>
                 </div>
               </form>
@@ -334,4 +328,3 @@ async function handleSubmit() {
     </div>
   </div>
 </template>
-  

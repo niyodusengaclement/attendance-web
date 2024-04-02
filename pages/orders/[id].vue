@@ -57,7 +57,7 @@
                       <div class="flex justify-between">
                         <div class="text-muted text-small">Total</div>
                         <div class="text-dark font-bold">
-                          {{ order.amount_paid }}Rwf
+                          {{ order.total_amount }}Rwf
                         </div>
                       </div>
                     </div>
@@ -164,8 +164,8 @@
                   <div class="text-dark font-medium text-small">{{ order.phone_number}}</div>
                 </div>
                 <div class="flex justify-between">
-                  <div class="text-muted text-small">House No.</div>
-                  <div class="text-dark font-medium text-small">{{ order.house_number}}</div>
+                  <div class="text-muted text-small">Location Title</div>
+                  <div class="text-dark font-medium text-small">{{ order.title}}</div>
                 </div>
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Address</div>
@@ -223,7 +223,7 @@
 import { onMounted } from "vue";
 const http = useHttpRequest();
 const route = useRoute();
-const orderId = ref(route.params.id);
+const orderId = ref('');
 const order = ref([]);
 const loading = ref(false);
 const isApprove = ref(false);
@@ -235,12 +235,15 @@ const editingItem = reactive({
   customer_name: "",
   id: 0
 });
+const instance = getCurrentInstance();
 definePageMeta({
   layout: "admin",
 });
 
 onMounted(() => {
-  loadOrderById(orderId.value);
+  instance?.proxy?.$forceUpdate();
+  loadOrderById(route.params.id);
+  orderId.value = route.params.id
 });
 
 const orderProducts = ref([]);
