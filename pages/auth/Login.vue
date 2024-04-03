@@ -37,7 +37,19 @@ const handleLoginSuccess = async (response: CredentialResponse) => {
 
   console.log("User", user);
 };
+const refreshing = ref(false)
+const refreshAll = async () => {
+  refreshing.value = true
+  try {
+    await refreshNuxtData()
+  } finally {
+    refreshing.value = false
+  }
+}
 
+onMounted(() => {
+  refreshAll()
+})
 // handle an error event
 const handleLoginError = () => {
   console.error("Login failed");

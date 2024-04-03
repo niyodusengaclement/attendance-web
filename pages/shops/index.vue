@@ -173,6 +173,7 @@ async function handleSubmit() {
             useToast().error("Your location is not captured, check if you enabled location or refresh the page")
             return
         }
+        loading.value = true
         http.fetch("createShopAdmin", {
             method: "post",
             body: {
@@ -196,6 +197,9 @@ async function handleSubmit() {
             })
             .catch(err => {
                 useToast().error(err.data.message)
+            })
+            .finally(() => {
+                loading.value = false
             })
     } catch (e) {
 

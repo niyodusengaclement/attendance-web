@@ -105,17 +105,5 @@ if (logger && logger.category === "1") {
         to: "/shops",
       },
     );
-} else if (logger && logger.category === "2") {
-  sidebarItem
-    .push
-    // Additional menu items for the "user" category...
-    (
-      {
-        title: "Shops",
-        icon: MoodHappyIcon,
-        to: "/shops",
-      },
-    );
 }
-
 export default sidebarItem;

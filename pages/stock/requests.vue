@@ -2,7 +2,21 @@
     <v-row>
         <v-col>
             <v-row justify="end" class="mx-1 mb-1">
-                <v-col cols="6">
+                <v-col cols="12" md="12" lg="6">
+                    <div class="flex justify-between">
+                        <NuxtLink to="/stock">
+                            <div class="d-flex align-center">
+                                <v-btn size="large" flat color="info" density="compact" variant="text"
+                                    icon="mdi-chevron-left">
+                                </v-btn>
+                                <h5 class="text-h5 mb-6 pl-2 pt-7 font-weight-light text-muted">
+                                    Back to Stock
+                                </h5>
+                            </div>
+                        </NuxtLink>
+                    </div>
+                </v-col>
+                <v-col cols="12" lg="6">
                     <v-card class="my-4 p-0">
                         <v-row>
                             <v-col cols="12" lg="5" class="p-0 m-0">
@@ -267,8 +281,8 @@
                                         </v-card-text>
                                         <v-card-actions>
                                             <v-spacer></v-spacer>
-                                            <v-btn color="primary" variant="text" :loading="loading"
-                                                class="mx-1" prepend-icon="mdi-close" @click="isViewing = false">
+                                            <v-btn color="primary" variant="text" :loading="loading" class="mx-1"
+                                                prepend-icon="mdi-close" @click="isViewing = false">
                                                 Close
                                             </v-btn>
                                             <v-btn size="small" variant="text" @click="changeRequestStatus(status)"
@@ -293,8 +307,8 @@
                                                 @click="isDeleting = false">
                                                 Cancel
                                             </v-btn>
-                                            <v-btn :loading="loading" elevation="10" variant="outlined"
-                                                color="error" class="mx-1" prepend-icon="mdi-delete"
+                                            <v-btn :loading="loading" elevation="10" variant="outlined" color="error"
+                                                class="mx-1" prepend-icon="mdi-delete"
                                                 @click="removeItem(itemToDelete.id)">
                                                 Delete
                                             </v-btn>
@@ -486,6 +500,7 @@ function changeRequestStatus(status: any) {
         })
         .finally(() => {
             loading.value = false
+            password.value = ''
         })
 }
 

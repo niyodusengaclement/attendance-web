@@ -35,7 +35,7 @@ const headers: Header[] = [
     { text: "Order ID", value: "reference_code", sortable: true },
     { text: "Client name", value: "customer_name", sortable: true },
     { text: "Client Phone", value: "phone_number", sortable: true },
-    { text: "Amount", value: "amount_paid", sortable: true },
+    { text: "Amount", value: "total_amount", sortable: true },
     { text: "Shop name", value: "shop_name", sortable: true },
     { text: "Driver", value: "driver", sortable: true },
     { text: "Payment Method", value: "payment_mode", sortable: true },

@@ -26,7 +26,7 @@ export const useHttpRequest = () => {
 
       promise.catch((res) => {
         if (res.status == 401) {
-          navigateTo({ path: "/auth/login" });
+          navigateTo({ path: "/" });
         } else {
           return res.data;
         }
@@ -47,7 +47,7 @@ export const useHttpRequest = () => {
 
       promise.catch((res) => {
         if (res.data.status == 401) {
-          navigateTo({ path: "/auth/login" });
+          navigateTo({ path: "/" });
         } else {
           console.log(res);
           return res;

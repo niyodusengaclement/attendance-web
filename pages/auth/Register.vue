@@ -16,7 +16,7 @@
                             <AuthRegisterForm />
                             <h6 class="text-h6 text-muted font-weight-medium d-flex justify-center align-center mt-3">
                                 Already have an Account?
-                                <NuxtLink to="/auth/login"
+                                <NuxtLink to="/"
                                     class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium pl-2">
                                     Sign In</NuxtLink>
                             </h6>

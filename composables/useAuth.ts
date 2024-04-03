@@ -88,7 +88,7 @@ export const useAuth = () => {
           }
         })
         .catch(() => {
-          navigateTo({ path: "/auth/login" });
+          navigateTo({ path: "/" });
         }),
   };
 };

@@ -95,7 +95,7 @@
         </v-col>
         <!-- REQUEST STOCK FROM MAIN-->
         <v-col cols="12" v-show="state == 5" :md="state == 1 ? 12 : 4">
-            <UiParentCard title="Moving Product to branch">
+            <UiParentCard title="Form to request stock from Headquater">
                 <v-btn icon="mdi-close" color="error" class="close-btn" variant="tonal" elevation="0" @click="reset()">
                 </v-btn>
 
@@ -135,7 +135,7 @@
                                     flat>Add Product</v-btn>
                                 </v-row>
                         </v-card>
-                        <v-btn @click.prevent="requestProducts" :disabled="loading" class="my-4" color="primary" size="large"
+                        <v-btn @click.prevent="requestProducts" :disabled="loading || productToRequest.length === 0" :loading="loading" class="my-4" color="primary" size="large"
                                 block flat>{{ loading ? "updating Item..." : "Send Order" }}</v-btn>
                     </v-col>
                 </form>
@@ -187,17 +187,17 @@
                                             Export
                                         </v-btn>
                                     </form>
-                                    <v-btn v-if="state != 4 && logger.category == '1'" prepend-icon="mdi-export"
+                                    <v-btn v-if="false" prepend-icon="mdi-export"
                                         color="info" class="mx-2" variant="tonal" @click="onMoveastock()">
                                         Move Stock
                                     </v-btn>
                                     <v-btn v-if="state != 5 && logger.category == '2'" prepend-icon="mdi-export"
                                         color="error" class="mx-2" variant="tonal" @click="state = 5;getCategories()">
-                                        Stock Request
+                                        Request Stock
                                     </v-btn>
                                     <v-btn prepend-icon="mdi-export"
                                         color="Warning" class="mx-2" variant="tonal" to="/stock/requests">
-                                        Stock Request
+                                        Stock Requests
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -399,7 +399,7 @@ const addProduct = () => {
     selectedProduct.value = ""
 }
 function requestProducts() {
-    console.log(productToRequest.value);
+    loading.value = true
     http.fetch("request-product", {
         method: "post",
         body: {
@@ -413,6 +413,9 @@ function requestProducts() {
         productToRequest.value = []
     }).catch(err => {
         useToast().error(err.data.message)
+    })
+    .finally(() => {
+        loading.value = false
     })
 }
 const onMoveastock = () => {

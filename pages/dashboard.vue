@@ -8,6 +8,8 @@ import ProductPerformance from '@/components/dashboard/ProductPerformance.vue';
 import ProductCards from '@/components/dashboard/ProductCards.vue';
 import { TrendingUpIcon, TruckDeliveryIcon, ShoppingCartIcon, HistoryIcon, BuildingWarehouseIcon } from "vue-tabler-icons";
 import { CircleIcon } from 'vue-tabler-icons';
+import { Field, useValidation } from "vue3-form-validation";
+import { rules } from "~/utils/rules";
 definePageMeta({
     layout: "admin",
     // middleware: "auth",
@@ -19,8 +21,10 @@ const records = ref([])
 const menu = ref(false)
 const loading = ref(false)
 const endDateMenu = ref(false)
+const isDeliveryFeeUpdate = ref(false)
 const productPerformance = ref([])
 const startDate = ref(new Date())
+const deliveryFee = ref('')
 startDate.value.setDate(startDate.value.getDate() - 30);
 const endDate = ref(new Date())
 const formattedStartDate = ref(startDate.value.toISOString().split('T')[0]);
@@ -32,6 +36,21 @@ watch(endDate, () => {
     formattedEndDate.value = endDate.value.toISOString().split('T')[0];
 });
 const maxDate = ref(new Date().toISOString().split('T')[0])
+
+
+interface FormData {
+    amount: Field<string>;
+}
+const {
+    form,
+    validateFields,
+    resetFields
+} = useValidation<FormData>({
+    amount: {
+        $value: "",
+        $rules: [rules.min(2)("Amount is required")],
+    }
+});
 
 function getDashboardData() {
     loading.value = true
@@ -93,10 +112,44 @@ function filterByDate() {
     loadOrders()
 }
 
+function getDeliveryFee() {
+    http.fetch("get-delivery-fee")
+        .then(res => {
+            deliveryFee.value = res.amount
+        })
+}
+async function updateDeliveryFee() {
+    try {
+        const data = await validateFields();
+        loading.value = true
+        http.fetch("update-delivery-fee", {
+            method: "post",
+            body: {
+                amount: data.amount
+            }
+        })
+            .then(res => {
+                useToast().success(res.message)
+                deliveryFee.value = data.amount
+                isDeliveryFeeUpdate.value = false
+                resetFields()
+            })
+            .catch(err => {
+                useToast().error(err.data.message)
+            })
+            .finally(() => {
+                loading.value = false
+            })
+    } catch (error) {
+        
+    }
+}
+
 onMounted(() => {
     getDashboardData()
     loadOrders()
     getRecentTransaction()
+    getDeliveryFee()
 })
 </script>
 <template>
@@ -165,30 +218,30 @@ onMounted(() => {
             <v-row>
                 <v-col cols="12" lg="3">
                     <NuxtLink to="/orders?status=1">
-                        <MonthlyEarning title="Completed" :amount="records?.completed" rate="+15.8" subtitle="Since last week"
-                            :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[12, 45, 12, 72, 46, 10, 69]"
-                            color="success" :icon="BuildingWarehouseIcon" />
+                        <MonthlyEarning title="Completed" :amount="records?.completed" rate="+15.8"
+                            subtitle="Since last week" :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+                            :data="[12, 45, 12, 72, 46, 10, 69]" color="success" :icon="BuildingWarehouseIcon" />
                     </NuxtLink>
                 </v-col>
                 <v-col cols="12" lg="3">
                     <NuxtLink to="/orders?status=2">
-                        <MonthlyEarning title="On Delivery" :amount="records?.inDelivery" rate="+15.8" subtitle="last week"
-                            :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[5, 45, 12, 62, 56, 20, 65]"
-                            color="warning" :icon="TruckDeliveryIcon" />
+                        <MonthlyEarning title="On Delivery" :amount="records?.inDelivery" rate="+15.8"
+                            subtitle="last week" :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+                            :data="[5, 45, 12, 62, 56, 20, 65]" color="warning" :icon="TruckDeliveryIcon" />
                     </NuxtLink>
                 </v-col>
                 <v-col cols="12" lg="3">
                     <NuxtLink to="/orders">
                         <MonthlyEarning title="Orders" :amount="records?.records" rate="+15.8" subtitle="Now today's "
-                            :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[61, 8, 12, 78, 20, 55, 5]"
-                            color="info" :icon="ShoppingCartIcon" />
+                            :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+                            :data="[61, 8, 12, 78, 20, 55, 5]" color="info" :icon="ShoppingCartIcon" />
                     </NuxtLink>
                 </v-col>
                 <v-col cols="12" lg="3">
                     <NuxtLink to="/orders?status=4">
                         <MonthlyEarning title="Cancelled" :amount="records?.cancelled" rate="+9.8" subtitle="last week"
-                            :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :data="[45, 10, 12, 40, 13, 52, 18]"
-                            color="error" :icon="HistoryIcon" />
+                            :label="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+                            :data="[45, 10, 12, 40, 13, 52, 18]" color="error" :icon="HistoryIcon" />
                     </NuxtLink>
                 </v-col>
                 <!-- Sales overview -->
@@ -228,7 +281,8 @@ onMounted(() => {
                                         </td>
                                         <td>
                                             <NuxtLink :to="'/orders/' + item.id">
-                                                <v-btn size="small" flat variant="outlined" color="info" class="mx-1">View
+                                                <v-btn size="small" flat variant="outlined" color="info"
+                                                    class="mx-1">View
                                                     <v-icon class="ml-2">mdi-chevron-right</v-icon>
 
                                                 </v-btn>
@@ -242,6 +296,49 @@ onMounted(() => {
                 </v-col>
                 <!-- Yearly Breakup / Monthly Earnings -->
                 <v-col cols="12" lg="4">
+                    <v-card class="my-4 p-0">
+                        <v-row justify="space-between">
+                            <v-col cols="8" class="p-0 m-0">
+                                <div class="text-center">
+                                    Deliver Fee: <span>{{ deliveryFee }} Rwf</span>
+                                </div>
+                            </v-col>
+                            <v-col cols="3" class="p-0 ml-3">
+                                <v-btn color="success" block @click="isDeliveryFeeUpdate = true" flat :loading="loading">
+                                    Update
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                        <v-card elevation="10" class="mt-5" v-if="isDeliveryFeeUpdate">
+                            <v-card-title color="success" class="text-h5 text-info px-6">
+                                Set delivery Fee
+                            </v-card-title>
+                            <div class="text-h7 text-primary px-6">
+                                Note that this new price will affect all orders will be received from now but it will not affect all received before
+                            </div>
+                            <v-card-text>
+                                <label for="amount" class="text-gray-700 text-sm">Amount</label>
+                                <form @submit.prevent="updateDeliveryFee">
+                                    <div class="flex flex-col my-2 group">
+                                        <input type="text" name="amount" id="amount" v-model="form.amount.$value"
+                                            @blur="form.amount.$validate()"
+                                            class="mt-1 p-2 border border-gray-300 focus:outline-none focus:ring-0 focus:border-warning-500 rounded text-sm text-gray-900"
+                                            placeholder="Enter delivery fee amount">
+                                        <FormErrors :errors="form.amount.$errors" class="p-error" />
+                                    </div>
+                                </form>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" variant="text" class="mx-1"
+                                    prepend-icon="mdi-close" @click="isDeliveryFeeUpdate = false">
+                                    Close
+                                </v-btn>
+                                <v-btn size="small" variant="text" :loading="loading" :disabled="loading" @click.prevent="updateDeliveryFee()"
+                                    color="success"> Save</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-card>
                     <v-card elevation="10" class="withbg">
                         <v-card-item class="pb-0">
                             <v-card-title class="text-h5 pt-sm-2">Recent Transactions</v-card-title>
@@ -257,14 +354,16 @@ onMounted(() => {
                                             <div v-if="list.line" class="line mx-auto bg-grey100"></div>
                                         </v-col>
                                         <v-col cols="7" sm="8" class="pt-0">
-                                            <h6 v-if="list.boldtext" class="text-body-1 font-weight-bold">{{ list.subtitle
-                                            }}</h6>
+                                            <h6 v-if="list.boldtext" class="text-body-1 font-weight-bold">{{
+                                        list.subtitle
+                                    }}</h6>
                                             <h6 v-else class="text-body-1 textSecondary">{{ list.subtitle }}</h6>
                                             <div class="mt-n1">
                                                 <RouterLink :to="list.url"
-                                                    class="text-body-1 text-primary text-decoration-none" v-if="list.link">
+                                                    class="text-body-1 text-primary text-decoration-none"
+                                                    v-if="list.link">
                                                     {{
-                                                        list.link
+                                        list.link
                                                     }}</RouterLink>
                                             </div>
                                         </v-col>
