@@ -296,7 +296,7 @@
                                         <v-card-title class="text-h5"> Delete </v-card-title>
                                         <v-card-text>
                                             <div class="text-lg text-center justify-center">
-                                                Are you want to delete
+                                                You are about to delete
                                                 <span class="font-bold"> {{ itemToDelete.product }} </span>
                                                 from this request?
                                             </div>

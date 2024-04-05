@@ -8,7 +8,7 @@
               <v-btn size="large" flat density="compact" variant="text" icon="mdi-chevron-left">
               </v-btn>
             </NuxtLink>
-  
+
             <h5 class="text-h5 mb-6 pl-2 pt-7 font-weight-light text-muted">
               Order
             </h5>
@@ -20,19 +20,21 @@
             </v-chip>
           </div>
           <div class="flex">
-            <v-chip v-if="order.status == '1'" class="ma-2" color="success" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
-              :model-value="true">
+            <v-chip v-if="order.status == '1'" class="ma-2" color="success" close-icon="mdi-delete"
+              prepend-icon="mdi-checkbox-marked-circle" :model-value="true">
               Confirmed
             </v-chip>
-            <v-chip v-else-if="order.status == '4'" class="ma-2" color="error" close-icon="mdi-delete" prepend-icon="mdi-checkbox-marked-circle"
-              :model-value="true">
+            <v-chip v-else-if="order.status == '4'" class="ma-2" color="error" close-icon="mdi-delete"
+              prepend-icon="mdi-checkbox-marked-circle" :model-value="true">
               Canceled
             </v-chip>
             <div v-else>
-              <v-btn size="small" v-if="order.length !== 0 && order.status != '2'" flat variant="flat" color="success" class=" ma-2" @click="approveItem(order)">
+              <v-btn size="small" v-if="order.length !== 0 && order.status != '2'" flat variant="flat" color="success"
+                class=" ma-2" @click="approveItem(order)">
                 <v-icon class="mr-2">mdi-check</v-icon> Approve
               </v-btn>
-              <v-btn size="small" v-if="order.length !== 0" flat variant="flat" color="error" class=" ma-2" @click="approveOrderClient(order.id,'4')">
+              <v-btn size="small" v-if="order.length !== 0" flat variant="flat" color="error" class=" ma-2"
+                @click="cancelOrder(order.id)">
                 <v-icon class="mr-2">mdi-close</v-icon> Reject
               </v-btn>
             </div>
@@ -53,7 +55,7 @@
                   <v-col cols="12" md="7"></v-col>
                   <v-col cols="12" md="5">
                     <div class="col-md-4 w-100 my-4 space-y-3">
-           
+
                       <div class="flex justify-between">
                         <div class="text-muted text-small">Total</div>
                         <div class="text-dark font-bold">
@@ -65,7 +67,7 @@
                 </v-row>
               </div>
             </div>
-  
+
             <v-col cols="12" md="12">
               <v-table class="month-table">
                 <thead>
@@ -111,34 +113,34 @@
                 <div class="h4 font-bold">Customer Info</div>
                 <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
-  
+
               <v-list-item class="w-100 my-4">
                 <template v-slot:prepend>
                   <v-avatar color="grey-darken-3"
                     image="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"></v-avatar>
                 </template>
-  
+
                 <v-list-item-title>{{
-                  order.customer_name ?? "Client Name"
-                }}</v-list-item-title>
-  
+              order.customer_name ?? "Client Name"
+            }}</v-list-item-title>
+
                 <v-list-item-subtitle class="text-13">Email:
                   {{
-                    order.email ?? "dallyjones4@yahoo.com"
-                  }}</v-list-item-subtitle>
+                order.email ?? "dallyjones4@yahoo.com"
+              }}</v-list-item-subtitle>
                 <v-list-item-subtitle class="text-13">Phone:
                   {{
-                    order.phone_number ?? "+250785100000"
-                  }}</v-list-item-subtitle>
+                order.phone_number ?? "+250785100000"
+              }}</v-list-item-subtitle>
               </v-list-item>
             </div>
-  
+
             <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
               <div class="d-flex justify-between pb-2">
                 <div class="h4 font-bold">Delivery</div>
                 <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
-  
+
               <div class="w-100 my-4 space-y-4">
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Ship By</div>
@@ -157,20 +159,20 @@
                 <div class="h4 font-bold">Shipping location</div>
                 <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
-  
+
               <div class="w-100 my-4 space-y-4">
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Phone number</div>
-                  <div class="text-dark font-medium text-small">{{ order.phone_number}}</div>
+                  <div class="text-dark font-medium text-small">{{ order.phone_number }}</div>
                 </div>
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Location Title</div>
-                  <div class="text-dark font-medium text-small">{{ order.title}}</div>
+                  <div class="text-dark font-medium text-small">{{ order.title }}</div>
                 </div>
                 <div class="flex justify-between">
                   <div class="text-muted text-small">Address</div>
                   <div class="text-dark font-medium text-small">
-                    {{ order.address}}
+                    {{ order.address }}
                   </div>
                 </div>
               </div>
@@ -180,7 +182,7 @@
                 <div class="h4 font-bold">Payment Mode</div>
                 <!-- <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn> -->
               </div>
-  
+
               <div class="w-100 my-4 space-y-4">
                 <div class="flex justify-between">
                   <div class="text-muted text-small"> </div>
@@ -193,7 +195,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-  
+
       <v-dialog v-model="isApprove" persistent width="auto">
         <v-card width="450">
           <v-card-title color="success" class="text-h5 font-bold text-info pa-6">
@@ -205,12 +207,35 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close" @click="isApprove = false; selectedDeliveryId = ''">
+            <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+              @click="isApprove = false; selectedDeliveryId = ''">
               Close
             </v-btn>
-            <v-btn color="success" :loading="btnApproveLoading" flat variant="tonal" class="mx-1" prepend-icon="mdi-check"
-              @click="approveOrderClient(editingItem.id,'2')">
+            <v-btn color="success" :loading="btnApproveLoading" flat variant="tonal" class="mx-1"
+              prepend-icon="mdi-check" @click="approveOrderClient(editingItem.id, '2')">
               Approve Order
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="iscancelingOrder" persistent width="auto">
+        <v-card>
+          <v-card-text>
+            <div class="text-lg text-center justify-center">
+              You are about to cancel this order
+            </div>
+          </v-card-text>
+          <v-card-title class="text-h5"> Continue? </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+              @click="iscancelingOrder = false">
+              No
+            </v-btn>
+            <v-btn :loading="btnApproveLoading" :disabled="btnApproveLoading" elevation="10" variant="outlined" color="error" class="mx-1"
+              prepend-icon="mdi-delete" @click="approveOrderClient(editingItem.id, '4')">
+              Yes
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -227,6 +252,7 @@ const orderId = ref('');
 const order = ref([]);
 const loading = ref(false);
 const isApprove = ref(false);
+const iscancelingOrder = ref(false);
 const btnApproveLoading = ref(false);
 const drivers = ref([]);
 const selectedDeliveryId = ref();
@@ -241,6 +267,7 @@ definePageMeta({
 });
 
 onMounted(() => {
+  console.log(useRoute().params.id)
   instance?.proxy?.$forceUpdate();
   loadOrderById(route.params.id);
   orderId.value = route.params.id
@@ -287,11 +314,13 @@ const approveItem = (val: any) => {
   editingItem.customer_name = first_name;
   editingItem.id = id;
 };
-function approveOrderClient(id: any,status = '2') {
+function approveOrderClient(id: any, status = '2') {
   btnApproveLoading.value = true;
   var formData = new FormData();
   formData.append("orderId", id.toString());
-  formData.append("driverId", selectedDeliveryId.value.toString());
+  if (status === '2') {
+    formData.append("driverId", selectedDeliveryId.value.toString());
+  }
   formData.append("status", status);
   http
     .fetch("approve_client_order", {
@@ -302,6 +331,7 @@ function approveOrderClient(id: any,status = '2') {
       if (data.status == 200) {
         useToast().success(data.message);
         loadOrderById(orderId.value);
+        iscancelingOrder.value = false
       }
     })
     .catch((error) => {
@@ -311,5 +341,11 @@ function approveOrderClient(id: any,status = '2') {
       btnApproveLoading.value = false;
       isApprove.value = false;
     });
+}
+
+const cancelOrder = (val: number) => {
+  iscancelingOrder.value = true
+
+  editingItem.id = val;
 }
 </script>

@@ -69,7 +69,7 @@
           <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="left">
             <v-tab @click="loadAllOrders('')" :value="1">All Orders
               <v-chip size="small" class="ma-1"> {{ parseInt(completed) + parseInt(shipping) + parseInt(pending) +
-                parseInt(cancelled) }} </v-chip>
+                    parseInt(cancelled) }} </v-chip>
             </v-tab>
             <v-tab @click="loadAllOrders('1')" :value="2">Completed
               <v-chip size="small" class="ma-1"> {{ completed }} </v-chip>
@@ -88,8 +88,8 @@
               <v-container fluid>
                 <ClientOnly>
                   <EasyDataTable ref="dataTable" empty-message="No Order found" :search-value="search"
-                    theme-color="#5d87ff" table-class-name="eztable" :headers="headers" :loading="loading" :items="lists"
-                    v-model:items-selected="orderSelected" :rows-per-page="15">
+                    theme-color="#5d87ff" table-class-name="eztable" :headers="headers" :loading="loading"
+                    :items="lists" v-model:items-selected="orderSelected" :rows-per-page="15">
 
                     <template #item-status="item">
                       <v-chip size="small" :color="statusClr(item.status)"> {{ statusStr(item.status) }} </v-chip>
@@ -116,11 +116,11 @@
                       <v-row justify="end">
                         <template v-if="item.status !== '1' && item.status !== '4'">
                           <v-btn size="small" flat variant="tonal" color="error" class="mx-1"
-                            @click="approveOrderClient(item.order_id, '4')">
+                            @click="cancelOrder(item)">
                             <v-icon class="mr-2">mdi-close</v-icon> Cancel
                           </v-btn>
-                          <v-btn size="small" v-if="item.status == '0'" flat variant="tonal" color="success" class="mx-1"
-                            @click="approveItem(item)">
+                          <v-btn size="small" v-if="item.status == '0'" flat variant="tonal" color="success"
+                            class="mx-1" @click="approveItem(item)">
                             <v-icon class="mr-2">mdi-check</v-icon> Approve
                           </v-btn>
                         </template>
@@ -197,6 +197,27 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
+                <v-dialog v-model="iscancelingOrder" persistent width="auto">
+                  <v-card>
+                    <v-card-text>
+                      <div class="text-lg text-center justify-center">
+                        You are about to cancel this order
+                      </div>
+                    </v-card-text>
+                    <v-card-title class="text-h5"> Continue? </v-card-title>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" variant="text" class="mx-1" prepend-icon="mdi-close"
+                        @click="iscancelingOrder = false">
+                        No
+                      </v-btn>
+                      <v-btn :loading="btnApproveLoading" :disabled="btnApproveLoading" elevation="10" variant="outlined" color="error" class="mx-1"
+                        prepend-icon="mdi-delete" @click="approveOrderClient(editingItem.id, '4')">
+                        Yes
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </v-container>
             </v-window-item>
 
@@ -222,6 +243,7 @@ const route = useRoute();
 const loading = ref(false);
 const isViewing = ref(false);
 const isApprove = ref(false);
+const iscancelingOrder = ref(false);
 const btnApproveLoading = ref(false);
 const totalAmount = ref(0);
 const tab = ref(null);
@@ -253,7 +275,7 @@ watch(endDate, () => {
 const maxDate = ref(new Date().toISOString().split('T')[0])
 
 onMounted(() => {
-  selectedStatus.value =  route.query.status || '';
+  selectedStatus.value = route.query.status || '';
   loadAllOrders(selectedStatus.value);
 });
 
@@ -267,6 +289,7 @@ const headers: Header[] = [
   { text: "Order ID", value: "reference_code", sortable: true },
   { text: "Customer", value: "customer_name", sortable: true },
   { text: "Package", value: "packages", sortable: true },
+  { text: "Delivery fee", value: "delivery_fee", sortable: true },
   { text: "Price", value: "total_amount", sortable: true },
   { text: "Payment Mode", value: "payment_mode", sortable: true },
   { text: "Delivery Status", value: "status", sortable: true },
@@ -352,6 +375,7 @@ function approveOrderClient(id: any, status = '2') {
       if (data.status == 200) {
         useToast().success(data.message);
         loadAllOrders(selectedStatus.value);
+        iscancelingOrder.value = false
       }
     })
     .catch((error) => {
@@ -401,7 +425,7 @@ const onSearchData = () => {
 const editItem = (val: Item) => {
   isViewing.value = true;
   console.log(val);
-  
+
 
   const { reference_code, first_name, id } =
     val;
@@ -417,7 +441,7 @@ const editItem = (val: Item) => {
 const approveItem = (val: Item) => {
   isApprove.value = true;
   console.log(val);
-  
+
   const { reference_code, first_name, order_id } =
     val;
   loadAllDrivers();
@@ -426,5 +450,12 @@ const approveItem = (val: Item) => {
   editingItem.id = order_id;
 
 };
+
+const cancelOrder = (val: Item) => {
+  iscancelingOrder.value = true
+
+  const { order_id } = val;
+  editingItem.id = order_id;
+}
 
 </script>
