@@ -10,7 +10,7 @@ export const useHttpRequest = () => {
     if (!params.headers) {
       params.headers = new Headers();
     }
-    params.headers.set("Authorization", "Bearer " + token);
+    params.headers.set("Authorization", token);
   };
 
   return {

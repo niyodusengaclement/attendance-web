@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { MoonIcon, EyeIcon, EyeOffIcon } from 'vue-tabler-icons';
-import { useUserStore } from '~/stores/users/user';
 
 import {
-  GoogleSignInButton,
   type CredentialResponse,
 } from "vue3-google-signin";
 
@@ -124,7 +121,7 @@ const checkbox = ref(true);
 interface FormData {
   email: Field<string>;
   password: Field<string>;
-  remember: Field<boolean>;
+  isDistrict: Field<boolean>;
 }
 const {
   form,
@@ -143,14 +140,14 @@ const {
     $value: "",
     $rules: [rules.min(6)("Password has to be longer than 6 characters")],
   },
-  remember: {
+  isDistrict: {
     $value: false
   },
 });
 async function handleSubmit() {
   try {
     const formData = await validateFields();
-    login(form.email.$value, form.password.$value, form.remember.$value);
+    login(form.email.$value, form.password.$value, form.isDistrict.$value);
   } catch (e) {
 
   }
@@ -168,7 +165,7 @@ async function handleSubmit() {
         <div class="md:max-w-6xl md:mx-auto">
           <div class="md:flex md:flex-wrap">
             <div v-if="state == 1" class="md:w-1/2  md:text-left md:pt-28">
-              <h1 class="font-bold text-primary text-3xl md:text-5xl leading-tight mb-4">
+              <h1 class="font-bold text-success text-3xl md:text-5xl leading-tight mb-4">
                 Login
               </h1>
               <p class="text-left md:text-xl text-gray-600 md:mb-12 mt-2">Welcome back, login to your account
@@ -202,28 +199,19 @@ async function handleSubmit() {
 
                 </div>
 
-                <div class="flex items-center">
-                  <!-- <input type="checkbox" name="remember_me" id="remember_me" class="mr-2 focus:ring-0 rounded"> -->
-                  <!-- <label for="remember_me" class="text-gray-700">Remember me </label> -->
-                </div>
+                <v-row class="p-4" justify="end">
+                  <v-switch v-model="form.isDistrict.$value" color="success" label="Injira nkumukozi w'akarere" inset hide-details></v-switch>
+                </v-row>
 
                 <div class="my-4 flex items-center justify-end space-x-4">
 
-                  <v-btn @click.prevent="handleSubmit" :disabled="loading" :loading="loading" rounded="xl"
-                    color="primary" size="large" block flat>
+                  <v-btn @click.prevent="handleSubmit" :disabled="loading" :loading="loading" color="success"
+                    size="large" block flat>
                     Login</v-btn>
-
                 </div>
                 <v-row justify="end">
-                  <v-btn color="primary" @click="state = 2" size="large" flat variant="text">Forgot Password?</v-btn>
+                  <v-btn color="primary" size="large" flat variant="text">Forgot Password?</v-btn>
                 </v-row>
-
-                <!-- <div class="flex items-center justify-between mb-8">
-                  <div class="w-full h-[1px] bg-gray-300"></div>
-                  <span class="text-sm uppercase mx-6 text-gray-400">Or</span>
-                  <div class="w-full h-[1px] bg-gray-300"></div>
-                </div> -->
-                <!-- <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
               </form>
             </div>
             <div v-if="state == 2" class="md:w-1/2  md:text-left md:pt-28">
@@ -312,13 +300,12 @@ async function handleSubmit() {
                 </div>
 
                 <div class="my-4 flex items-center justify-end space-x-4">
-                  <v-btn @click.prevent="saveNewPassword" :disabled="dataLoading" :loading="dataLoading" rounded="xl"
-                    color="primary" size="large" block flat>
+                  <v-btn @click.prevent="saveNewPassword" :disabled="dataLoading" :loading="dataLoading" color="success"
+                    size="large" block flat>
                     Save New Password</v-btn>
                 </div>
               </form>
             </div>
-            <LoginRightDesign />
           </div>
         </div>
       </div>

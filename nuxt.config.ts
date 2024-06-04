@@ -5,7 +5,6 @@ export default defineNuxtConfig({
     public: {
       apiUrl: process.env.BASE_URL,
       imageURL: process.env.IMAGE_URL,
-      profileURL: process.env.PROFILE_URL,
     },
     googleClientId: process.env.GOOGLE_AUTH_CLIENT_ID_LOCAL,
   },

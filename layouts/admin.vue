@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
-const title = ref("Ecommerce Platform");
+const title = ref("Attendance");
 useHead({
     meta: [{ content: title }],
-    titleTemplate: (titleChunk) => {
-        return titleChunk
-            ? `${titleChunk} - Ecommerce Platform`
-            : "Ecommerce Platform";
+    titleTemplate: () => {
+        return "Attendance";
     },
 });
 </script>
@@ -22,8 +20,8 @@ useHead({
                     </div>
                 </v-container>
                 <v-col class="text-center mt-2">
-                    <p class="text-muted">Design and Developed by <a flat variant="text" href="https://adminmart.com/"
-                            target="_blank" class="pl-1 text-success">Qonics Inc</a></p>
+                    <p class="text-muted">2024 <a flat variant="text" href="#"
+                            target="_blank" class="pl-1 text-success"></a></p>
                 </v-col>
             </v-main>
         </v-app>

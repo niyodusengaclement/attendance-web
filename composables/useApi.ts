@@ -6,7 +6,7 @@ export const useApi = () => {
    return axios.create({
     baseURL,
     headers: {
-      Authorization: `Bearer dsfsfs`,
+      Authorization: ``,
     },
   });
 }

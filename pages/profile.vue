@@ -30,26 +30,6 @@
                                     }}</v-list-item-subtitle>
                             </v-list-item>
                         </div>
-
-                        <!-- <div class="pa-1 border-b-2 mb-4 py-2 border-gray-200">
-                            <div class="d-flex justify-between pb-2">
-                                <div class="h4 font-bold">More Informations</div>
-                                <v-btn icon="mdi-pencil" variant="text" size="small"></v-btn>
-                            </div>
-
-                            <div class="w-100 my-4 space-y-4">
-                                <div class="flex justify-between">
-                                    <div class="text-muted text-small">Completed Order</div>
-                                    <div class="text-dark font-medium text-small">{{ info.driver ?? '100' }}</div>
-                                </div>
-                                <div class="flex justify-between">
-                                    <div class="text-muted text-small">Total Income</div>
-                                    <div class="text-dark font-medium text-small">
-                                        {{ info.reference_code ?? '10000000 rwf' }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -118,8 +98,8 @@
                             </div>
 
                             <div class="my-4 flex items-center justify-end space-x-4">
-                                <v-btn @click="changePassword" :disabled="dataLoading" :loading="dataLoading" rounded="xl"
-                                    color="primary" size="large" block flat>
+                                <v-btn @click="changePassword" :disabled="dataLoading" :loading="dataLoading"
+                                    color="success" size="large" block flat>
                                     Save New Password</v-btn>
                             </div>
                         </v-col>

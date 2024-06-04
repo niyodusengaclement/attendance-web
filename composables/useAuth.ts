@@ -9,7 +9,7 @@ export const useAuth = () => {
   return {
     headers: () => ({ Authorization: `token` }),
     loading,
-    login(email: any, passord: any, remember: any): void {
+    login(email: any, password: any, isDistrict: any): void {
       loading.value = true;
 
       http
@@ -20,16 +20,14 @@ export const useAuth = () => {
           //   "Access-Control-Allow-Origin": "*",
           //   "Access-Control-Allow-Credentials": "true",
           // },
-          body: { email: email, password: passord, remember: remember ? 1 : 0 },
+          body: { email, password, isDistrict },
         })
         .then((data: any) => {
           console.log(data);
-          if (data.status == 200) {
-            localStorage.setItem("token", data.accessToken);
-            localStorage.setItem("logger", JSON.stringify(data.data));
-            navigateTo("/dashboard");
-            console.log("login succeed");
-          }
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("logger", JSON.stringify(data));
+          navigateTo("/dashboard");
+          console.log("login succeed");
         })
         .catch((data) => {
           useToast().error(data.data.message);
